@@ -18,9 +18,13 @@
     <div class="page-content" id="page-content">
 
       <div class="cover is-active" id="cover">
-        <div class="cover-photo"><img src="images/guillaume-varet-01.jpg" alt="Profil d'une sculpture en bois sur fond sombre incandescent"></div>
-        <h1>Carnet de sculptures</h1>
-        <p>Guillaume Varet — Chartreuse</p>
+        <img class="cover-bg" src="images/guillaume-varet-01.jpg" alt="Profil d'une sculpture en bois sur fond sombre incandescent">
+        <div class="cover-overlay"></div>
+        <img class="stamp" src="images/carnet/timbre-foret-jour.gif" alt="">
+        <div class="cover-text">
+          <h1>Carnet de sculptures</h1>
+          <p>Guillaume Varet — Chartreuse</p>
+        </div>
       </div>
 
       <!-- pages injected by JS -->
@@ -44,6 +48,14 @@
 
 <script>
 const STAMP = 'images/carnet/timbre-foret-jour.gif';
+
+let tiltSeed = 0;
+function nextTilt(){
+  tiltSeed++;
+  const sign = tiltSeed % 2 === 0 ? 1 : -1;          // strictly alternates left/right
+  const magnitude = 1.4 + Math.random() * 2.8;        // 1.4deg to 4.2deg, randomized
+  return (sign * magnitude).toFixed(1);
+}
 
 const DATA = {
   geants: { bg:'bg-foret', label:'Géants', pages:[
@@ -74,11 +86,10 @@ const DATA = {
 };
 
 function photoPageHTML(bgClass, label, it){
-  const tilt = (Math.random() * 7 - 3.5).toFixed(1); // random gîte between -3.5 and 3.5deg
+  const tilt = nextTilt();
   return `
     <div class="page ${bgClass}">
       <span class="section-label">${label}</span>
-      <img class="stamp" src="${STAMP}" alt="">
       <div class="polaroid" style="transform: rotate(${tilt}deg);">
         <img src="${it.img}" alt="${it.alt}" loading="lazy">
         <div class="polaroid-band"><p>${it.cap}</p></div>
@@ -96,7 +107,6 @@ Object.entries(DATA).forEach(([key, section]) => {
 html += `
   <div data-section="atelier"><div class="page bg-foret">
     <span class="section-label">Atelier</span>
-    <img class="stamp" src="${STAMP}" alt="">
     <div class="page-text">
       <h2>L'atelier</h2>
       <p>Tout commence dehors, sur un établi de chantier. La tronçonneuse d'abord, pour dégrossir — puis la meuleuse, pour faire apparaître ce qui était déjà là.</p>
@@ -111,7 +121,6 @@ html += `
 html += `
   <div data-section="contact"><div class="page bg-champ">
     <span class="section-label">Contact</span>
-    <img class="stamp" src="${STAMP}" alt="">
     <div class="page-text"><h2>Contact</h2></div>
     <img class="contact-img" src="images/carnet/contact.png" alt="Coordonnées de l'atelier">
   </div></div>

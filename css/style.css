@@ -117,37 +117,47 @@ img{ display:block; max-width:100%; }
   position: absolute;
   inset: 0;
   display: none;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 6%;
 }
-.cover.is-active{ display: flex; }
+.cover.is-active{ display: block; }
 
-.cover-photo{
-  width: 64%;
-  max-width: 320px;
-  border: 10px solid #fbf8f0;
-  outline: 1px solid rgba(0,0,0,0.08);
+.cover-bg{
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-.cover-photo img{ width: 100%; display: block; }
+.cover-overlay{
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(18,13,8,0.92) 0%, rgba(18,13,8,0.25) 45%, rgba(18,13,8,0.45) 100%);
+}
 
-.cover h1{
+.cover-text{
+  position: absolute;
+  left: 0; right: 0;
+  bottom: 7%;
+  z-index: 2;
+  text-align: center;
+  padding: 0 8%;
+}
+
+.cover-text h1{
   font-family:'Caveat', cursive;
   font-weight: 700;
-  font-size: clamp(2.2rem, 6vw, 3.4rem);
-  color: var(--ink-pen);
-  margin-top: 1.6rem;
-  text-align: center;
+  font-size: clamp(2.2rem, 7vw, 3.6rem);
+  color: #f3ecd9;
 }
 
-.cover p{
+.cover-text p{
   font-family:'Kalam', cursive;
   font-size: 1.1rem;
   margin-top: 0.3rem;
-  color: var(--ink-pencil);
+  color: rgba(243,236,217,0.75);
 }
+
+.cover .stamp{ top: 5%; right: 6%; }
 
 /* ---------- Content pages ---------- */
 
