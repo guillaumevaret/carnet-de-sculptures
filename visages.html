@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Visages — Guillaume Varet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;1,9..144,500;1,9..144,600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav class="top-nav">
+  <a href="index.html">&larr; Carnet</a>
+  <a class="current">Visages</a>
+  <a href="empreintes.html">Empreintes &rarr;</a>
+</nav>
+
+<main class="carnet" id="carnet">
+
+  <div class="spread is-intro is-active">
+    <div class="spread-text">
+      <p>Le visage revient souvent dans ce travail. Tantôt à peine esquissé — deux fentes, une ligne pour le nez — tantôt habité jusqu'au moindre pli. Toujours le même geste, retrouvé sur des bois différents.</p>
+    </div>
+  </div>
+
+  <div class="spread">
+    <div class="spread-images has-two">
+      <img src="images/visages/epure.jpg" alt="Visage très épuré, traits réduits à quelques lignes, dans l'herbe" loading="lazy">
+      <img src="images/visages/pipe.jpg" alt="Buste d'homme au chapeau et à la pipe, taille brute à la tronçonneuse" loading="lazy">
+    </div>
+    <div class="spread-text">
+      <p>D'un bout à l'autre du même geste&nbsp;: ici réduit à l'essentiel, là creusé jusqu'à l'excès.</p>
+    </div>
+  </div>
+
+  <div class="spread">
+    <div class="spread-images has-two">
+      <img src="images/visages/beret.jpg" alt="Tête de femme au béret, traitement lisse et minimal" loading="lazy">
+      <img src="images/visages/ecorce-1.jpg" alt="Visage émergeant d'une bille de bois, écorce conservée en couronne" loading="lazy">
+    </div>
+    <div class="spread-text">
+      <p>Le bois choisit parfois à la place du sculpteur — une écorce qu'on garde, une veine qu'on suit.</p>
+    </div>
+  </div>
+
+  <div class="spread">
+    <div class="spread-images has-two">
+      <img src="images/visages/bob.jpg" alt="Tête au carré court, lumière rasante, jardin en hiver" loading="lazy">
+      <img src="images/visages/couronne.jpg" alt="Buste à la coiffe sculptée en éclats, posé en intérieur" loading="lazy">
+    </div>
+    <div class="spread-text">
+      <p>Le givre d'un matin d'hiver, la poussière d'un atelier — la lumière change, le visage reste.</p>
+    </div>
+  </div>
+
+  <div class="spread">
+    <div class="spread-images has-two">
+      <img src="images/visages/totem-multiple.jpg" alt="Plusieurs visages superposés, écorce et bois clair" loading="lazy">
+      <img src="images/visages/brut.jpg" alt="Visage taillé à même une branche brute" loading="lazy">
+    </div>
+    <div class="spread-text">
+      <p>Plusieurs têtes sur une même bille, ou une seule à même la branche&nbsp;: la matière impose sa forme avant la main.</p>
+    </div>
+  </div>
+
+  <div class="spread">
+    <div class="spread-images has-two">
+      <img src="images/visages/ecorce-2.jpg" alt="Visage en cours de dégrossissage, écorce encore présente" loading="lazy">
+      <img src="images/visages/texture.jpg" alt="Gros plan sur le grain du bois sculpté" loading="lazy">
+    </div>
+    <div class="spread-text">
+      <p>Un visage encore aveugle, qui attend ses yeux. Le grain du bois, déjà, raconte quelque chose.</p>
+    </div>
+  </div>
+
+  <div class="carnet-controls">
+    <button class="carnet-btn" id="prev" aria-label="Page précédente">&larr;</button>
+    <span class="carnet-count" id="count">1 / 6</span>
+    <button class="carnet-btn" id="next" aria-label="Page suivante">&rarr;</button>
+  </div>
+
+</main>
+
+<p class="page-footer"><a href="empreintes.html">Continuer vers Empreintes &rarr;</a></p>
+
+<script>
+  const spreads = document.querySelectorAll('.spread');
+  const prevBtn = document.getElementById('prev');
+  const nextBtn = document.getElementById('next');
+  const count = document.getElementById('count');
+  let i = 0;
+
+  function render(){
+    spreads.forEach((s, idx) => s.classList.toggle('is-active', idx === i));
+    count.textContent = (i + 1) + ' / ' + spreads.length;
+    prevBtn.disabled = i === 0;
+    nextBtn.disabled = i === spreads.length - 1;
+  }
+
+  prevBtn.addEventListener('click', () => { if(i > 0){ i--; render(); } });
+  nextBtn.addEventListener('click', () => { if(i < spreads.length - 1){ i++; render(); } });
+
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'ArrowRight') nextBtn.click();
+    if(e.key === 'ArrowLeft') prevBtn.click();
+  });
+
+  render();
+</script>
+
+</body>
+</html>

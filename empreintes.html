@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Empreintes — Guillaume Varet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;1,9..144,500;1,9..144,600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav class="top-nav">
+  <a href="visages.html">&larr; Visages</a>
+  <a class="current">Empreintes</a>
+  <a href="atelier.html">L'atelier &rarr;</a>
+</nav>
+
+<main class="carnet" id="carnet">
+
+  <div class="spread is-intro is-active">
+    <div class="spread-text">
+      <p>Le reste du travail ne tient pas dans une seule catégorie&nbsp;: un tronc entier sculpté debout dans un parc, un masque trouvé dans une bille fendue, un animal facétieux planté sur deux jambes de bois. Ce qui les relie, c'est ce qu'il en reste une fois le geste terminé — une empreinte.</p>
+    </div>
+  </div>
+
+  <div class="spread">
+    <div class="spread-images has-two">
+      <img src="images/selection/sequoia.jpg" alt="Sculpture monumentale en cours, à même un séquoia, échafaudage et château en arrière-plan" loading="lazy">
+      <img src="images/selection/couple-totem.jpg" alt="Deux silhouettes enlacées sculptées dans un tronc debout, jardin" loading="lazy">
+    </div>
+    <div class="spread-text">
+      <p>Le travail à plus grande échelle&nbsp;: un séquoia entier, un couple enlacé à même un tronc encore debout.</p>
+    </div>
+  </div>
+
+  <div class="spread">
+    <div class="spread-images has-two">
+      <img src="images/selection/bouddha.jpg" alt="Buste détaillé, mains jointes, coiffe travaillée" loading="lazy">
+      <img src="images/selection/corbeau.jpg" alt="Oiseau facétieux au chapeau, posé sur deux jambes en bois" loading="lazy">
+    </div>
+    <div class="spread-text">
+      <p>D'un visage serein à un oiseau facétieux — le recueillement et l'humour se côtoient.</p>
+    </div>
+  </div>
+
+  <div class="spread">
+    <div class="spread-images has-two">
+      <img src="images/selection/marmottes.jpg" alt="Deux marmottes sculptées sur une souche, vue de dos" loading="lazy">
+      <img src="images/selection/saxophoniste.jpg" alt="Personnage félin anthropomorphe tenant un instrument, fond sombre" loading="lazy">
+    </div>
+    <div class="spread-text">
+      <p>Le bestiaire&nbsp;: une scène tendre sur une souche, un musicien improbable en studio.</p>
+    </div>
+  </div>
+
+  <div class="spread">
+    <div class="spread-images has-two">
+      <img src="images/selection/crapaud.jpg" alt="Forme abstraite émergeant du bois brut, sous-bois en automne" loading="lazy">
+      <img src="images/selection/lunien.jpg" alt="Masque creusé dans une bille fendue, contre un mur de pierre" loading="lazy">
+    </div>
+    <div class="spread-text">
+      <p>Deux formes qui hésitent entre figure et paysage, presque géologiques.</p>
+    </div>
+  </div>
+
+  <div class="spread">
+    <div class="spread-images">
+      <img src="images/selection/poteau.jpg" alt="Poteau de bois fin avec ferrures, contre un muret moussu" loading="lazy">
+    </div>
+    <div class="spread-text">
+      <p>Un dernier geste, plus retenu&nbsp;: un poteau, des ferrures, contre un mur de pierre moussue.</p>
+    </div>
+  </div>
+
+  <div class="carnet-controls">
+    <button class="carnet-btn" id="prev" aria-label="Page précédente">&larr;</button>
+    <span class="carnet-count" id="count">1 / 6</span>
+    <button class="carnet-btn" id="next" aria-label="Page suivante">&rarr;</button>
+  </div>
+
+</main>
+
+<p class="page-footer"><a href="atelier.html">Continuer vers l'atelier &rarr;</a></p>
+
+<script>
+  const spreads = document.querySelectorAll('.spread');
+  const prevBtn = document.getElementById('prev');
+  const nextBtn = document.getElementById('next');
+  const count = document.getElementById('count');
+  let i = 0;
+
+  function render(){
+    spreads.forEach((s, idx) => s.classList.toggle('is-active', idx === i));
+    count.textContent = (i + 1) + ' / ' + spreads.length;
+    prevBtn.disabled = i === 0;
+    nextBtn.disabled = i === spreads.length - 1;
+  }
+
+  prevBtn.addEventListener('click', () => { if(i > 0){ i--; render(); } });
+  nextBtn.addEventListener('click', () => { if(i < spreads.length - 1){ i++; render(); } });
+
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'ArrowRight') nextBtn.click();
+    if(e.key === 'ArrowLeft') prevBtn.click();
+  });
+
+  render();
+</script>
+
+</body>
+</html>
