@@ -22,7 +22,6 @@
 
   body{
     font-family:'Inter', sans-serif;
-    overflow:hidden;
   }
 
   .hero{
@@ -109,6 +108,209 @@
   @media (max-width: 600px){
     .hero-content{ padding: 0 7vw 9vh; }
   }
+
+  .scroll-cue{
+    position:absolute;
+    bottom: 2.4rem;
+    right: 6vw;
+    z-index:2;
+    width: 22px;
+    height: 36px;
+    border: 1.5px solid var(--cream-dim);
+    border-radius: 12px;
+    opacity:0;
+    animation: rise 1.1s ease-out 0.6s forwards;
+  }
+
+  .scroll-cue::before{
+    content:"";
+    position:absolute;
+    top: 7px;
+    left: 50%;
+    width: 3px;
+    height: 7px;
+    background: var(--ember-bright);
+    border-radius: 2px;
+    transform: translateX(-50%);
+    animation: scroll-dot 1.8s ease-in-out infinite;
+  }
+
+  @keyframes scroll-dot{
+    0%{ opacity:1; transform: translate(-50%, 0); }
+    70%{ opacity:0; transform: translate(-50%, 10px); }
+    100%{ opacity:0; transform: translate(-50%, 10px); }
+  }
+
+  @media (max-width: 600px){
+    .scroll-cue{ display:none; }
+  }
+
+  /* ---------- Galleries ---------- */
+
+  .gallery-section{
+    padding: 7rem 6vw 6rem;
+    max-width: 1500px;
+    margin: 0 auto;
+  }
+
+  .section-head{
+    margin-bottom: 3rem;
+    max-width: 640px;
+  }
+
+  .section-head .eyebrow{ margin-bottom: 0.7rem; }
+
+  .section-title{
+    font-family:'Fraunces', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: clamp(2rem, 4.5vw, 3.4rem);
+    color: var(--cream);
+    line-height: 1;
+  }
+
+  .section-deck{
+    margin-top: 1rem;
+    font-family:'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--cream-dim);
+    max-width: 46ch;
+  }
+
+  .masonry{
+    column-count: 1;
+    column-gap: 1.1rem;
+  }
+
+  @media (min-width: 640px){
+    .masonry{ column-count: 2; }
+  }
+  @media (min-width: 1020px){
+    .masonry{ column-count: 3; }
+  }
+
+  .piece{
+    break-inside: avoid;
+    margin-bottom: 1.1rem;
+    cursor: zoom-in;
+    position: relative;
+    overflow: hidden;
+    border-radius: 2px;
+    opacity: 0;
+    transform: translateY(18px);
+  }
+
+  .piece.in-view{
+    animation: piece-rise 0.8s ease-out forwards;
+  }
+
+  @keyframes piece-rise{
+    to{ opacity:1; transform: translateY(0); }
+  }
+
+  .piece img{
+    display:block;
+    width: 100%;
+    height: auto;
+    transition: transform 0.6s cubic-bezier(.2,.7,.2,1), filter 0.6s ease;
+  }
+
+  .piece:hover img{
+    transform: scale(1.035);
+  }
+
+  .piece figcaption{
+    position:absolute;
+    left:0; right:0; bottom:0;
+    padding: 1.6rem 1rem 0.9rem;
+    background: linear-gradient(to top, rgba(11,10,8,0.88), rgba(11,10,8,0));
+    font-family:'Fraunces', serif;
+    font-style: italic;
+    font-size: 0.95rem;
+    color: var(--cream);
+    opacity:0;
+    transform: translateY(6px);
+    transition: opacity 0.35s ease, transform 0.35s ease;
+  }
+
+  .piece:hover figcaption,
+  .piece:focus-visible figcaption{
+    opacity:1;
+    transform: translateY(0);
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .piece{ opacity:1; transform:none; animation:none; }
+    .piece img{ transition:none; }
+  }
+
+  /* ---------- Lightbox ---------- */
+
+  .lightbox{
+    position: fixed;
+    inset: 0;
+    background: rgba(8,7,6,0.96);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4vh 4vw;
+    z-index: 50;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .lightbox.is-open{
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .lightbox img{
+    max-width: 100%;
+    max-height: 86vh;
+    object-fit: contain;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+  }
+
+  .lightbox-caption{
+    position: absolute;
+    bottom: 4vh;
+    left: 0; right: 0;
+    text-align: center;
+    font-family:'Fraunces', serif;
+    font-style: italic;
+    color: var(--cream-dim);
+    font-size: 0.95rem;
+  }
+
+  .lightbox-close{
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--cream-dim);
+    border-radius: 50%;
+    background: transparent;
+    color: var(--cream);
+    font-family:'Inter', sans-serif;
+    font-size: 1.3rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .lightbox-close:hover{ border-color: var(--ember-bright); color: var(--ember-bright); }
+
+  footer{
+    padding: 3.5rem 6vw 4rem;
+    border-top: 1px solid rgba(241,234,217,0.1);
+    font-family:'Inter', sans-serif;
+    font-size: 0.85rem;
+    color: var(--cream-dim);
+    letter-spacing: 0.02em;
+  }
 </style>
 </head>
 <body>
@@ -117,11 +319,108 @@
   <img class="hero-img" src="images/guillaume-varet-01.jpg" alt="Profil d'une sculpture en bois, vue de dos, sur fond sombre incandescent">
   <div class="overlay"></div>
   <div class="hero-content">
-    <p class="eyebrow">Chartreuse,France</p>
+    <p class="eyebrow">Chartreuse</p>
     <h1 class="name">Guillaume Varet</h1>
     <p class="medium">Sculptures — bois, paille&hellip;</p>
   </div>
+  <div class="scroll-cue" aria-hidden="true"></div>
 </main>
+
+<section class="gallery-section" id="visages">
+  <div class="section-head">
+    <p class="eyebrow">Une série</p>
+    <h2 class="section-title">Visages</h2>
+    <p class="section-deck">Du plus brut au plus épuré — un même geste, répété sur des bois différents.</p>
+  </div>
+  <div class="masonry">
+    <figure class="piece"><img loading="lazy" src="images/visages/epure.jpg" alt="Visage très épuré, traits réduits à quelques lignes, dans l'herbe"><figcaption>Sans titre</figcaption></figure>
+    <figure class="piece"><img loading="lazy" src="images/visages/pipe.jpg" alt="Buste d'homme au chapeau et à la pipe, taille brute à la tronçonneuse"><figcaption>Le fumeur</figcaption></figure>
+    <figure class="piece"><img loading="lazy" src="images/visages/beret.jpg" alt="Tête de femme au béret, traitement lisse et minimal"><figcaption>Sans titre</figcaption></figure>
+    <figure class="piece"><img loading="lazy" src="images/visages/ecorce-1.jpg" alt="Visage émergeant d'une bille de bois, écorce conservée en couronne"><figcaption>Sans titre</figcaption></figure>
+    <figure class="piece"><img loading="lazy" src="images/visages/bob.jpg" alt="Tête au carré court, lumière rasante, jardin en hiver"><figcaption>Sans titre</figcaption></figure>
+    <figure class="piece"><img loading="lazy" src="images/visages/couronne.jpg" alt="Buste à la coiffe sculptée en éclats, posé en intérieur"><figcaption>Sans titre</figcaption></figure>
+    <figure class="piece"><img loading="lazy" src="images/visages/totem-multiple.jpg" alt="Plusieurs visages superposés, écorce et bois clair"><figcaption>Sans titre</figcaption></figure>
+    <figure class="piece"><img loading="lazy" src="images/visages/brut.jpg" alt="Visage taillé à même une branche brute"><figcaption>Sans titre</figcaption></figure>
+    <figure class="piece"><img loading="lazy" src="images/visages/ecorce-2.jpg" alt="Visage en cours de dégrossissage, écorce encore présente"><figcaption>Sans titre</figcaption></figure>
+    <figure class="piece"><img loading="lazy" src="images/visages/texture.jpg" alt="Gros plan sur le grain du bois sculpté"><figcaption>Détail</figcaption></figure>
+  </div>
+</section>
+
+<section class="gallery-section" id="selection">
+  <div class="section-head">
+    <p class="eyebrow">Pièces choisies</p>
+    <h2 class="section-title">Sélection</h2>
+    <p class="section-deck">Du tronc entier sculpté in situ à la pièce de studio.</p>
+  </div>
+  <div class="masonry">
+    <figure class="piece"><img loading="lazy" src="images/selection/sequoia.jpg" alt="Sculpture monumentale en cours, à même un séquoia, échafaudage et château en arrière-plan"><figcaption>Pièce monumentale</figcaption></figure>
+    <figure class="piece"><img loading="lazy" src="images/selection/couple-totem.jpg" alt="Deux silhouettes enlacées sculptées dans un tronc debout, jardin"><figcaption>Sans titre</figcaption></figure>
+    <figure class="piece"><img loading="lazy" src="images/selection/bouddha.jpg" alt="Buste détaillé, mains jointes, coiffe travaillée"><figcaption>Bouddha</figcaption></figure>
+    <figure class="piece"><img loading="lazy" src="images/selection/corbeau.jpg" alt="Oiseau facétieux au chapeau, posé sur deux jambes en bois"><figcaption>Le corbeau</figcaption></figure>
+    <figure class="piece"><img loading="lazy" src="images/selection/marmottes.jpg" alt="Deux marmottes sculptées sur une souche, vue de dos"><figcaption>Marmottes</figcaption></figure>
+    <figure class="piece"><img loading="lazy" src="images/selection/saxophoniste.jpg" alt="Personnage félin anthropomorphe tenant un instrument, fond sombre"><figcaption>Le saxophoniste</figcaption></figure>
+    <figure class="piece"><img loading="lazy" src="images/selection/crapaud.jpg" alt="Forme abstraite émergeant du bois brut, sous-bois en automne"><figcaption>Le crapaud</figcaption></figure>
+    <figure class="piece"><img loading="lazy" src="images/selection/lunien.jpg" alt="Masque creusé dans une bille fendue, contre un mur de pierre"><figcaption>Sans titre</figcaption></figure>
+    <figure class="piece"><img loading="lazy" src="images/selection/poteau.jpg" alt="Poteau de bois fin avec ferrures, contre un muret moussu"><figcaption>Sans titre</figcaption></figure>
+  </div>
+</section>
+
+<footer>
+  Guillaume Varet — Chartreuse
+</footer>
+
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lightbox-close" aria-label="Fermer">&times;</button>
+  <img id="lightbox-img" src="" alt="">
+  <p class="lightbox-caption" id="lightbox-caption"></p>
+</div>
+
+<script>
+  // Reveal pieces on scroll
+  const pieces = document.querySelectorAll('.piece');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if(e.isIntersecting){
+        e.target.classList.add('in-view');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  pieces.forEach(p => io.observe(p));
+
+  // Lightbox
+  const lightbox = document.getElementById('lightbox');
+  const lightboxImg = document.getElementById('lightbox-img');
+  const lightboxCaption = document.getElementById('lightbox-caption');
+  const lightboxClose = document.getElementById('lightbox-close');
+
+  function openLightbox(src, alt, caption){
+    lightboxImg.src = src;
+    lightboxImg.alt = alt;
+    lightboxCaption.textContent = caption;
+    lightbox.classList.add('is-open');
+  }
+  function closeLightbox(){
+    lightbox.classList.remove('is-open');
+    lightboxImg.src = '';
+  }
+
+  pieces.forEach(p => {
+    p.addEventListener('click', () => {
+      const img = p.querySelector('img');
+      const caption = p.querySelector('figcaption')?.textContent || '';
+      openLightbox(img.src, img.alt, caption);
+    });
+  });
+
+  lightboxClose.addEventListener('click', closeLightbox);
+  lightbox.addEventListener('click', (e) => {
+    if(e.target === lightbox) closeLightbox();
+  });
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape') closeLightbox();
+  });
+</script>
 
 </body>
 </html>
