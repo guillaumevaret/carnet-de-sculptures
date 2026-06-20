@@ -3,29 +3,195 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Guillaume Varet — Sculptures</title>
+<title>Carnet de sculptures — Guillaume Varet</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;1,9..144,500;1,9..144,600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<main class="hero">
-  <img class="hero-img" src="images/guillaume-varet-01.jpg" alt="Profil d'une sculpture en bois, vue de dos, sur fond sombre incandescent">
-  <div class="overlay"></div>
-  <div class="hero-content">
-    <h1 class="name">Guillaume Varet</h1>
-    <p class="medium">Sculptures — bois, paille&hellip;</p>
-    <nav class="hero-nav">
-      <a href="visages.html">Visages</a>
-      <span class="sep">/</span>
-      <a href="empreintes.html">Empreintes</a>
-      <span class="sep">/</span>
-      <a href="atelier.html">L'atelier</a>
-    </nav>
+<div class="desk" aria-hidden="true"></div>
+<div class="shaving" style="top:8%; left:6%; transform:rotate(20deg);" aria-hidden="true"></div>
+<div class="shaving" style="bottom:10%; right:7%; transform:rotate(-35deg) scale(1.3);" aria-hidden="true"></div>
+<div class="shaving" style="top:14%; right:10%; transform:rotate(60deg) scale(0.8);" aria-hidden="true"></div>
+<div class="shaving" style="bottom:6%; left:11%; transform:rotate(-10deg) scale(1.1);" aria-hidden="true"></div>
+
+<div class="notebook">
+  <div class="page-frame"></div>
+
+  <div class="rings" aria-hidden="true"></div>
+
+  <nav class="tabs" id="tabs">
+    <button class="tab" data-tab="geants">Géants</button>
+    <button class="tab" data-tab="impromptu">Impromptu</button>
+    <button class="tab" data-tab="visages">Visages</button>
+    <button class="tab" data-tab="atelier">Atelier</button>
+    <button class="tab" data-tab="contact">Contact</button>
+  </nav>
+
+  <div class="cover" id="cover">
+    <h1>Carnet de sculptures</h1>
+    <p class="by">Guillaume Varet</p>
+    <p class="hint">touchez un onglet pour l'ouvrir</p>
   </div>
-</main>
+
+  <div class="book-pages is-hidden" id="book-pages">
+    <a class="cover-link" id="cover-link">&larr; couverture</a>
+    <div class="tab-pages" data-tab="geants" id="pages-geants"></div>
+    <div class="tab-pages" data-tab="impromptu" id="pages-impromptu"></div>
+    <div class="tab-pages" data-tab="visages" id="pages-visages"></div>
+    <div class="tab-pages" data-tab="atelier" id="pages-atelier"></div>
+    <div class="tab-pages" data-tab="contact" id="pages-contact"></div>
+    <button class="corner corner-prev" id="corner-prev" aria-label="Page précédente" hidden></button>
+    <button class="corner corner-next" id="corner-next" aria-label="Page suivante" hidden></button>
+    <div class="page-counter" id="page-counter"></div>
+  </div>
+</div>
+
+<script>
+const SCRIBBLE = (style) => `<svg class="scribble" style="${style}" viewBox="0 0 100 100" width="80" height="80" xmlns="http://www.w3.org/2000/svg"><path d="M50,10 C72,7 92,28 89,50 C92,73 70,91 49,88 C27,91 9,71 12,49 C9,27 29,9 50,10 Z" fill="none" stroke="#4a463f" stroke-width="2"/></svg>`;
+
+const DATA = {
+  geants: [
+    { img:'images/selection/sequoia.jpg', alt:"Sculpture monumentale en cours, à même un séquoia, échafaudage et château en arrière-plan", cap:`Un séquoia <span class="ink-pen">entier</span>. <span class="biffe">trop grand</span> à la bonne échelle, finalement.` },
+    { img:'images/selection/couple-totem.jpg', alt:"Deux silhouettes enlacées sculptées dans un tronc debout, jardin", cap:`Deux silhouettes enlacées, à même un tronc <span class="ink-pen">encore debout</span>.` }
+  ],
+  impromptu: [
+    { img:'images/selection/bouddha.jpg', alt:"Buste détaillé, mains jointes, coiffe travaillée", cap:`Un visage recueilli, presque <span class="biffe">sage</span> serein.` },
+    { img:'images/selection/corbeau.jpg', alt:"Oiseau facétieux au chapeau, posé sur deux jambes en bois", cap:`Un chapeau trouvé, un oiseau qui s'impose.` },
+    { img:'images/selection/marmottes.jpg', alt:"Deux marmottes sculptées sur une souche, vue de dos", cap:`Deux marmottes, blotties sur une souche.` },
+    { img:'images/selection/saxophoniste.jpg', alt:"Personnage félin anthropomorphe tenant un instrument, fond sombre", cap:`Un musicien qu'on n'attendait pas.` },
+    { img:'images/selection/crapaud.jpg', alt:"Forme abstraite émergeant du bois brut, sous-bois en automne", cap:`Une forme qui hésite entre <span class="biffe">grenouille</span> crapaud et paysage.` },
+    { img:'images/selection/lunien.jpg', alt:"Masque creusé dans une bille fendue, contre un mur de pierre", cap:`Un masque trouvé dans une bille fendue.` },
+    { img:'images/selection/poteau.jpg', alt:"Poteau de bois fin avec ferrures, contre un muret moussu", cap:`Un dernier geste, plus <span class="ink-pen">retenu</span>.` }
+  ],
+  visages: [
+    { img:'images/visages/epure.jpg', alt:"Visage très épuré, traits réduits à quelques lignes, dans l'herbe", cap:`À peine esquissé&nbsp;: deux fentes, une ligne.` },
+    { img:'images/visages/pipe.jpg', alt:"Buste d'homme au chapeau et à la pipe, taille brute à la tronçonneuse", cap:`Brut, fumeur, <span class="biffe">presque vivant</span>.` },
+    { img:'images/visages/beret.jpg', alt:"Tête de femme au béret, traitement lisse et minimal", cap:`Poli jusqu'au silence.` },
+    { img:'images/visages/ecorce-1.jpg', alt:"Visage émergeant d'une bille de bois, écorce conservée en couronne", cap:`L'écorce, gardée en couronne.` },
+    { img:'images/visages/bob.jpg', alt:"Tête au carré court, lumière rasante, jardin en hiver", cap:`Lumière d'un matin de givre.` },
+    { img:'images/visages/couronne.jpg', alt:"Buste à la coiffe sculptée en éclats, posé en intérieur", cap:`La coiffe devient sculpture.` },
+    { img:'images/visages/totem-multiple.jpg', alt:"Plusieurs visages superposés, écorce et bois clair", cap:`Plusieurs têtes, une seule bille.` },
+    { img:'images/visages/brut.jpg', alt:"Visage taillé à même une branche brute", cap:`Encore aveugle, sur la branche.` },
+    { img:'images/visages/ecorce-2.jpg', alt:"Visage en cours de dégrossissage, écorce encore présente", cap:`En cours. <span class="biffe">pas fini</span> en devenir.` },
+    { img:'images/visages/texture.jpg', alt:"Gros plan sur le grain du bois sculpté", cap:`Le grain, de très près.` }
+  ]
+};
+
+const ROTS = ['rot-1','rot-2','rot-3','rot-4','rot-5'];
+
+function buildPhotoPages(containerId, items){
+  const el = document.getElementById(containerId);
+  el.innerHTML = items.map((it, idx) => `
+    <div class="page ${idx===0 ? 'is-active' : ''}">
+      ${SCRIBBLE(`top:8%; left:${idx%2===0?'4%':'82%'}; transform:rotate(${idx*23 % 40 - 20}deg);`)}
+      ${SCRIBBLE(`bottom:14%; right:${idx%2===0?'6%':'80%'}; transform:rotate(${idx*17 % 50 - 25}deg) scale(0.7);`)}
+      <div class="page-photo ${ROTS[idx % ROTS.length]}">
+        <img src="${it.img}" alt="${it.alt}" loading="lazy">
+      </div>
+      <div class="page-caption"><p class="ink-pencil">${it.cap}</p></div>
+    </div>
+  `).join('');
+}
+
+buildPhotoPages('pages-geants', DATA.geants);
+buildPhotoPages('pages-impromptu', DATA.impromptu);
+buildPhotoPages('pages-visages', DATA.visages);
+
+document.getElementById('pages-atelier').innerHTML = `
+  <div class="page is-active">
+    <div class="page-text-only">
+      <h2>L'atelier</h2>
+      <p>Tout commence dehors. Une bille de bois encore couverte d'écorce, posée sur un établi de chantier.</p>
+      <p><span class="ink-pen">La tronçonneuse d'abord, pour dégrossir</span> — puis la meuleuse, pour faire apparaître ce qui était déjà là.</p>
+      <p>Ce que vous voyez ici n'est jamais que ce qui reste, une fois la poussière retombée.</p>
+    </div>
+    <div class="page-photo rot-2" style="position:absolute; right:4.2rem; bottom:3.4rem; width:34%; max-width:280px;">
+      <img src="images/atelier/etabli.jpg" alt="Guillaume Varet au travail, meuleuse à la main, sur une pièce posée sur un établi de chantier">
+    </div>
+  </div>
+`;
+
+document.getElementById('pages-contact').innerHTML = `
+  <div class="page is-active">
+    ${SCRIBBLE('top:10%; right:8%; transform:rotate(15deg);')}
+    <div class="page-text-only">
+      <h2>Contact</h2>
+      <p class="ink-pencil">38134 La Sûre en Chartreuse</p>
+      <p><a href="tel:0601757940">06 01 75 79 40</a></p>
+    </div>
+  </div>
+`;
+
+/* ---------- Navigation logic ---------- */
+
+const tabs = document.querySelectorAll('.tab');
+const cover = document.getElementById('cover');
+const bookPages = document.getElementById('book-pages');
+const coverLink = document.getElementById('cover-link');
+const cornerPrev = document.getElementById('corner-prev');
+const cornerNext = document.getElementById('corner-next');
+const pageCounter = document.getElementById('page-counter');
+
+let currentTab = null;
+let pageIndex = 0;
+
+function getPages(tab){
+  return document.querySelectorAll(`#pages-${tab} .page`);
+}
+
+function openTab(tab){
+  currentTab = tab;
+  pageIndex = 0;
+  cover.style.display = 'none';
+  bookPages.classList.remove('is-hidden');
+  tabs.forEach(t => t.classList.toggle('is-active', t.dataset.tab === tab));
+  document.querySelectorAll('.tab-pages').forEach(tp => tp.classList.toggle('is-active', tp.dataset.tab === tab));
+  renderPage();
+}
+
+function renderPage(direction){
+  const pages = getPages(currentTab);
+  pages.forEach((p, idx) => {
+    p.classList.remove('flipping-next', 'flipping-prev');
+    if(idx === pageIndex){
+      p.classList.add('is-active');
+      if(direction === 1) p.classList.add('flipping-next');
+      if(direction === -1) p.classList.add('flipping-prev');
+    } else {
+      p.classList.remove('is-active');
+    }
+  });
+  cornerPrev.hidden = pageIndex === 0;
+  cornerNext.hidden = pageIndex >= pages.length - 1;
+  pageCounter.textContent = pages.length > 1 ? `page ${pageIndex + 1} / ${pages.length}` : '';
+}
+
+tabs.forEach(t => t.addEventListener('click', () => openTab(t.dataset.tab)));
+
+cornerNext.addEventListener('click', () => {
+  const pages = getPages(currentTab);
+  if(pageIndex < pages.length - 1){ pageIndex++; renderPage(1); }
+});
+cornerPrev.addEventListener('click', () => {
+  if(pageIndex > 0){ pageIndex--; renderPage(-1); }
+});
+
+coverLink.addEventListener('click', () => {
+  bookPages.classList.add('is-hidden');
+  cover.style.display = 'flex';
+  tabs.forEach(t => t.classList.remove('is-active'));
+  currentTab = null;
+});
+
+document.addEventListener('keydown', (e) => {
+  if(!currentTab) return;
+  if(e.key === 'ArrowRight') cornerNext.click();
+  if(e.key === 'ArrowLeft') cornerPrev.click();
+});
+</script>
 
 </body>
 </html>
