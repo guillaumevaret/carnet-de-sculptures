@@ -307,29 +307,55 @@ img{ display:block; max-width:100%; }
 /* ---------- Page corners: turn by "dog-earing" ---------- */
 
 .corner{
+  --fold-color: 70,60,46;
+  --fold-alpha: 0.18;
   position: absolute;
-  bottom: 0;
-  width: 64px;
-  height: 64px;
+  width: 52px;
+  height: 52px;
   cursor: pointer;
   z-index: 6;
+  transition: width 0.16s ease, height 0.16s ease;
 }
 
-.corner-next{
-  right: 0;
-  clip-path: polygon(100% 0, 100% 100%, 0 100%);
-  background: linear-gradient(135deg, rgba(0,0,0,0) 45%, rgba(70,60,46,0.18) 46%, var(--paper) 47%);
+.corner-tl{
+  top: 0; left: 0;
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+  background: linear-gradient(315deg, rgba(0,0,0,0) 45%, rgba(var(--fold-color), var(--fold-alpha)) 46%, var(--paper) 47%);
 }
-
-.corner-prev{
-  left: 0;
+.corner-tr{
+  top: 0; right: 0;
+  clip-path: polygon(100% 0, 100% 100%, 0 0);
+  background: linear-gradient(45deg, rgba(0,0,0,0) 45%, rgba(var(--fold-color), var(--fold-alpha)) 46%, var(--paper) 47%);
+}
+.corner-bl{
+  bottom: 0; left: 0;
   clip-path: polygon(0 0, 100% 100%, 0 100%);
-  background: linear-gradient(225deg, rgba(0,0,0,0) 45%, rgba(70,60,46,0.18) 46%, var(--paper) 47%);
+  background: linear-gradient(225deg, rgba(0,0,0,0) 45%, rgba(var(--fold-color), var(--fold-alpha)) 46%, var(--paper) 47%);
 }
-
-.corner:hover{ width: 78px; height: 78px; }
+.corner-br{
+  bottom: 0; right: 0;
+  clip-path: polygon(100% 0, 100% 100%, 0 100%);
+  background: linear-gradient(135deg, rgba(0,0,0,0) 45%, rgba(var(--fold-color), var(--fold-alpha)) 46%, var(--paper) 47%);
+}
 
 .corner[hidden]{ display:none; }
+
+/* arrow only on the bottom two corners */
+.corner-arrow{
+  position: absolute;
+  bottom: 13px;
+  font-family:'Kalam', cursive;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--ink-pencil);
+  opacity: 0.55;
+  pointer-events: none;
+  transition: opacity 0.16s ease, color 0.16s ease;
+}
+.corner-bl .corner-arrow{ left: 13px; }
+.corner-br .corner-arrow{ right: 13px; }
+
+.corner:hover .corner-arrow{ opacity: 0.9; color: var(--accent-red); }
 
 .page-counter{
   position: absolute;

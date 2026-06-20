@@ -30,8 +30,10 @@
       <!-- pages injected by JS -->
       <div id="pages"></div>
 
-      <button class="corner corner-prev" id="corner-prev" aria-label="Page précédente" hidden></button>
-      <button class="corner corner-next" id="corner-next" aria-label="Page suivante" hidden></button>
+      <button class="corner corner-tl" data-dir="prev" aria-label="Page précédente" hidden></button>
+      <button class="corner corner-tr" data-dir="next" aria-label="Page suivante" hidden></button>
+      <button class="corner corner-bl" data-dir="prev" aria-label="Page précédente" hidden><span class="corner-arrow">&larr;</span></button>
+      <button class="corner corner-br" data-dir="next" aria-label="Page suivante" hidden><span class="corner-arrow">&rarr;</span></button>
       <div class="page-counter" id="page-counter"></div>
     </div>
   </div>
@@ -141,9 +143,11 @@ SECTION_ORDER.forEach(key => {
 
 const cover = document.getElementById('cover');
 const tabs = document.querySelectorAll('.tab');
-const cornerPrev = document.getElementById('corner-prev');
-const cornerNext = document.getElementById('corner-next');
+const corners = Array.from(document.querySelectorAll('.corner'));
+const cornersPrev = corners.filter(c => c.dataset.dir === 'prev');
+const cornersNext = corners.filter(c => c.dataset.dir === 'next');
 const counter = document.getElementById('page-counter');
+const pageContent = document.getElementById('page-content');
 
 /* one flat sequence for the whole book: the cover, then every page of every section in order */
 const sequence = [{ tab:'cover', el:cover }];
@@ -152,6 +156,9 @@ SECTION_ORDER.forEach(key => {
 });
 
 let pos = 0; // index into `sequence`
+
+function goNext(){ if(pos < sequence.length - 1){ pos++; render(1); } }
+function goPrev(){ if(pos > 0){ pos--; render(-1); } }
 
 function render(direction){
   sequence.forEach(s => s.el.classList.remove('is-active','flip-next','flip-prev'));
@@ -163,15 +170,13 @@ function render(direction){
 
   tabs.forEach(tt => tt.classList.toggle('is-active', tt.dataset.tab === current.tab));
 
-  if(current.tab === 'cover'){
-    cornerPrev.hidden = true;
-    cornerNext.hidden = false; // flipping forward from the cover enters the book
-    counter.textContent = '';
-    return;
-  }
+  const atCover = current.tab === 'cover';
+  const atEnd = pos >= sequence.length - 1;
 
-  cornerPrev.hidden = false; // can always flip back, even into the cover
-  cornerNext.hidden = pos >= sequence.length - 1; // true end of the book
+  cornersPrev.forEach(c => { c.hidden = atCover; });
+  cornersNext.forEach(c => { c.hidden = atEnd; });
+
+  if(atCover){ counter.textContent = ''; return; }
 
   const pageInSection = sections[current.tab].indexOf(current.el) + 1;
   counter.textContent = `${current.tab} — page ${pageInSection} / ${sections[current.tab].length}`;
@@ -183,16 +188,49 @@ tabs.forEach(t => t.addEventListener('click', () => {
   render(0);
 }));
 
-cornerNext.addEventListener('click', () => {
-  if(pos < sequence.length - 1){ pos++; render(1); }
-});
-cornerPrev.addEventListener('click', () => {
-  if(pos > 0){ pos--; render(-1); }
-});
+corners.forEach(c => c.addEventListener('click', () => {
+  c.dataset.dir === 'next' ? goNext() : goPrev();
+}));
 
 document.addEventListener('keydown', (e) => {
-  if(e.key === 'ArrowRight') cornerNext.click();
-  if(e.key === 'ArrowLeft') cornerPrev.click();
+  if(e.key === 'ArrowRight') goNext();
+  if(e.key === 'ArrowLeft') goPrev();
+});
+
+/* the corner "grows" and shifts colour toward the cursor as it approaches the actual page corner */
+const ANCHORS = {
+  'corner-tl': ['left','top'],
+  'corner-tr': ['right','top'],
+  'corner-bl': ['left','bottom'],
+  'corner-br': ['right','bottom']
+};
+const BASE_SIZE = 52, MAX_SIZE = 118, INFLUENCE = 150;
+
+pageContent.addEventListener('mousemove', (e) => {
+  const frameRect = pageContent.getBoundingClientRect();
+  corners.forEach(c => {
+    if(c.hidden) return;
+    const cls = [...c.classList].find(cl => ANCHORS[cl]);
+    const [hx, vy] = ANCHORS[cls];
+    const ax = hx === 'left' ? frameRect.left : frameRect.right;
+    const ay = vy === 'top' ? frameRect.top : frameRect.bottom;
+    const dist = Math.hypot(e.clientX - ax, e.clientY - ay);
+    const t = Math.max(0, 1 - dist / INFLUENCE);
+    const size = BASE_SIZE + t * (MAX_SIZE - BASE_SIZE);
+    c.style.width = size + 'px';
+    c.style.height = size + 'px';
+    c.style.setProperty('--fold-alpha', (0.16 + t * 0.4).toFixed(2));
+    c.style.setProperty('--fold-color', t > 0.45 ? '192,67,47' : '70,60,46');
+  });
+});
+
+pageContent.addEventListener('mouseleave', () => {
+  corners.forEach(c => {
+    c.style.width = BASE_SIZE + 'px';
+    c.style.height = BASE_SIZE + 'px';
+    c.style.setProperty('--fold-alpha', '0.18');
+    c.style.setProperty('--fold-color', '70,60,46');
+  });
 });
 
 render(0);
