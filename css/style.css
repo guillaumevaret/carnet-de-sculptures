@@ -60,16 +60,19 @@ img{ display:block; max-width:100%; }
   overflow: hidden;
 }
 
-/* binding holes, left edge */
+/* binding holes, left edge, now with a metal ring around each */
 .page-frame::after{
   content:"";
   position:absolute;
   left: 10px; top: 6%; bottom: 6%;
-  width: 12px;
-  background-image: radial-gradient(circle, rgba(60,50,38,0.5) 32%, transparent 34%);
-  background-size: 12px 38px;
+  width: 16px;
+  background-image: radial-gradient(circle,
+    rgba(20,16,10,0.55) 0 28%,
+    #ece8da 28% 36%,
+    #8c887a 36% 46%,
+    transparent 48%);
+  background-size: 16px 38px;
   background-repeat: repeat-y;
-  opacity: 0.45;
 }
 
 /* ---------- Side tabs (vertical, part of the notebook) ---------- */
@@ -183,7 +186,10 @@ img{ display:block; max-width:100%; }
   font-weight: 700;
   font-size: 1.5rem;
   color: var(--ink-pen);
+  z-index: 3;
 }
+
+.page-photo-text .section-label{ color: #f3ecd9; }
 
 /* recurring single stamp, identical every time */
 .stamp{
@@ -229,13 +235,13 @@ img{ display:block; max-width:100%; }
 .tape{
   position: absolute;
   width: 34px;
-  height: 15px;
+  height: 16px;
   background: rgba(230,220,188,0.6);
 }
-.tape.tl{ top: -7px; left: 6px; transform: rotate(45deg); }
-.tape.tr{ top: -7px; right: 6px; transform: rotate(-45deg); }
-.tape.bl{ bottom: -7px; left: 6px; transform: rotate(-45deg); }
-.tape.br{ bottom: -7px; right: 6px; transform: rotate(45deg); }
+.tape.tl{ top: -8px; left: -8px; transform: rotate(-45deg); }
+.tape.tr{ top: -8px; right: -8px; transform: rotate(45deg); }
+.tape.bl{ bottom: -8px; left: -8px; transform: rotate(45deg); }
+.tape.br{ bottom: -8px; right: -8px; transform: rotate(-45deg); }
 
 .page-intro{
   font-family:'Caveat', cursive;
@@ -260,6 +266,37 @@ img{ display:block; max-width:100%; }
   font-size: 1.35rem;
   line-height: 1.5;
   max-width: 38ch;
+}
+
+/* photo with text written directly over it (atelier) */
+.page-photo-text{
+  padding: 0 !important;
+  justify-content: flex-end !important;
+}
+
+.photo-bg{
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.photo-overlay{
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(18,13,8,0.88) 0%, rgba(18,13,8,0.15) 48%, rgba(18,13,8,0.4) 100%);
+}
+
+.photo-overlay-text{
+  position: relative;
+  z-index: 2;
+  font-family:'Caveat', cursive;
+  font-size: 1.4rem;
+  line-height: 1.45;
+  color: #f3ecd9;
+  max-width: 34ch;
+  padding: 0 9% 10%;
 }
 
 .contact-img{
