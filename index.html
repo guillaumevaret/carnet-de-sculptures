@@ -74,12 +74,15 @@ const DATA = {
 };
 
 function photoPageHTML(bgClass, label, it){
+  const tilt = (Math.random() * 7 - 3.5).toFixed(1); // random gîte between -3.5 and 3.5deg
   return `
     <div class="page ${bgClass}">
       <span class="section-label">${label}</span>
       <img class="stamp" src="${STAMP}" alt="">
-      <div class="polaroid"><img src="${it.img}" alt="${it.alt}" loading="lazy"></div>
-      <p class="page-caption">${it.cap}</p>
+      <div class="polaroid" style="transform: rotate(${tilt}deg);">
+        <img src="${it.img}" alt="${it.alt}" loading="lazy">
+        <div class="polaroid-band"><p>${it.cap}</p></div>
+      </div>
     </div>`;
 }
 
@@ -98,7 +101,10 @@ html += `
       <h2>L'atelier</h2>
       <p>Tout commence dehors, sur un établi de chantier. La tronçonneuse d'abord, pour dégrossir — puis la meuleuse, pour faire apparaître ce qui était déjà là.</p>
     </div>
-    <div class="polaroid" style="margin-top:1rem;"><img src="images/atelier/etabli.jpg" alt="Guillaume Varet au travail, meuleuse à la main"></div>
+    <div class="polaroid" style="margin-top:1rem; transform: rotate(-1.5deg);">
+      <img src="images/atelier/etabli.jpg" alt="Guillaume Varet au travail, meuleuse à la main">
+      <div class="polaroid-band"><p>en Chartreuse</p></div>
+    </div>
   </div></div>
 `;
 
