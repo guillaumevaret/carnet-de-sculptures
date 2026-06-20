@@ -225,17 +225,17 @@ img{ display:block; max-width:100%; }
   max-width: 26ch;
 }
 
-/* single piece of tape, right on the seam between photo and page */
-.polaroid::before{
-  content:"";
+/* corner tape pieces, diagonal, random 2 or 4 per photo */
+.tape{
   position: absolute;
-  top: -9px;
-  left: 50%;
-  transform: translateX(-50%) rotate(-2deg);
-  width: 86px;
-  height: 22px;
-  background: rgba(230,220,188,0.55);
+  width: 34px;
+  height: 15px;
+  background: rgba(230,220,188,0.6);
 }
+.tape.tl{ top: -7px; left: 6px; transform: rotate(45deg); }
+.tape.tr{ top: -7px; right: 6px; transform: rotate(-45deg); }
+.tape.bl{ bottom: -7px; left: 6px; transform: rotate(-45deg); }
+.tape.br{ bottom: -7px; right: 6px; transform: rotate(45deg); }
 
 .page-intro{
   font-family:'Caveat', cursive;

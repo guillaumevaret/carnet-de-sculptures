@@ -57,6 +57,15 @@ function nextTilt(){
   return (sign * magnitude).toFixed(1);
 }
 
+function tapeHTML(){
+  const fourCorners = Math.random() < 0.5;
+  if(fourCorners){
+    return ['tl','tr','bl','br'].map(c => `<span class="tape ${c}"></span>`).join('');
+  }
+  const diag = Math.random() < 0.5 ? ['tl','br'] : ['tr','bl'];
+  return diag.map(c => `<span class="tape ${c}"></span>`).join('');
+}
+
 const DATA = {
   geants: { bg:'bg-foret', label:'Géants', pages:[
     { img:'images/selection/sequoia.jpg', alt:"Sculpture monumentale en cours, à même un douglas, échafaudage et château en arrière-plan", cap:"Un douglas entier, sculpté debout." },
@@ -91,6 +100,7 @@ function photoPageHTML(bgClass, label, it){
     <div class="page ${bgClass}">
       <span class="section-label">${label}</span>
       <div class="polaroid" style="transform: rotate(${tilt}deg);">
+        ${tapeHTML()}
         <img src="${it.img}" alt="${it.alt}" loading="lazy">
         <div class="polaroid-band"><p>${it.cap}</p></div>
       </div>
@@ -108,10 +118,10 @@ html += `
   <div data-section="atelier"><div class="page bg-foret">
     <span class="section-label">Atelier</span>
     <div class="page-text">
-      <h2>L'atelier</h2>
       <p>Tout commence dehors, sur un établi de chantier. La tronçonneuse d'abord, pour dégrossir — puis la meuleuse, pour faire apparaître ce qui était déjà là.</p>
     </div>
     <div class="polaroid" style="margin-top:1rem; transform: rotate(-1.5deg);">
+      <span class="tape tl"></span><span class="tape br"></span>
       <img src="images/atelier/etabli.jpg" alt="Guillaume Varet au travail, meuleuse à la main">
       <div class="polaroid-band"><p>en Chartreuse</p></div>
     </div>
@@ -121,7 +131,6 @@ html += `
 html += `
   <div data-section="contact"><div class="page bg-champ">
     <span class="section-label">Contact</span>
-    <div class="page-text"><h2>Contact</h2></div>
     <img class="contact-img" src="images/carnet/contact.png" alt="Coordonnées de l'atelier">
   </div></div>
 `;
@@ -130,7 +139,8 @@ pagesEl.innerHTML = html;
 
 /* unwrap: each page lives inside a [data-section] wrapper for easy querying */
 const sections = {};
-['geants','impromptu','visages','atelier','contact'].forEach(key => {
+const SECTION_ORDER = ['geants','impromptu','visages','atelier','contact'];
+SECTION_ORDER.forEach(key => {
   sections[key] = Array.from(document.querySelectorAll(`#pages [data-section="${key}"] .page`));
 });
 
@@ -140,45 +150,49 @@ const cornerPrev = document.getElementById('corner-prev');
 const cornerNext = document.getElementById('corner-next');
 const counter = document.getElementById('page-counter');
 
-let currentTab = 'cover';
-let pageIndex = 0;
+/* one flat sequence for the whole book: the cover, then every page of every section in order */
+const sequence = [{ tab:'cover', el:cover }];
+SECTION_ORDER.forEach(key => {
+  sections[key].forEach(el => sequence.push({ tab:key, el }));
+});
 
-function allPagesFlat(){ return Object.values(sections).flat(); }
+let pos = 0; // index into `sequence`
 
 function render(direction){
-  allPagesFlat().forEach(p => { p.classList.remove('is-active','flip-next','flip-prev'); });
-  cover.classList.remove('is-active');
+  sequence.forEach(s => s.el.classList.remove('is-active','flip-next','flip-prev'));
 
-  if(currentTab === 'cover'){
-    cover.classList.add('is-active');
-    cornerPrev.hidden = true; cornerNext.hidden = true; counter.textContent = '';
+  const current = sequence[pos];
+  current.el.classList.add('is-active');
+  if(direction === 1) current.el.classList.add('flip-next');
+  if(direction === -1) current.el.classList.add('flip-prev');
+
+  tabs.forEach(tt => tt.classList.toggle('is-active', tt.dataset.tab === current.tab));
+
+  if(current.tab === 'cover'){
+    cornerPrev.hidden = true;
+    cornerNext.hidden = false; // flipping forward from the cover enters the book
+    counter.textContent = '';
     return;
   }
 
-  const pages = sections[currentTab];
-  const p = pages[pageIndex];
-  p.classList.add('is-active');
-  if(direction === 1) p.classList.add('flip-next');
-  if(direction === -1) p.classList.add('flip-prev');
+  cornerPrev.hidden = false; // can always flip back, even into the cover
+  cornerNext.hidden = pos >= sequence.length - 1; // true end of the book
 
-  cornerPrev.hidden = pageIndex === 0;
-  cornerNext.hidden = pageIndex >= pages.length - 1;
-  counter.textContent = pages.length > 1 ? `page ${pageIndex+1} / ${pages.length}` : '';
+  const pageInSection = sections[current.tab].indexOf(current.el) + 1;
+  counter.textContent = `${current.tab} — page ${pageInSection} / ${sections[current.tab].length}`;
 }
 
 tabs.forEach(t => t.addEventListener('click', () => {
-  currentTab = t.dataset.tab;
-  pageIndex = 0;
-  tabs.forEach(tt => tt.classList.toggle('is-active', tt === t));
+  const target = t.dataset.tab;
+  pos = sequence.findIndex(s => s.tab === target);
   render(0);
 }));
 
 cornerNext.addEventListener('click', () => {
-  const pages = sections[currentTab];
-  if(pageIndex < pages.length - 1){ pageIndex++; render(1); }
+  if(pos < sequence.length - 1){ pos++; render(1); }
 });
 cornerPrev.addEventListener('click', () => {
-  if(pageIndex > 0){ pageIndex--; render(-1); }
+  if(pos > 0){ pos--; render(-1); }
 });
 
 document.addEventListener('keydown', (e) => {
