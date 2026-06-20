@@ -32,8 +32,8 @@
 
       <button class="corner corner-tl" data-dir="prev" aria-label="Page précédente" hidden></button>
       <button class="corner corner-tr" data-dir="next" aria-label="Page suivante" hidden></button>
-      <button class="corner corner-bl" data-dir="prev" aria-label="Page précédente" hidden><span class="corner-arrow">&larr;</span></button>
-      <button class="corner corner-br" data-dir="next" aria-label="Page suivante" hidden><span class="corner-arrow">&rarr;</span></button>
+      <button class="corner corner-bl" data-dir="prev" aria-label="Page précédente" hidden><span class="corner-arrow"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M4 12a8 8 0 1 1 2.6 5.9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M2.6 17.2l1-4.6 4.1 2.2z" fill="currentColor"/></svg></span></button>
+      <button class="corner corner-br" data-dir="next" aria-label="Page suivante" hidden><span class="corner-arrow"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M4 12a8 8 0 1 1 2.6 5.9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M2.6 17.2l1-4.6 4.1 2.2z" fill="currentColor"/></svg></span></button>
       <div class="page-counter" id="page-counter"></div>
     </div>
   </div>
@@ -219,7 +219,7 @@ pageContent.addEventListener('mousemove', (e) => {
     const size = BASE_SIZE + t * (MAX_SIZE - BASE_SIZE);
     c.style.width = size + 'px';
     c.style.height = size + 'px';
-    c.style.setProperty('--fold-alpha', (0.16 + t * 0.4).toFixed(2));
+    c.style.setProperty('--fold-alpha', (t * 0.5).toFixed(2));
     c.style.setProperty('--fold-color', t > 0.45 ? '192,67,47' : '70,60,46');
   });
 });
@@ -228,7 +228,7 @@ pageContent.addEventListener('mouseleave', () => {
   corners.forEach(c => {
     c.style.width = BASE_SIZE + 'px';
     c.style.height = BASE_SIZE + 'px';
-    c.style.setProperty('--fold-alpha', '0.18');
+    c.style.setProperty('--fold-alpha', '0');
     c.style.setProperty('--fold-color', '70,60,46');
   });
 });

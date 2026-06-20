@@ -317,26 +317,27 @@ img{ display:block; max-width:100%; }
   transition: width 0.16s ease, height 0.16s ease;
 }
 
-.corner-tl{
-  top: 0; left: 0;
-  clip-path: polygon(0 0, 100% 0, 0 100%);
-  background: linear-gradient(315deg, rgba(0,0,0,0) 45%, rgba(var(--fold-color), var(--fold-alpha)) 46%, var(--paper) 47%);
+.corner{
+  --fold-color: 70,60,46;
+  --fold-alpha: 0;
+  position: absolute;
+  width: 52px;
+  height: 52px;
+  cursor: pointer;
+  z-index: 6;
+  transition: width 0.16s ease, height 0.16s ease;
+  background-image:
+    linear-gradient(135deg, rgba(var(--fold-color), var(--fold-alpha)), rgba(var(--fold-color), var(--fold-alpha))),
+    url('../images/carnet/page-curl.svg');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  mix-blend-mode: normal;
 }
-.corner-tr{
-  top: 0; right: 0;
-  clip-path: polygon(100% 0, 100% 100%, 0 0);
-  background: linear-gradient(45deg, rgba(0,0,0,0) 45%, rgba(var(--fold-color), var(--fold-alpha)) 46%, var(--paper) 47%);
-}
-.corner-bl{
-  bottom: 0; left: 0;
-  clip-path: polygon(0 0, 100% 100%, 0 100%);
-  background: linear-gradient(225deg, rgba(0,0,0,0) 45%, rgba(var(--fold-color), var(--fold-alpha)) 46%, var(--paper) 47%);
-}
-.corner-br{
-  bottom: 0; right: 0;
-  clip-path: polygon(100% 0, 100% 100%, 0 100%);
-  background: linear-gradient(135deg, rgba(0,0,0,0) 45%, rgba(var(--fold-color), var(--fold-alpha)) 46%, var(--paper) 47%);
-}
+
+.corner-tl{ top: 0; left: 0; transform: scale(-1, -1); }
+.corner-tr{ top: 0; right: 0; transform: scale(1, -1); }
+.corner-bl{ bottom: 0; left: 0; transform: scale(-1, 1); }
+.corner-br{ bottom: 0; right: 0; }
 
 .corner[hidden]{ display:none; }
 
@@ -344,16 +345,15 @@ img{ display:block; max-width:100%; }
 .corner-arrow{
   position: absolute;
   bottom: 13px;
-  font-family:'Kalam', cursive;
-  font-weight: 700;
-  font-size: 1.1rem;
   color: var(--ink-pencil);
   opacity: 0.55;
   pointer-events: none;
   transition: opacity 0.16s ease, color 0.16s ease;
+  display: flex;
 }
 .corner-bl .corner-arrow{ left: 13px; }
 .corner-br .corner-arrow{ right: 13px; }
+.corner-arrow-flip{ transform: scaleX(-1); }
 
 .corner:hover .corner-arrow{ opacity: 0.9; color: var(--accent-red); }
 
