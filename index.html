@@ -23,7 +23,7 @@
         <img class="stamp" src="images/carnet/timbre-foret-jour.gif" alt="">
         <div class="cover-text">
           <h1>Carnet de sculptures</h1>
-          <p>Guillaume Varet — Chartreuse</p>
+          <p>Guillaume Varet</p>
         </div>
       </div>
 
@@ -115,16 +115,11 @@ Object.entries(DATA).forEach(([key, section]) => {
 });
 
 html += `
-  <div data-section="atelier"><div class="page bg-foret">
+  <div data-section="atelier"><div class="page page-photo-text">
     <span class="section-label">Atelier</span>
-    <div class="page-text">
-      <p>Tout commence dehors, sur un établi de chantier. La tronçonneuse d'abord, pour dégrossir — puis la meuleuse, pour faire apparaître ce qui était déjà là.</p>
-    </div>
-    <div class="polaroid" style="margin-top:1rem; transform: rotate(-1.5deg);">
-      <span class="tape tl"></span><span class="tape br"></span>
-      <img src="images/atelier/etabli.jpg" alt="Guillaume Varet au travail, meuleuse à la main">
-      <div class="polaroid-band"><p>en Chartreuse</p></div>
-    </div>
+    <img class="photo-bg" src="images/atelier/etabli.jpg" alt="Guillaume Varet au travail, meuleuse à la main, sur un établi de chantier">
+    <div class="photo-overlay"></div>
+    <p class="photo-overlay-text">Tout commence dehors, sur un établi de chantier. La tronçonneuse d'abord, pour dégrossir — puis la meuleuse, pour faire apparaître ce qui était déjà là.</p>
   </div></div>
 `;
 
