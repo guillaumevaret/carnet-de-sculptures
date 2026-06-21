@@ -24,6 +24,7 @@
         <div class="cover-text">
           <h1>Carnet de sculptures</h1>
           <p>Guillaume Varet</p>
+          <p class="cover-version">V1.21</p>
         </div>
       </div>
 
@@ -59,8 +60,8 @@ const RING_SHORT_AXIS = 16; // the dimension along which rings are stacked — "
 function buildBinding(){
   binding.innerHTML = '';
   const vertical = window.innerWidth > 720; // matches the CSS breakpoint: column on desktop, row on mobile
-  const space = vertical ? binding.clientHeight : binding.clientWidth;
-  const count = Math.max(3, Math.round(space / RING_SHORT_AXIS));
+  const space = (vertical ? binding.clientHeight : binding.clientWidth) * 0.94; // small safety margin so it never overflows
+  const count = Math.max(3, Math.floor(space / RING_SHORT_AXIS));
 
   for(let i = 0; i < count; i++){
     const item = document.createElement('div');
