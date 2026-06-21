@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reliure – offset fixe en pixels</title>
+    <title>Reliure – offset fixe 8px</title>
     <style>
         * {
             margin: 0;
@@ -27,6 +27,7 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.6);
             overflow: hidden;
         }
+        /* Fond pour visualiser les bords */
         .page {
             position: absolute;
             inset: 0;
@@ -41,9 +42,8 @@
         .binding {
             position: absolute;
             left: 10px;
-            /* 🔴 OFFSET FIXE en pixels */
-            top: 20px;
-            bottom: 20px;
+            top: 8px;     /* offset fixe */
+            bottom: 8px;  /* offset fixe */
             width: 20px;
             display: flex;
             flex-direction: column;
@@ -90,8 +90,8 @@
         @media (min-width: 721px) {
             .binding {
                 left: 10px;
-                top: 20px;
-                bottom: 20px;
+                top: 8px;
+                bottom: 8px;
                 flex-direction: column;
                 width: 20px;
                 height: auto;
@@ -109,7 +109,7 @@
             .binding {
                 left: 6%;
                 right: 6%;
-                top: 10px;
+                top: 8px;
                 bottom: auto;
                 width: auto;
                 height: 20px;
@@ -143,9 +143,9 @@
         function buildBinding() {
             binding.innerHTML = '';
             const vertical = window.innerWidth > 720;
-            // L'espace disponible est la hauteur (ou largeur en mobile) du conteneur
+            // Hauteur disponible = clientHeight (qui inclut déjà l'offset de 8px top/bottom)
             const space = vertical ? binding.clientHeight : binding.clientWidth;
-            // On calcule le nombre d'anneaux
+            // Calcul du nombre d'anneaux : on prend la partie entière, on ajoute 2 pour mieux remplir
             let count = Math.max(3, Math.floor(space / RING_SHORT_AXIS));
             if (!vertical) count = Math.max(3, count - 2);
 
