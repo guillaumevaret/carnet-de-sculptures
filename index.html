@@ -53,12 +53,23 @@ const pageFrame = document.getElementById('page-frame');
 const RING_COUNT = 11;
 for(let i = 0; i < RING_COUNT; i++){
   const top = 6 + (i / (RING_COUNT - 1)) * 88; // spread between 6% and 94%
-  const img = document.createElement('img');
-  img.src = 'images/carnet/ring.svg';
-  img.className = 'ring';
-  img.alt = '';
-  img.style.top = `calc(${top}% - 13px)`;
-  pageFrame.appendChild(img);
+  const wrap = document.createElement('div');
+  wrap.className = 'ring-wrap';
+  wrap.style.top = `calc(${top}% - 12px)`;
+
+  const back = document.createElement('img');
+  back.src = 'images/carnet/ring.svg';
+  back.className = 'ring-back';
+  back.alt = '';
+
+  const front = document.createElement('img');
+  front.src = 'images/carnet/ring.svg';
+  front.className = 'ring-front';
+  front.alt = '';
+
+  wrap.appendChild(back);
+  wrap.appendChild(front);
+  pageFrame.appendChild(wrap);
 }
 
 const STAMP = 'images/carnet/timbre-foret-jour.gif';
