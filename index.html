@@ -71,7 +71,7 @@
         .binding {
             position: absolute;
             left: 10px;
-            top: 2%;             /* réduit pour mieux atteindre les bords */
+            top: 2%;
             bottom: 2%;
             width: 20px;
             display: flex;
@@ -114,10 +114,10 @@
             clip-path: polygon(50% 50%, 100% 15%, 100% 0%, 0% 0%, 0% 100%, 100% 100%, 100% 85%, 50% 50%);
         }
 
-        /* ── version desktop : anneau à gauche avec branche supérieure épaisse (45%) et inférieure fine (20%) ── */
+        /* ── version desktop : anneau asymétrique (45% haut, 20% bas) ── */
         @media (min-width: 721px) {
             .ring-front {
-                clip-path: polygon(50% 50%, 100% 45%, 100% 0%, 0% 0%, 0% 100%, 100% 100%, 100% 20%, 50% 50%);
+                clip-path: polygon(50% 50%, 100% 45%, 100% 0%, 0% 0%, 0% 100%, 100% 100%, 100% 20%, 50% 50%) !important;
             }
         }
 
@@ -292,13 +292,13 @@
             color: #f3ecd9;
         }
 
-        /* ── polaroid avec ombre ── */
+        /* ── polaroid avec ombre décalée (bas + droite) ── */
         .polaroid {
             position: relative;
             background: #fbf8f0;
             padding: 10px 10px 0;
             width: min(72%, 320px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25), 0 2px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 4px 6px 12px rgba(0, 0, 0, 0.25), 1px 2px 4px rgba(0, 0, 0, 0.08);
         }
         .polaroid img {
             width: 100%;
@@ -443,7 +443,7 @@
             color: #c0432f;
         }
 
-        /* Flèche style V1.32 mais avec trait fin et triangle visible */
+        /* Flèche style V1.32 : cercle + triangle, trait fin */
         .corner-arrow svg {
             display: block;
             width: 28px;
@@ -564,7 +564,7 @@
                     <div class="cover-text">
                         <h1>Carnet de sculptures</h1>
                         <p>Guillaume Varet</p>
-                        <p class="cover-version">V1.34</p>
+                        <p class="cover-version">V1.35</p>
                     </div>
                 </div>
 
@@ -627,7 +627,6 @@
             binding.innerHTML = '';
             const vertical = window.innerWidth > 720;
             const space = (vertical ? binding.clientHeight : binding.clientWidth) * 0.94;
-            // on ajoute 2 anneaux pour mieux toucher les bords
             let count = Math.max(3, Math.floor(space / RING_SHORT_AXIS) + 2);
             if (!vertical) count = Math.max(3, count - 2);
             for (let i = 0; i < count; i++) {
@@ -882,11 +881,11 @@
             }
             extraWidth = Math.round(extraWidth * 100) / 100;
 
-            // ── Appliquer l'élargissement aux onglets au‑dessus, sauf "contact" ──
+            // ── Appliquer l'élargissement aux onglets au‑dessus, SAUF "contact" ──
             const tabsToEnlarge = [];
             for (let i = 0; i <= activeIndex; i++) {
                 const tab = allTabs[i];
-                // Ne pas élargir l'onglet "contact"
+                // Ne jamais élargir l'onglet "contact"
                 if (tab.dataset.tab !== 'contact') {
                     tabsToEnlarge.push(tab);
                 }
@@ -896,7 +895,6 @@
                 const baseWidth = isActive ? 40 : 34;
                 const newWidth = baseWidth + extraWidth;
                 tab.style.width = newWidth + 'px';
-                // Décalage vers la gauche
                 tab.style.transform = `translateX(-${extraWidth}px)`;
                 if (isActive) {
                     tab.style.marginLeft = '-6px';
