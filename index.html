@@ -612,7 +612,7 @@
                     <div class="cover-text">
                         <h1>Carnet de sculptures</h1>
                         <p>Guillaume Varet</p>
-                        <p class="cover-version">V1.64</p>
+                        <p class="cover-version">V1.71</p>
                     </div>
                 </div>
 
@@ -903,10 +903,13 @@
 
             const notebookRect = document.querySelector('.notebook').getBoundingClientRect();
             const pageFrameRect = document.getElementById('page-frame').getBoundingClientRect();
-            const tabsRect = tabsNav.getBoundingClientRect();
+            const contactTabRect = document.querySelector('.tab[data-tab="contact"]').getBoundingClientRect();
 
-            const left = pageFrameRect.left - notebookRect.left;
-            const right = tabsRect.right - notebookRect.left;
+            // bord gauche réel de .ring-front, relatif à .page-frame :
+            // left:50% de .hole-ring (binding_left 10 + hole_ring_w/2 8 = 18) puis margin-left:-40 -> -22
+            const RING_LEFT_OFFSET = 22;
+            const left = pageFrameRect.left - notebookRect.left - RING_LEFT_OFFSET;
+            const right = contactTabRect.right - notebookRect.left - 24; // affiné à -24
             const top = pageFrameRect.bottom - notebookRect.top; // haut du bloc = bas de la page
 
             pageEdgesBottom.style.left = left + 'px';
