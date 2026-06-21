@@ -54,25 +54,37 @@ const binding = document.createElement('div');
 binding.className = 'binding';
 pageFrame.appendChild(binding);
 
-const RING_COUNT = 11;
-for(let i = 0; i < RING_COUNT; i++){
-  const item = document.createElement('div');
-  item.className = 'hole-ring';
+const RING_SHORT_AXIS = 16; // the dimension along which rings are stacked — "touching" means count = space / this
 
-  const back = document.createElement('div');
-  back.className = 'ring-back';
+function buildBinding(){
+  binding.innerHTML = '';
+  const vertical = window.innerWidth > 720; // matches the CSS breakpoint: column on desktop, row on mobile
+  const space = vertical ? binding.clientHeight : binding.clientWidth;
+  const count = Math.max(3, Math.round(space / RING_SHORT_AXIS));
 
-  const hole = document.createElement('div');
-  hole.className = 'hole';
+  for(let i = 0; i < count; i++){
+    const item = document.createElement('div');
+    item.className = 'hole-ring';
 
-  const front = document.createElement('div');
-  front.className = 'ring-front';
+    const hole = document.createElement('div');
+    hole.className = 'hole';
 
-  item.appendChild(back);
-  item.appendChild(hole);
-  item.appendChild(front);
-  binding.appendChild(item);
+    const front = document.createElement('div');
+    front.className = 'ring-front';
+
+    item.appendChild(hole);
+    item.appendChild(front);
+    binding.appendChild(item);
+  }
 }
+
+buildBinding();
+
+let resizeTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(buildBinding, 150);
+});
 
 const STAMP = 'images/carnet/timbre-foret-jour.gif';
 
