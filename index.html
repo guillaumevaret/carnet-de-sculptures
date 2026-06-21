@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Validation répartition – V1.41</title>
+    <title>Validation finale – H / V</title>
     <style>
         * {
             margin: 0;
@@ -16,8 +16,9 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            font-family: sans-serif;
+            font-family: 'Segoe UI', sans-serif;
         }
+
         .mockup {
             background: #f3ecd9;
             width: min(92vw, 760px);
@@ -27,7 +28,8 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.6);
             overflow: hidden;
         }
-        /* Fond quadrillé pour voir les bords */
+
+        /* Fond quadrillé pour visualiser les bords */
         .page {
             position: absolute;
             inset: 0;
@@ -38,19 +40,14 @@
             background-size: 20px 20px;
         }
 
-        /* ── Reliure avec offset FIXE de 8px ── */
+        /* ── Reliure ── */
         .binding {
             position: absolute;
-            left: 10px;
-            top: 8px;      /* fixe */
-            bottom: 8px;   /* fixe */
-            width: 20px;
             display: flex;
-            flex-direction: column;
-            justify-content: space-between;
             align-items: center;
             pointer-events: none;
         }
+
         .hole-ring {
             position: relative;
             width: 16px;
@@ -73,28 +70,24 @@
             position: absolute;
             left: 50%;
             top: 50%;
-            width: 40px;
-            height: 16px;
-            margin: -8px 0 0 -40px;
             border-radius: 50%;
             border: 3.5px solid #7a7466;
             border-top-color: #d8d4c4;
             border-left-color: #c2bca8;
             box-sizing: border-box;
             z-index: 1;
-            /* clip‑path vertical par défaut (mobile) */
-            clip-path: polygon(50% 50%, 45% 100%, 100% 100%, 100% 0%, 0% 0%, 0% 50%, 50% 50%);
         }
 
-        /* ── version desktop : anneau horizontal ── */
+        /* ── HORIZONTAL (desktop) ── */
         @media (min-width: 721px) {
             .binding {
-                left: 10px;
-                top: 8px;
-                bottom: 8px;
-                flex-direction: column;
+                left: 10px;      /* position de la reliure */
+                top: 8px;        /* offset haut */
+                bottom: 8px;     /* offset bas */
                 width: 20px;
                 height: auto;
+                flex-direction: column;
+                justify-content: space-between;
             }
             .ring-front {
                 width: 40px;
@@ -104,22 +97,18 @@
             }
         }
 
-        /* ── version mobile : anneau vertical (reliure en haut) ── */
+        /* ── VERTICAL (mobile) ── */
         @media (max-width: 720px) {
             .binding {
-                left: 6%;
-                right: 6%;
-                top: 8px;      /* fixe */
-                bottom: 8px;   /* fixe ! */
+                top: 10px;       /* position de la reliure */
+                left: 8px;       /* offset gauche */
+                right: 8px;      /* offset droite */
+                bottom: auto;
                 width: auto;
-                height: 32px;  /* 16px (anneau) + 8px + 8px */
+                height: 20px;
                 flex-direction: row;
                 justify-content: space-between;
-                align-items: center;  /* centrer verticalement */
-            }
-            .hole-ring {
-                width: 16px;
-                height: 16px;
+                align-items: center;
             }
             .ring-front {
                 width: 16px;
@@ -129,21 +118,31 @@
             }
         }
 
-        /* Étiquette pour savoir quelle orientation est active */
+        /* Étiquette d’information */
         .badge {
             position: absolute;
-            bottom: 16px;
+            bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(0,0,0,0.6);
+            background: rgba(0,0,0,0.75);
             color: #fff;
-            padding: 4px 16px;
-            border-radius: 20px;
+            padding: 6px 18px;
+            border-radius: 30px;
             font-size: 0.8rem;
             font-weight: 600;
             z-index: 10;
             backdrop-filter: blur(4px);
+            text-align: center;
             pointer-events: none;
+            white-space: nowrap;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .badge small {
+            font-weight: 400;
+            opacity: 0.7;
+            display: block;
+            font-size: 0.65rem;
+            margin-top: 2px;
         }
     </style>
 </head>
@@ -165,9 +164,8 @@
         const vertical = window.innerWidth <= 720;
         // Espace disponible = hauteur (desktop) ou largeur (mobile) du conteneur
         const space = vertical ? binding.clientWidth : binding.clientHeight;
-        // Calcul du nombre d'anneaux
         let count = Math.max(3, Math.floor(space / RING_SHORT_AXIS));
-        if (!vertical) count = Math.max(3, count - 1); // léger ajustement pour desktop
+        if (!vertical) count = Math.max(3, count - 1);
 
         for (let i = 0; i < count; i++) {
             const item = document.createElement('div');
@@ -184,10 +182,12 @@
             binding.appendChild(item);
         }
 
-        // Mettre à jour le badge
-        badge.innerHTML = vertical ?
-            '⬆️ VERTICAL · reliure en haut · offset 8px' :
-            '⬅️ HORIZONTAL · reliure à gauche · offset 8px';
+        // Mettre à jour l’étiquette avec les valeurs exactes
+        if (vertical) {
+            badge.innerHTML = '⬆️ VERTICAL · top:10px · left/right:8px';
+        } else {
+            badge.innerHTML = '⬅️ HORIZONTAL · left:10px · top/bottom:8px';
+        }
     }
 
     buildBinding();
