@@ -52,12 +52,12 @@ img { display:block; max-width:100%; }
   overflow: hidden;
 }
 
-/* ── binding rings ── */
+/* ── binding rings (version V1.28 inchangée) ── */
 .binding {
   position: absolute;
   left: 10px;
-  top: 2%;          /* mieux centré */
-  bottom: 2%;
+  top: 6%;
+  bottom: 6%;
   width: 20px;
   display: flex;
   flex-direction: column;
@@ -91,14 +91,8 @@ img { display:block; max-width:100%; }
   border-left-color: #c2bca8;
   box-sizing: border-box;
   z-index: 10;
-  /* clip‑path par défaut (mobile) : symétrique */
-  clip-path: polygon(50% 50%, 100% 15%, 100% 0%, 0% 0%, 0% 100%, 100% 100%, 100% 85%, 50% 50%);
-}
-/* ── version desktop : anneau asymétrique (45% haut, 20% bas) ── */
-@media (min-width: 721px) {
-  .ring-front {
-    clip-path: polygon(50% 50%, 100% 45%, 100% 0%, 0% 0%, 0% 100%, 100% 100%, 100% 20%, 50% 50%);
-  }
+  /* clip-path identique à V1.28 */
+  clip-path: polygon(50% 50%, 100% 15%, 0% 0%, 0% 100%, 100% 100%, 50% 50%);
 }
 
 /* ── side tabs ── */
@@ -319,7 +313,7 @@ img { display:block; max-width:100%; }
   margin-top: 0.6rem;
 }
 
-/* ── corners ── */
+/* ── corners (flèche identique à V1.28) ── */
 .corner {
   --fold-color: 70,60,46;
   --fold-alpha: 0;
@@ -357,15 +351,19 @@ img { display:block; max-width:100%; }
 .corner-br .corner-arrow { right: 13px; }
 .corner:hover .corner-arrow { opacity: 0.9; color: #c0432f; }
 
+/* Flèche exactement comme V1.28 */
 .corner-arrow svg {
   display: block;
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
 }
 .corner-arrow .arrow-circle {
   fill: none;
   stroke: currentColor;
-  stroke-width: 2;
+  stroke-width: 9;
+  stroke-linecap: round;
+  pathLength: 100;
+  stroke-dasharray: 72 28;
 }
 .corner-arrow .arrow-path {
   fill: currentColor;
@@ -427,7 +425,7 @@ img { display:block; max-width:100%; }
         <div class="cover-text">
           <h1>Carnet de sculptures</h1>
           <p>Guillaume Varet</p>
-          <p class="cover-version">V1.37</p>
+          <p class="cover-version">V1.38</p>
         </div>
       </div>
 
@@ -437,25 +435,25 @@ img { display:block; max-width:100%; }
       <button class="corner corner-tl" data-dir="prev" aria-label="Page précédente" hidden></button>
       <button class="corner corner-tr" data-dir="next" aria-label="Page suivante" hidden>
         <span class="corner-arrow">
-          <svg viewBox="0 0 40 40" width="28" height="28">
-            <circle class="arrow-circle" cx="20" cy="20" r="13" />
-            <path class="arrow-path" d="M8,14 L20,20 L8,26 Z" />
+          <svg viewBox="0 0 40 40" width="26" height="26">
+            <circle class="arrow-circle" cx="20" cy="20" r="13" transform="rotate(-90 20 20)"/>
+            <path class="arrow-path" d="M3,19 L11,15 L9,25 Z"/>
           </svg>
         </span>
       </button>
       <button class="corner corner-bl" data-dir="prev" aria-label="Page précédente" hidden>
         <span class="corner-arrow">
-          <svg viewBox="0 0 40 40" width="28" height="28">
-            <circle class="arrow-circle" cx="20" cy="20" r="13" />
-            <path class="arrow-path" d="M32,14 L20,20 L32,26 Z" />
+          <svg viewBox="0 0 40 40" width="26" height="26">
+            <circle class="arrow-circle" cx="20" cy="20" r="13" transform="rotate(-90 20 20)"/>
+            <path class="arrow-path" d="M3,19 L11,15 L9,25 Z"/>
           </svg>
         </span>
       </button>
       <button class="corner corner-br" data-dir="next" aria-label="Page suivante" hidden>
         <span class="corner-arrow">
-          <svg viewBox="0 0 40 40" width="28" height="28">
-            <circle class="arrow-circle" cx="20" cy="20" r="13" />
-            <path class="arrow-path" d="M8,14 L20,20 L8,26 Z" />
+          <svg viewBox="0 0 40 40" width="26" height="26">
+            <circle class="arrow-circle" cx="20" cy="20" r="13" transform="rotate(-90 20 20)"/>
+            <path class="arrow-path" d="M3,19 L11,15 L9,25 Z"/>
           </svg>
         </span>
       </button>
@@ -476,7 +474,7 @@ img { display:block; max-width:100%; }
 </div>
 
 <script>
-// ─── binding rings ────────────────────────────────────────────────
+// ─── binding rings (identique à V1.28) ──────────────────────────
 const pageFrame = document.getElementById('page-frame');
 const binding = document.createElement('div');
 binding.className = 'binding';
@@ -488,7 +486,7 @@ function buildBinding() {
   binding.innerHTML = '';
   const vertical = window.innerWidth > 720;
   const space = (vertical ? binding.clientHeight : binding.clientWidth) * 0.94;
-  let count = Math.max(3, Math.floor(space / RING_SHORT_AXIS) + 2); // +2 pour mieux épouser les bords
+  let count = Math.max(3, Math.floor(space / RING_SHORT_AXIS));
   if (!vertical) count = Math.max(3, count - 2);
   for (let i = 0; i < count; i++) {
     const item = document.createElement('div');
@@ -510,7 +508,7 @@ window.addEventListener('resize', () => {
   resizeTimer = setTimeout(() => { buildBinding(); render(0); }, 150);
 });
 
-// ─── data ──────────────────────────────────────────────────────────
+// ─── données ──────────────────────────────────────────────────────
 const DATA = {
   geants: { bg:'bg-foret', label:'Géants', pages:[
     { img:'images/selection/sequoia.jpg', alt:"Sculpture monumentale en cours, à même un douglas, échafaudage et château en arrière-plan", cap:"Un douglas entier, sculpté debout." },
@@ -568,7 +566,7 @@ function photoPageHTML(bgClass, label, it) {
     </div>`;
 }
 
-// ─── build pages ──────────────────────────────────────────────────
+// ─── construction des pages ──────────────────────────────────────
 const pagesEl = document.getElementById('pages');
 let html = '';
 Object.entries(DATA).forEach(([key, section]) => {
@@ -592,7 +590,7 @@ html += `
 `;
 pagesEl.innerHTML = html;
 
-// ─── index pages by section ──────────────────────────────────────
+// ─── indexation des sections ─────────────────────────────────────
 const sections = {};
 SECTION_ORDER.forEach(key => {
   sections[key] = Array.from(document.querySelectorAll(`#pages [data-section="${key}"] .page`));
@@ -606,7 +604,7 @@ const cornersPrev = corners.filter(c => c.dataset.dir === 'prev');
 const cornersNext = corners.filter(c => c.dataset.dir === 'next');
 const counter = document.getElementById('page-counter');
 
-// ─── sequence: cover + all pages ────────────────────────────────
+// ─── séquence complète ────────────────────────────────────────────
 const sequence = [{ tab:'cover', el:cover }];
 SECTION_ORDER.forEach(key => {
   sections[key].forEach(el => sequence.push({ tab:key, el }));
@@ -614,9 +612,9 @@ SECTION_ORDER.forEach(key => {
 const TOTAL_PAGES = sequence.length - 1;
 let pos = 0;
 
-// ─── page-edges (white lines) ────────────────────────────────────
+// ─── traits blancs ────────────────────────────────────────────────
 const LINE_WIDTH = 1;
-const STEP = 0.5; // pas entre chaque ligne
+const STEP = 0.5;
 
 function updatePageEdges(count, activeTabEl) {
   pageEdges.innerHTML = '';
@@ -625,13 +623,12 @@ function updatePageEdges(count, activeTabEl) {
   for (let i = 0; i < visible; i++) {
     const line = document.createElement('div');
     line.className = 'edge-line';
-    line.style.right = (i * STEP) + 'px'; // empile depuis la droite
+    line.style.right = (i * STEP) + 'px';
     const alpha = 0.5 + 0.5 * (1 - i / Math.max(1, visible - 1));
     line.style.opacity = alpha;
     pageEdges.appendChild(line);
   }
 
-  // Position verticale : sous l'onglet actif jusqu'en bas de "contact"
   if (activeTabEl) {
     const notebookRect = document.querySelector('.notebook').getBoundingClientRect();
     const activeRect = activeTabEl.getBoundingClientRect();
@@ -675,7 +672,6 @@ function render(direction) {
     }
   });
 
-  // highlight pour les onglets au‑dessus (incluant l'actif)
   if (activeIndex !== -1) {
     for (let i = 0; i <= activeIndex; i++) {
       allTabs[i].classList.add('highlight');
@@ -706,14 +702,14 @@ function render(direction) {
     if (remaining < 0) remaining = 0;
   }
 
-  // ── largeur de la pile de traits ──
+  // ── largeur de la pile ──
   let extraWidth = 0;
   if (remaining > 0) {
     extraWidth = (remaining - 1) * STEP + LINE_WIDTH;
   }
   extraWidth = Math.round(extraWidth * 100) / 100;
 
-  // ── élargir les onglets au‑dessus (sauf "contact") ──
+  // ── élargir les onglets au‑dessus (sauf contact) ──
   const tabsToEnlarge = [];
   for (let i = 0; i <= activeIndex; i++) {
     const tab = allTabs[i];
@@ -734,7 +730,7 @@ function render(direction) {
     }
   });
 
-  // réinitialiser les autres (dont "contact")
+  // réinitialiser les autres (dont contact)
   for (let i = 0; i < allTabs.length; i++) {
     const tab = allTabs[i];
     if (!tabsToEnlarge.includes(tab)) {
@@ -753,11 +749,10 @@ function render(direction) {
       c.style.transform = '';
     }
   });
-  // les coins de gauche restent en place
   const leftCorners = document.querySelectorAll('.corner-tl, .corner-bl');
   leftCorners.forEach(c => { c.style.transform = ''; });
 
-  // ── mettre à jour les traits blancs ──
+  // ── mettre à jour les traits ──
   const activeTabEl = document.querySelector('.tab.is-active');
   updatePageEdges(remaining, activeTabEl);
 }
@@ -778,7 +773,7 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'ArrowLeft') goPrev();
 });
 
-// ─── effet de survol des coins ──────────────────────────────────
+// ─── effet de survol des coins (identique V1.28) ────────────────
 const ANCHORS = {
   'corner-tl': ['left','top'],
   'corner-tr': ['right','top'],
