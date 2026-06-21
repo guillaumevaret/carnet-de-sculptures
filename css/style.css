@@ -74,8 +74,8 @@ img{ display:block; max-width:100%; }
 
 .hole-ring{
   position: relative;
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   flex-shrink: 0;
 }
 
@@ -149,16 +149,16 @@ img{ display:block; max-width:100%; }
 /* thin page-edge lines, mimicking the stacked sheets peeking out above/below the open tab */
 .page-edges{
   position: absolute;
-  top: 0; right: 6px;       /* on the paper itself, to the left of the tabs */
-  width: 28px; height: 100%;
+  top: 0; bottom: 0; right: 6px;       /* on the paper itself, to the left of the tabs */
+  width: 28px;
   z-index: 6;                /* above the page surface */
   pointer-events: none;
 }
 
 .edge-line{
   position: absolute;
-  left: 4px; right: 4px;
-  height: 1px;
+  top: 0; bottom: 0;          /* full page height for now — will be trimmed to start under the tab next */
+  width: 1px;
   background: #ffffff;       /* temporary — white so it's easy to verify placement */
 }
 
@@ -447,7 +447,7 @@ img{ display:block; max-width:100%; }
     width: auto; height: 20px;
     flex-direction: row;
   }
-  .hole-ring{ width: 20px; height: 20px; }
+  .hole-ring{ width: 16px; height: 16px; }
 
   /* on the top edge the rings stand in a vertical plane, so they read as TALL and NARROW.
      Radial cut (cake, not baguette) — the missing wedge points down, toward the page.

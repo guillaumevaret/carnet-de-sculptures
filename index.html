@@ -24,7 +24,7 @@
         <div class="cover-text">
           <h1>Carnet de sculptures</h1>
           <p>Guillaume Varet</p>
-          <p class="cover-version">V1.25</p>
+          <p class="cover-version">V1.27</p>
         </div>
       </div>
 
@@ -56,7 +56,7 @@ const binding = document.createElement('div');
 binding.className = 'binding';
 pageFrame.appendChild(binding);
 
-const RING_SHORT_AXIS = 16; // the dimension along which rings are stacked — "touching" means count = space / this
+const RING_SHORT_AXIS = 16; // matches .hole-ring's box size exactly now, so "touching boxes" = "touching rings"
 
 function buildBinding(){
   binding.innerHTML = '';
@@ -207,24 +207,12 @@ const EDGE_GAP = 3; // px between each thin page-edge line
 function updatePageEdges(currentTab, linesAbove, linesBelow){
   pageEdges.innerHTML = '';
   if(!currentTab){ return; }
-  const activeTabEl = [...tabs].find(t => t.dataset.tab === currentTab);
-  if(!activeTabEl) return;
 
-  const navRect = tabsNav.getBoundingClientRect();
-  const tabRect = activeTabEl.getBoundingClientRect();
-  const topY = tabRect.top - navRect.top;
-  const bottomY = tabRect.bottom - navRect.top;
-
-  for(let i = 1; i <= linesAbove; i++){
+  const total = linesAbove + linesBelow + 1; // +1 for the current page itself
+  for(let i = 0; i < total; i++){
     const line = document.createElement('div');
     line.className = 'edge-line';
-    line.style.top = (topY - i * EDGE_GAP) + 'px';
-    pageEdges.appendChild(line);
-  }
-  for(let i = 1; i <= linesBelow; i++){
-    const line = document.createElement('div');
-    line.className = 'edge-line';
-    line.style.top = (bottomY + i * EDGE_GAP) + 'px';
+    line.style.left = (i * EDGE_GAP) + 'px';
     pageEdges.appendChild(line);
   }
 }
