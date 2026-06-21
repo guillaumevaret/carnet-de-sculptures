@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" preserveAspectRatio="none">
+  <defs>
+    <!-- Ombre portée pour donner l'effet 3D du coin qui se rabat sur la page -->
+    <filter id="shadowBlur" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="-10" dy="-10" stdDeviation="15" flood-color="#000000" flood-opacity="0.4" />
+    </filter>
+  </defs>
+  <!-- dos de la page : le coin plié, seul élément visible (jaune/vert d'origine = guides de construction, transparents) -->
+  <polygon points="1000,200 250,800 350,950" fill="#000000" filter="url(#shadowBlur)" />
+</svg>
