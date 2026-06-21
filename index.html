@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test onglets interactifs – élargissement</title>
+    <title>Test onglets – élargissement uniforme</title>
     <style>
         * {
             margin: 0;
@@ -26,7 +26,7 @@
             border-radius: 4px;
             position: relative;
             box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-            overflow: visible; /* pour les onglets qui débordent */
+            overflow: visible;
         }
 
         .page {
@@ -140,7 +140,7 @@
             letter-spacing: 0.02em;
             color: #2b2417;
             border: none;
-            width: 34px;
+            width: 34px;          /* largeur de base */
             flex: 1 1 0;
             padding: 10px 0;
             display: flex;
@@ -149,9 +149,8 @@
             border-bottom: 1px solid rgba(0,0,0,0.12);
             border-radius: 2px 0 0 2px;
             cursor: pointer;
-            transition: background 0.2s, color 0.2s, filter 0.2s, transform 0.2s, width 0.2s;
+            transition: background 0.2s, color 0.2s, filter 0.2s, transform 0.2s;
             will-change: transform, width;
-            /* largeur et transform seront modifiés en JS */
         }
 
         .tab:hover {
@@ -166,10 +165,9 @@
         .tab[data-tab="atelier"] { background: #a05c4e; }
         .tab[data-tab="contact"] { background: #6e7a5e; }
 
-        /* Onglet actif : agrandi et avec un texte blanc ? On laisse la couleur d'origine */
+        /* Onglet actif : on ne définit plus de width fixe ici, tout est géré par JS */
         .tab.active {
-            width: 40px; /* largeur de base agrandie */
-            margin-left: -6px; /* pour décaler vers la gauche */
+            margin-left: -6px;   /* décalage vers la gauche */
             filter: brightness(1.2);
         }
 
@@ -215,12 +213,11 @@
                 right: -30px;
             }
             .tab {
-                width: 30px;
+                width: 30px;       /* largeur de base mobile */
                 font-size: 0.7rem;
                 padding: 6px 0;
             }
             .tab.active {
-                width: 36px;
                 margin-left: -6px;
             }
         }
@@ -280,8 +277,7 @@
 
     // ─── Gestion des onglets ──────────────────────────────────
     const tabs = document.querySelectorAll('.tab');
-    const extraWidth = 20; // valeur simulée pour le test (en px)
-    // Dans la version finale, extraWidth sera calculé dynamiquement
+    const extraWidth = 20; // valeur simulée (en px)
 
     function updateTabs(activeTab) {
         // Retirer les classes
@@ -290,39 +286,34 @@
         // Ajouter active sur l'onglet cliqué
         activeTab.classList.add('active');
 
-        // Trouver l'index de l'onglet actif
         const tabArray = Array.from(tabs);
         const activeIndex = tabArray.indexOf(activeTab);
 
-        // Appliquer highlight à l'actif et à tous ceux au‑dessus (index <= activeIndex)
+        // Déterminer la largeur de base selon la taille d'écran
+        const isMobile = window.innerWidth <= 720;
+        const baseWidth = isMobile ? 30 : 34;
+
+        // Appliquer highlight aux onglets au‑dessus (index <= activeIndex)
         for (let i = 0; i <= activeIndex; i++) {
             tabArray[i].classList.add('highlight');
         }
 
-        // Appliquer l'élargissement aux onglets concernés (index <= activeIndex)
-        // et à ceux en dessous, on réinitialise la largeur et le transform
+        // Appliquer l'élargissement
         for (let i = 0; i < tabArray.length; i++) {
             const tab = tabArray[i];
             if (i <= activeIndex) {
-                // Déterminer la largeur de base selon qu'il est actif ou non
-                const isActive = tab.classList.contains('active');
-                // Sur desktop et mobile, les largeurs de base sont différentes, on les lit depuis le style
-                // On va définir une largeur de base : 40px si actif, 34px sinon (desktop)
-                // Mais il faut gérer le responsive. Pour simplifier, on utilise 34px + 6px si actif.
-                const baseWidth = isActive ? 40 : 34;
-                // Pour mobile, on peut ajuster, mais on garde la même logique.
-                // On va appliquer la largeur calculée
+                // Tous les onglets élargis ont la même largeur
                 const newWidth = baseWidth + extraWidth;
                 tab.style.width = newWidth + 'px';
                 tab.style.transform = `translateX(-${extraWidth}px)`;
-                // Pour l'actif, on garde le margin-left de -6px pour le décalage initial
-                if (isActive) {
+                // L'onglet actif garde son margin-left de -6px
+                if (tab === activeTab) {
                     tab.style.marginLeft = '-6px';
                 } else {
                     tab.style.marginLeft = '0';
                 }
             } else {
-                // Réinitialiser
+                // Réinitialiser pour les onglets en dessous
                 tab.style.width = '';
                 tab.style.transform = '';
                 tab.style.marginLeft = '';
