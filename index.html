@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anneaux elliptiques validés</title>
+    <title>Anneaux validés H / V (avec trou et bord de feuille)</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -13,27 +13,77 @@
             align-items: center;
             min-height: 100vh;
             font-family: 'Segoe UI', sans-serif;
-            gap: 60px;
+            gap: 50px;
             padding: 20px;
             flex-wrap: wrap;
         }
-        .card {
-            background: #2a221e;
-            border-radius: 20px;
-            padding: 30px 35px 25px;
+        .mockup {
+            background: #f3ecd9;
+            border-radius: 8px;
+            padding: 25px 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
             display: flex;
             flex-direction: column;
             align-items: center;
-            border: 1px solid #4d3f35;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            border: 1px solid #b8aa94;
         }
-        .ring-wrapper {
+        .mockup-title {
+            color: #4f4a40;
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            background: rgba(0,0,0,0.05);
+            padding: 4px 16px;
+            border-radius: 20px;
+        }
+        .binding-area {
+            position: relative;
             display: flex;
-            justify-content: center;
             align-items: center;
-            margin-bottom: 10px;
+            justify-content: center;
         }
+        /* Page edge simulation (le bord de la feuille) */
+        .page-edge {
+            background: #e8dccc;
+            border-radius: 2px;
+            box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05);
+        }
+        .page-edge-h {
+            width: 100px;
+            height: 50px;
+            border-right: 3px solid #c0b09a;
+        }
+        .page-edge-v {
+            width: 50px;
+            height: 100px;
+            border-bottom: 3px solid #c0b09a;
+        }
+
+        /* Conteneur de l’anneau */
+        .ring-wrapper {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .ring-wrapper-h {
+            top: 50%;
+            right: -15px;
+            transform: translateY(-50%);
+            width: 80px;
+            height: 32px;
+        }
+        .ring-wrapper-v {
+            left: 50%;
+            bottom: -15px;
+            transform: translateX(-50%);
+            width: 32px;
+            height: 80px;
+        }
+
+        /* L’anneau (ellipse) */
         .ring {
+            position: absolute;
             border-radius: 50%;
             border: 5px solid #b8aa94;
             border-top-color: #e8ddd0;
@@ -43,68 +93,83 @@
         }
         .ring-h {
             width: 80px;
-            height: 32px;   /* ellipse horizontale */
+            height: 32px;
+            clip-path: polygon(50% 50%, 100% 55%, 100% 0%, 0% 0%, 0% 100%, 50% 100%, 50% 50%);
         }
         .ring-v {
             width: 32px;
-            height: 80px;   /* ellipse verticale */
+            height: 80px;
+            clip-path: polygon(50% 50%, 55% 0%, 0% 0%, 0% 100%, 100% 100%, 100% 50%, 50% 50%);
         }
-        .label {
-            color: #d4c9b0;
-            font-size: 1.1rem;
-            font-weight: 600;
-            background: #1f1814;
-            padding: 4px 18px;
-            border-radius: 30px;
-            border: 1px solid #4d3f35;
-            margin-top: 6px;
+
+        /* Le trou (perforation) */
+        .hole {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(60, 50, 38, 0.6);
+            z-index: 2;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
         }
-        .code {
-            color: #a89880;
-            font-size: 0.65rem;
+
+        .info {
+            margin-top: 18px;
+            color: #4f4a40;
+            font-size: 0.75rem;
             text-align: center;
-            margin-top: 10px;
-            background: #1f1814;
-            padding: 8px 10px;
-            border-radius: 8px;
+            background: rgba(0,0,0,0.04);
+            padding: 6px 12px;
+            border-radius: 6px;
             font-family: monospace;
-            line-height: 1.4;
+            word-break: break-all;
             max-width: 280px;
+            line-height: 1.4;
         }
         .badge {
-            font-size: 0.7rem;
-            background: #4d3f35;
+            font-size: 0.75rem;
+            font-weight: 700;
+            background: #2a221e;
             color: #d4c9b0;
-            padding: 2px 14px;
+            padding: 2px 12px;
             border-radius: 20px;
-            margin-bottom: 12px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            margin-bottom: 8px;
         }
-        .badge.h { background: #5d4a3a; }
-        .badge.v { background: #3a4d5d; }
     </style>
 </head>
 <body>
 
-    <!-- HORIZONTAL : haut 55%, bas 50% -->
-    <div class="card">
-        <div class="badge h">⬅️ Horizontal · reliure à gauche</div>
-        <div class="ring-wrapper">
-            <div class="ring ring-h" style="clip-path: polygon(50% 50%, 100% 55%, 100% 0%, 0% 0%, 0% 100%, 50% 100%, 50% 50%);"></div>
+    <!-- HORIZONTAL : reliure à gauche -->
+    <div class="mockup">
+        <div class="badge">⬅️ HORIZONTAL · reliure à gauche</div>
+        <div class="binding-area">
+            <div class="page-edge page-edge-h"></div>
+            <div class="ring-wrapper ring-wrapper-h">
+                <div class="ring ring-h"></div>
+                <div class="hole"></div>
+            </div>
         </div>
-        <div class="label">H · 55% / 50%</div>
-        <div class="code">polygon(50% 50%,<br>100% 55%, 100% 0%,<br>0% 0%, 0% 100%,<br>50% 100%, 50% 50%)</div>
+        <div class="info">
+            clip-path: polygon(50% 50%,<br>100% 55%, 100% 0%,<br>0% 0%, 0% 100%,<br>50% 100%, 50% 50%)
+        </div>
     </div>
 
-    <!-- VERTICAL : rotation horaire de 90° -->
-    <div class="card">
-        <div class="badge v">⬆️ Vertical · reliure en haut</div>
-        <div class="ring-wrapper">
-            <div class="ring ring-v" style="clip-path: polygon(50% 50%, 55% 0%, 0% 0%, 0% 100%, 100% 100%, 100% 50%, 50% 50%);"></div>
+    <!-- VERTICAL : reliure en haut (rotation horaire) -->
+    <div class="mockup">
+        <div class="badge">⬆️ VERTICAL · reliure en haut (horaire)</div>
+        <div class="binding-area">
+            <div class="page-edge page-edge-v"></div>
+            <div class="ring-wrapper ring-wrapper-v">
+                <div class="ring ring-v"></div>
+                <div class="hole"></div>
+            </div>
         </div>
-        <div class="label">V · rotation horaire</div>
-        <div class="code">polygon(50% 50%,<br>55% 0%, 0% 0%,<br>0% 100%, 100% 100%,<br>100% 50%, 50% 50%)</div>
+        <div class="info">
+            clip-path: polygon(50% 50%,<br>55% 0%, 0% 0%,<br>0% 100%, 100% 100%,<br>100% 50%, 50% 50%)
+        </div>
     </div>
 
 </body>
