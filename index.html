@@ -3,47 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reliure – offset fixe 8px</title>
+    <title>Reliure – offset 8px fixe H et V</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             background: #1c1410;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            font-family: sans-serif;
+            gap: 40px;
+            flex-wrap: wrap;
+            font-family: 'Segoe UI', sans-serif;
+            padding: 20px;
         }
         .mockup {
             background: #f3ecd9;
-            width: min(92vw, 760px);
-            height: min(86vh, 640px);
-            border-radius: 4px;
+            width: min(42vw, 360px);
+            height: min(80vh, 560px);
+            border-radius: 8px;
             position: relative;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
             overflow: hidden;
+            border: 1px solid #b8aa94;
         }
-        /* Fond pour visualiser les bords */
+        /* Fond quadrillé pour visualiser les bords */
         .page {
             position: absolute;
             inset: 0;
             background: #f3ecd9;
             background-image: 
-                linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px);
+                linear-gradient(rgba(0,0,0,0.06) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,0,0,0.06) 1px, transparent 1px);
             background-size: 20px 20px;
         }
+        .label {
+            position: absolute;
+            bottom: 12px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: #4f4a40;
+            font-weight: 700;
+            font-size: 1.1rem;
+            background: rgba(255,255,255,0.7);
+            padding: 4px 0;
+            border-radius: 20px;
+            margin: 0 30px;
+            backdrop-filter: blur(2px);
+            z-index: 10;
+        }
+        .label small {
+            font-weight: 400;
+            font-size: 0.65rem;
+            display: block;
+            color: #6a5f50;
+        }
 
-        /* ── Reliure avec OFFSET FIXE en pixels ── */
+        /* ── Reliure avec offset FIXE de 8px ── */
         .binding {
             position: absolute;
             left: 10px;
-            top: 8px;     /* offset fixe */
-            bottom: 8px;  /* offset fixe */
+            top: 8px;      /* fixe */
+            bottom: 8px;   /* fixe */
             width: 20px;
             display: flex;
             flex-direction: column;
@@ -82,72 +104,69 @@
             border-left-color: #c2bca8;
             box-sizing: border-box;
             z-index: 1;
-            /* clip‑path vertical par défaut (mobile) */
+        }
+
+        /* ── HORIZONTAL (reliure à gauche) ── */
+        .mockup-h .ring-front {
+            clip-path: polygon(50% 50%, 100% 55%, 100% 0%, 0% 0%, 0% 100%, 50% 100%, 50% 50%);
+        }
+
+        /* ── VERTICAL (reliure en haut) ── */
+        .mockup-v .binding {
+            left: 6%;
+            right: 6%;
+            top: 8px;      /* fixe */
+            bottom: auto;
+            width: auto;
+            height: 20px;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+        .mockup-v .hole-ring {
+            width: 16px;
+            height: 16px;
+        }
+        .mockup-v .ring-front {
+            width: 16px;
+            height: 40px;
+            margin: -40px 0 0 -8px;
             clip-path: polygon(50% 50%, 45% 100%, 100% 100%, 100% 0%, 0% 0%, 0% 50%, 50% 50%);
         }
 
-        /* ── version desktop : anneau horizontal ── */
-        @media (min-width: 721px) {
-            .binding {
-                left: 10px;
-                top: 8px;
-                bottom: 8px;
-                flex-direction: column;
-                width: 20px;
-                height: auto;
-            }
-            .ring-front {
-                width: 40px;
-                height: 16px;
-                margin: -8px 0 0 -40px;
-                clip-path: polygon(50% 50%, 100% 55%, 100% 0%, 0% 0%, 0% 100%, 50% 100%, 50% 50%);
-            }
-        }
-
-        /* ── version mobile : anneau vertical (reliure en haut) ── */
-        @media (max-width: 720px) {
-            .binding {
-                left: 6%;
-                right: 6%;
-                top: 8px;
-                bottom: auto;
-                width: auto;
-                height: 20px;
-                flex-direction: row;
-                justify-content: space-between;
-            }
-            .hole-ring {
-                width: 16px;
-                height: 16px;
-            }
-            .ring-front {
-                width: 16px;
-                height: 40px;
-                margin: -40px 0 0 -8px;
-                clip-path: polygon(50% 50%, 45% 100%, 100% 100%, 100% 0%, 0% 0%, 0% 50%, 50% 50%);
+        @media (max-width: 800px) {
+            .mockup {
+                width: min(80vw, 360px);
+                height: min(60vh, 460px);
             }
         }
     </style>
 </head>
 <body>
 
-    <div class="mockup">
+    <!-- HORIZONTAL -->
+    <div class="mockup mockup-h">
         <div class="page"></div>
-        <div class="binding" id="binding"></div>
+        <div class="binding" id="binding-h"></div>
+        <div class="label">⬅️ HORIZONTAL <small>reliure à gauche · offset 8px</small></div>
+    </div>
+
+    <!-- VERTICAL -->
+    <div class="mockup mockup-v">
+        <div class="page"></div>
+        <div class="binding" id="binding-v"></div>
+        <div class="label">⬆️ VERTICAL <small>reliure en haut · offset 8px</small></div>
     </div>
 
     <script>
-        const binding = document.getElementById('binding');
         const RING_SHORT_AXIS = 16;
 
-        function buildBinding() {
-            binding.innerHTML = '';
-            const vertical = window.innerWidth > 720;
-            // Hauteur disponible = clientHeight (qui inclut déjà l'offset de 8px top/bottom)
-            const space = vertical ? binding.clientHeight : binding.clientWidth;
-            // Calcul du nombre d'anneaux : on prend la partie entière, on ajoute 2 pour mieux remplir
+        function buildBinding(container, vertical) {
+            container.innerHTML = '';
+            // Espace disponible = hauteur (ou largeur) du conteneur, qui inclut déjà l'offset de 8px
+            const space = vertical ? container.clientHeight : container.clientWidth;
+            // Nombre d'anneaux : on prend la partie entière, on ajoute 1 pour bien remplir
             let count = Math.max(3, Math.floor(space / RING_SHORT_AXIS));
-            if (!vertical) count = Math.max(3, count - 2);
+            if (!vertical) count = Math.max(3, count - 1);
 
             for (let i = 0; i < count; i++) {
                 const item = document.createElement('div');
@@ -161,17 +180,22 @@
 
                 item.appendChild(hole);
                 item.appendChild(front);
-                binding.appendChild(item);
+                container.appendChild(item);
             }
         }
 
-        buildBinding();
+        const bindingH = document.getElementById('binding-h');
+        const bindingV = document.getElementById('binding-v');
+
+        buildBinding(bindingH, false);
+        buildBinding(bindingV, true);
 
         let resizeTimer;
         window.addEventListener('resize', () => {
             clearTimeout(resizeTimer);
             resizeTimer = setTimeout(() => {
-                buildBinding();
+                buildBinding(bindingH, false);
+                buildBinding(bindingV, true);
             }, 150);
         });
     </script>
