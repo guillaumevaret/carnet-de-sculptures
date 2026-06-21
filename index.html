@@ -114,11 +114,10 @@
             clip-path: polygon(50% 50%, 100% 15%, 100% 0%, 0% 0%, 0% 100%, 100% 100%, 100% 85%, 50% 50%);
         }
 
-        /* ── version desktop : anneau à gauche avec branche supérieure plus épaisse ── */
+        /* ── version desktop : anneau à gauche avec branche supérieure épaisse (45%) et inférieure fine (20%) ── */
         @media (min-width: 721px) {
             .ring-front {
-                /* branche du haut agrandie (40%), branche du bas réduite (30%) */
-                clip-path: polygon(50% 50%, 100% 40%, 100% 0%, 0% 0%, 0% 100%, 100% 100%, 100% 70%, 50% 50%);
+                clip-path: polygon(50% 50%, 100% 45%, 100% 0%, 0% 0%, 0% 100%, 100% 100%, 100% 20%, 50% 50%);
             }
         }
 
@@ -149,6 +148,7 @@
             justify-content: center;
             border-bottom: 1px solid rgba(0, 0, 0, 0.12);
             transition: background 0.2s, color 0.2s, filter 0.2s;
+            /* les largeurs seront modifiées dynamiquement par JS */
         }
         .tab.is-active {
             width: 40px;
@@ -518,7 +518,6 @@
                 width: 16px;
                 height: 40px;
                 margin: -40px 0 0 -8px;
-                /* clip‑path symétrique pour la version mobile */
                 clip-path: polygon(50% 50%, 85% 100%, 100% 0%, 0% 0%, 0% 100%, 50% 50%);
             }
             .page-edges {
@@ -546,7 +545,7 @@
                     <div class="cover-text">
                         <h1>Carnet de sculptures</h1>
                         <p>Guillaume Varet</p>
-                        <p class="cover-version">V1.31</p>
+                        <p class="cover-version">V1.32</p>
                     </div>
                 </div>
 
@@ -592,9 +591,8 @@
             binding.innerHTML = '';
             const vertical = window.innerWidth > 720;
             const space = (vertical ? binding.clientHeight : binding.clientWidth) * 0.94;
-            // on ajoute 2 anneaux (un en haut, un en bas)
             let count = Math.max(3, Math.floor(space / RING_SHORT_AXIS) + 2);
-            if (!vertical) count = Math.max(3, count - 2); // ajustement pour mobile
+            if (!vertical) count = Math.max(3, count - 2);
             for (let i = 0; i < count; i++) {
                 const item = document.createElement('div');
                 item.className = 'hole-ring';
@@ -838,6 +836,41 @@
             } else {
                 remaining = TOTAL_PAGES - pos;
                 if (remaining < 0) remaining = 0;
+            }
+
+            // ── calcul de la largeur supplémentaire pour les onglets ──
+            let extraWidth = 0;
+            if (remaining > 0) {
+                extraWidth = (remaining - 1) * STEP + LINE_WIDTH;
+            }
+            // On arrondit à 2 décimales pour éviter les problèmes de pixels
+            extraWidth = Math.round(extraWidth * 100) / 100;
+
+            // Appliquer la largeur élargie aux onglets au‑dessus (incluant l'actif)
+            const tabsToEnlarge = [];
+            for (let i = 0; i <= activeIndex; i++) {
+                tabsToEnlarge.push(allTabs[i]);
+            }
+            tabsToEnlarge.forEach((tab, idx) => {
+                const isActive = tab.classList.contains('is-active');
+                const baseWidth = isActive ? 40 : 34;
+                const newWidth = baseWidth + extraWidth;
+                tab.style.width = newWidth + 'px';
+                // Pour l'actif, on garde son margin-left de -6px pour le décalage
+                // Sinon on le remet à 0
+                if (isActive) {
+                    tab.style.marginLeft = '-6px';
+                } else {
+                    tab.style.marginLeft = '0';
+                }
+            });
+
+            // Réinitialiser les largeurs des onglets en dessous (non élargis)
+            for (let i = activeIndex + 1; i < allTabs.length; i++) {
+                const tab = allTabs[i];
+                // On retire le style width pour revenir au CSS
+                tab.style.width = '';
+                tab.style.marginLeft = '';
             }
 
             const activeTabEl = document.querySelector('.tab.is-active');
