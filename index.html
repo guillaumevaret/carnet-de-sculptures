@@ -1,825 +1,229 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Carnet de sculptures — Guillaume Varet</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
-<style>
-/* ── reset & base ── */
-* { margin:0; padding:0; box-sizing:border-box; }
-html, body { height:100%; }
-body {
-  font-family: 'Caveat', cursive;
-  color: #4f4a40;
-  overflow: hidden;
-}
-img { display:block; max-width:100%; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratoire d’anneaux – choisissez votre clip-path</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #1c1410;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Segoe UI', sans-serif;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            background: #2a221e;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.7);
+        }
+        h1 {
+            color: #d4c9b0;
+            text-align: center;
+            font-weight: 400;
+            font-size: 1.6rem;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+        .sub {
+            text-align: center;
+            color: #9a8b78;
+            font-size: 0.95rem;
+            margin-bottom: 30px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 20px 15px;
+        }
+        .card {
+            background: #362d27;
+            border-radius: 16px;
+            padding: 20px 10px 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: background 0.2s;
+            border: 1px solid #4d3f35;
+        }
+        .card:hover {
+            background: #443832;
+            border-color: #7a6652;
+        }
+        .ring-wrapper {
+            width: 80px;
+            height: 80px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .ring {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            border: 5px solid #b8aa94;
+            border-top-color: #e8ddd0;
+            border-left-color: #d0c2ae;
+            box-sizing: border-box;
+            background: transparent;
+            /* chaque carte aura son propre clip-path via une classe */
+        }
+        .label {
+            color: #d4c9b0;
+            font-size: 1rem;
+            font-weight: 600;
+            background: #1f1814;
+            padding: 2px 14px;
+            border-radius: 30px;
+            margin-top: 4px;
+            border: 1px solid #4d3f35;
+        }
+        .code {
+            color: #a89880;
+            font-size: 0.65rem;
+            text-align: center;
+            margin-top: 6px;
+            word-break: break-all;
+            background: #1f1814;
+            padding: 4px 8px;
+            border-radius: 6px;
+            width: 100%;
+            font-family: monospace;
+            line-height: 1.3;
+        }
 
-/* ── desk background ── */
-.desk {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  background: #1c1410 url('../images/desk-bg.jpg') center/cover no-repeat;
-}
-.desk::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(ellipse at center, rgba(0,0,0,0.1), rgba(0,0,0,0.6) 82%);
-}
+        /* ─── les 12 variantes de clip-path ─── */
 
-/* ── notebook ── */
-.notebook {
-  position: relative;
-  width: min(92vw, 760px);
-  height: min(86vh, 640px);
-  margin: 7vh auto 0;
-}
-.page-frame {
-  position: absolute;
-  top: 0; right: 0; bottom: 0; left: 24px;
-  background: #f3ecd9;
-  background-image: repeating-linear-gradient(0deg, transparent, transparent 27px, rgba(120,105,80,0.06) 28px);
-  border-radius: 2px;
-}
-.page-content {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-}
+        /* 1 – original V1.28 (coupe en bas à droite) */
+        .ring-1 { clip-path: polygon(50% 50%, 100% 15%, 0% 0%, 0% 100%, 100% 100%, 50% 50%); }
 
-/* ── binding rings (identique à V1.28) ── */
-.binding {
-  position: absolute;
-  left: 10px;
-  top: 6%;
-  bottom: 6%;
-  width: 20px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-  pointer-events: none;
-}
-.hole-ring {
-  position: relative;
-  width: 16px;
-  height: 16px;
-  flex-shrink: 0;
-}
-.hole {
-  position: absolute;
-  left: 50%; top: 50%;
-  width: 10px; height: 10px;
-  margin: -5px 0 0 -5px;
-  border-radius: 50%;
-  background: rgba(60,50,38,0.5);
-  z-index: 8;
-}
-.ring-front {
-  position: absolute;
-  left: 50%; top: 50%;
-  width: 40px; height: 16px;
-  margin: -8px 0 0 -40px;
-  border-radius: 50%;
-  border: 3.5px solid #7a7466;
-  border-top-color: #d8d4c4;
-  border-left-color: #c2bca8;
-  box-sizing: border-box;
-  z-index: 10;
-  /* clip-path identique à V1.28 */
-  clip-path: polygon(50% 50%, 100% 15%, 0% 0%, 0% 100%, 100% 100%, 50% 50%);
-}
+        /* 2 – symétrique vertical (coupe à gauche) */
+        .ring-2 { clip-path: polygon(50% 50%, 100% 15%, 100% 0%, 0% 0%, 0% 100%, 50% 100%, 50% 50%); }
 
-/* ── side tabs ── */
-.tabs {
-  position: absolute;
-  right: -34px;
-  top: 0;
-  bottom: 0;
-  display: flex;
-  flex-direction: column;
-  z-index: 5;
-}
-.tab {
-  writing-mode: vertical-rl;
-  font-family: 'Kalam', cursive;
-  font-weight: 700;
-  font-size: 0.82rem;
-  letter-spacing: 0.02em;
-  color: #2b2417;
-  border: none;
-  cursor: pointer;
-  width: 34px;
-  flex: 1 1 0;
-  padding: 10px 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-bottom: 1px solid rgba(0,0,0,0.12);
-  transition: background 0.2s, color 0.2s, filter 0.2s, transform 0.2s;
-  will-change: transform, width;
-}
-.tab.is-active {
-  width: 40px;
-  margin-left: -6px;
-}
-/* couleurs de base */
-.tab[data-tab="cover"] { background: #7d7466; flex: 0 0 44px; }
-.tab[data-tab="geants"] { background: #c9a86a; }
-.tab[data-tab="impromptu"] { background: #b97a4f; }
-.tab[data-tab="visages"] { background: #8c8a5e; }
-.tab[data-tab="atelier"] { background: #a05c4e; }
-.tab[data-tab="contact"] { background: #6e7a5e; }
+        /* 3 – coupe en bas (moitié inférieure enlevée) */
+        .ring-3 { clip-path: polygon(50% 50%, 100% 15%, 100% 0%, 0% 0%, 0% 100%, 50% 50%); }
 
-/* onglets au‑dessus de l’actif : fond éclairci, texte blanc (sauf actif) */
-.tab.highlight {
-  filter: brightness(1.4);
-}
-.tab.highlight:not(.is-active) {
-  color: white !important;
-}
+        /* 4 – coupe à droite (branche haute épaisse) */
+        .ring-4 { clip-path: polygon(50% 50%, 100% 40%, 100% 0%, 0% 0%, 0% 100%, 100% 100%, 100% 70%, 50% 50%); }
 
-/* ── page edges (white lines) ── */
-.page-edges {
-  position: absolute;
-  right: 0;
-  width: 16px;
-  z-index: 6;
-  pointer-events: none;
-  overflow: hidden;
-  top: 0;
-  height: 0;
-}
-.edge-line {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 1px;
-  background: rgba(255,255,255,0.7);
-  border-radius: 0;
-}
+        /* 5 – coupe à droite (branche basse épaisse) */
+        .ring-5 { clip-path: polygon(50% 50%, 100% 15%, 100% 0%, 0% 0%, 0% 100%, 100% 100%, 100% 85%, 50% 50%); }
 
-/* ── cover ── */
-.cover {
-  position: absolute;
-  inset: 0;
-  display: none;
-}
-.cover.is-active { display: block; }
-.cover-bg {
-  position: absolute;
-  inset: 0;
-  width: 100%; height: 100%;
-  object-fit: cover;
-}
-.cover-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgba(18,13,8,0.92) 0%, rgba(18,13,8,0.25) 45%, rgba(18,13,8,0.45) 100%);
-}
-.cover-text {
-  position: absolute;
-  left: 0; right: 0;
-  bottom: 7%;
-  z-index: 2;
-  text-align: center;
-  padding: 0 8%;
-}
-.cover-text h1 {
-  font-family: 'Caveat', cursive;
-  font-weight: 700;
-  font-size: clamp(2.2rem, 7vw, 3.6rem);
-  color: #f3ecd9;
-}
-.cover-text p {
-  font-family: 'Kalam', cursive;
-  font-size: 1.1rem;
-  margin-top: 0.3rem;
-  color: rgba(243,236,217,0.75);
-}
-.cover-version {
-  font-size: 0.78rem !important;
-  opacity: 0.55;
-  margin-top: 0.2rem !important;
-}
-.stamp {
-  position: absolute;
-  top: 5%; right: 6%;
-  width: clamp(58px, 9vw, 84px);
-}
+        /* 6 – coupe en haut (branche basse seule) */
+        .ring-6 { clip-path: polygon(50% 50%, 100% 85%, 100% 100%, 0% 100%, 0% 0%, 50% 50%); }
 
-/* ── content pages ── */
-.page {
-  position: absolute;
-  inset: 0;
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 8% 9%;
-  text-align: center;
-}
-.page.is-active { display: flex; }
-.page.bg-foret {
-  background: linear-gradient(rgba(243,236,217,0.3), rgba(243,236,217,0.45)), url('../images/carnet/aquarelle-foret.jpg') center/cover no-repeat;
-}
-.page.bg-champ {
-  background: linear-gradient(rgba(243,236,217,0.32), rgba(243,236,217,0.5)), url('../images/carnet/aquarelle-champ.jpg') center/cover no-repeat;
-}
-.section-label {
-  position: absolute;
-  top: 5%; left: 9%;
-  font-family: 'Caveat', cursive;
-  font-weight: 700;
-  font-size: 1.5rem;
-  color: #2a2f47;
-  z-index: 3;
-}
-.page-photo-text .section-label { color: #f3ecd9; }
+        /* 7 – coupe en bas (branche haute seule) */
+        .ring-7 { clip-path: polygon(50% 50%, 100% 15%, 100% 0%, 0% 0%, 0% 100%, 50% 50%); }
 
-/* ── polaroid avec ombre ── */
-.polaroid {
-  position: relative;
-  background: #fbf8f0;
-  padding: 10px 10px 0;
-  width: min(72%, 320px);
-  box-shadow: 4px 6px 12px rgba(0,0,0,0.25), 1px 2px 4px rgba(0,0,0,0.08);
-}
-.polaroid img {
-  width: 100%;
-  height: 34vh;
-  object-fit: cover;
-  display: block;
-}
-.polaroid-band {
-  height: 92px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 12px;
-}
-.polaroid-band p {
-  font-family: 'Caveat', cursive;
-  font-size: 1.4rem;
-  line-height: 1.2;
-  color: #4f4a40;
-  text-align: center;
-  max-width: 26ch;
-}
+        /* 8 – anneau presque complet (petite encoche à droite) */
+        .ring-8 { clip-path: polygon(50% 50%, 100% 10%, 100% 0%, 0% 0%, 0% 100%, 100% 100%, 100% 90%, 50% 50%); }
 
-.tape {
-  position: absolute;
-  width: 34px; height: 16px;
-  background: rgba(230,220,188,0.6);
-}
-.tape.tl { top: -8px; left: -8px; transform: rotate(-45deg); }
-.tape.tr { top: -8px; right: -8px; transform: rotate(45deg); }
-.tape.bl { bottom: -8px; left: -8px; transform: rotate(45deg); }
-.tape.br { bottom: -8px; right: -8px; transform: rotate(-45deg); }
+        /* 9 – anneau complet (pas de coupe) */
+        .ring-9 { clip-path: none; }
 
-/* ── atelier / contact ── */
-.page-photo-text {
-  padding: 0 !important;
-  justify-content: flex-end !important;
-}
-.photo-bg {
-  position: absolute;
-  inset: 0;
-  width: 100%; height: 100%;
-  object-fit: cover;
-}
-.photo-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgba(18,13,8,0.88) 0%, rgba(18,13,8,0.15) 48%, rgba(18,13,8,0.4) 100%);
-}
-.photo-overlay-text {
-  position: relative;
-  z-index: 2;
-  font-family: 'Caveat', cursive;
-  font-size: 1.4rem;
-  line-height: 1.45;
-  color: #f3ecd9;
-  max-width: 34ch;
-  padding: 0 9% 10%;
-}
-.contact-img {
-  width: min(82%, 380px);
-  margin-top: 0.6rem;
-}
+        /* 10 – coupe en bas à droite (plus large) */
+        .ring-10 { clip-path: polygon(50% 50%, 100% 30%, 100% 0%, 0% 0%, 0% 100%, 100% 100%, 100% 70%, 50% 50%); }
 
-/* ── corners (flèche identique à V1.28) ── */
-.corner {
-  --fold-color: 70,60,46;
-  --fold-alpha: 0;
-  position: absolute;
-  width: 52px;
-  height: 52px;
-  cursor: pointer;
-  z-index: 6;
-  transition: width 0.16s ease, height 0.16s ease, transform 0.2s ease;
-  background-image: linear-gradient(135deg, rgba(var(--fold-color), var(--fold-alpha)), rgba(var(--fold-color), var(--fold-alpha))),
-    url('../images/carnet/page-curl.svg');
-  background-size: 100% 100%;
-  background-repeat: no-repeat;
-  mix-blend-mode: normal;
-  will-change: transform;
-}
-.corner-tl { top:0; left:0; transform: scale(-1,-1); }
-.corner-tr { top:0; right:0; transform: scale(1,-1); }
-.corner-bl { bottom:0; left:0; transform: scale(-1,1); }
-.corner-br { bottom:0; right:0; }
-.corner[hidden] { display: none; }
+        /* 11 – coupe à gauche (branche haute épaisse, basse fine) */
+        .ring-11 { clip-path: polygon(50% 50%, 100% 45%, 100% 0%, 0% 0%, 0% 100%, 100% 100%, 100% 20%, 50% 50%); }
 
-.corner-arrow {
-  position: absolute;
-  bottom: 13px;
-  color: #4f4a40;
-  opacity: 0.6;
-  pointer-events: none;
-  transition: opacity 0.16s ease, color 0.16s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.corner-bl .corner-arrow { left: 13px; }
-.corner-br .corner-arrow { right: 13px; }
-.corner:hover .corner-arrow { opacity: 0.9; color: #c0432f; }
-
-/* Flèche exactement comme V1.28 */
-.corner-arrow svg {
-  display: block;
-  width: 26px;
-  height: 26px;
-}
-.corner-arrow .arrow-circle {
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 9;
-  stroke-linecap: round;
-  pathLength: 100;
-  stroke-dasharray: 72 28;
-}
-.corner-arrow .arrow-path {
-  fill: currentColor;
-}
-
-.page-counter {
-  position: absolute;
-  bottom: 4%;
-  left: 0; right: 0;
-  text-align: center;
-  font-family: 'Kalam', cursive;
-  font-size: 0.85rem;
-  color: rgba(74,70,63,0.55);
-}
-
-/* ── flip transitions ── */
-.page.flip-next { animation: flip-n 0.5s ease; }
-.page.flip-prev { animation: flip-p 0.5s ease; }
-@keyframes flip-n { from { opacity:0; transform:translateX(22px); } to { opacity:1; transform:translateX(0); } }
-@keyframes flip-p { from { opacity:0; transform:translateX(-22px); } to { opacity:1; transform:translateX(0); } }
-@media (prefers-reduced-motion: reduce) {
-  .page.flip-next, .page.flip-prev { animation: none; }
-}
-
-/* ── responsive ── */
-@media (max-width: 720px) {
-  body { overflow-y: auto; }
-  .notebook { width: 90vw; height: 78vh; margin: 9vh auto 4vh; }
-  .polaroid img { height: 28vh; }
-  .page-frame { left: 0; top: 24px; }
-  .binding {
-    left: 6%; right: 6%; top: 10px; bottom: auto;
-    width: auto; height: 20px;
-    flex-direction: row;
-  }
-  .hole-ring { width: 16px; height: 16px; }
-  .ring-front {
-    width: 16px; height: 40px;
-    margin: -40px 0 0 -8px;
-    clip-path: polygon(50% 50%, 85% 100%, 100% 0%, 0% 0%, 0% 100%, 50% 50%);
-  }
-  .page-edges { width: 14px; }
-  .edge-line { width: 0.8px; }
-}
-</style>
+        /* 12 – coupe à droite avec deux branches fines */
+        .ring-12 { clip-path: polygon(50% 50%, 100% 25%, 100% 0%, 0% 0%, 0% 100%, 100% 100%, 100% 75%, 50% 50%); }
+    </style>
 </head>
 <body>
-
-<div class="desk" aria-hidden="true"></div>
-
-<div class="notebook">
-  <div class="page-frame" id="page-frame">
-    <div class="page-content" id="page-content">
-
-      <div class="cover is-active" id="cover">
-        <img class="cover-bg" src="images/guillaume-varet-01.jpg" alt="Profil d'une sculpture en bois sur fond sombre incandescent">
-        <div class="cover-overlay"></div>
-        <img class="stamp" src="images/carnet/timbre-foret-jour.gif" alt="">
-        <div class="cover-text">
-          <h1>Carnet de sculptures</h1>
-          <p>Guillaume Varet</p>
-          <p class="cover-version">V1.39</p>
+<div class="container">
+    <h1>🧪 Laboratoire d’anneaux</h1>
+    <p class="sub">Chaque anneau a un <code>clip-path</code> différent. Choisis celui qui ressemble le plus à une reliure réelle.</p>
+    <div class="grid">
+        <!-- 1 -->
+        <div class="card">
+            <div class="ring-wrapper"><div class="ring ring-1"></div></div>
+            <div class="label">#1</div>
+            <div class="code">polygon(50% 50%,<br>100% 15%, 0% 0%,<br>0% 100%, 100% 100%,<br>50% 50%)</div>
         </div>
-      </div>
-
-      <!-- pages injected by JS -->
-      <div id="pages"></div>
-
-      <button class="corner corner-tl" data-dir="prev" aria-label="Page précédente" hidden></button>
-      <button class="corner corner-tr" data-dir="next" aria-label="Page suivante" hidden>
-        <span class="corner-arrow">
-          <svg viewBox="0 0 40 40" width="26" height="26">
-            <circle class="arrow-circle" cx="20" cy="20" r="13" transform="rotate(-90 20 20)"/>
-            <path class="arrow-path" d="M3,19 L11,15 L9,25 Z"/>
-          </svg>
-        </span>
-      </button>
-      <button class="corner corner-bl" data-dir="prev" aria-label="Page précédente" hidden>
-        <span class="corner-arrow">
-          <svg viewBox="0 0 40 40" width="26" height="26">
-            <circle class="arrow-circle" cx="20" cy="20" r="13" transform="rotate(-90 20 20)"/>
-            <path class="arrow-path" d="M3,19 L11,15 L9,25 Z"/>
-          </svg>
-        </span>
-      </button>
-      <button class="corner corner-br" data-dir="next" aria-label="Page suivante" hidden>
-        <span class="corner-arrow">
-          <svg viewBox="0 0 40 40" width="26" height="26">
-            <circle class="arrow-circle" cx="20" cy="20" r="13" transform="rotate(-90 20 20)"/>
-            <path class="arrow-path" d="M3,19 L11,15 L9,25 Z"/>
-          </svg>
-        </span>
-      </button>
-
-      <div class="page-counter" id="page-counter"></div>
+        <!-- 2 -->
+        <div class="card">
+            <div class="ring-wrapper"><div class="ring ring-2"></div></div>
+            <div class="label">#2</div>
+            <div class="code">polygon(50% 50%,<br>100% 15%, 100% 0%,<br>0% 0%, 0% 100%,<br>50% 100%, 50% 50%)</div>
+        </div>
+        <!-- 3 -->
+        <div class="card">
+            <div class="ring-wrapper"><div class="ring ring-3"></div></div>
+            <div class="label">#3</div>
+            <div class="code">polygon(50% 50%,<br>100% 15%, 100% 0%,<br>0% 0%, 0% 100%,<br>50% 50%)</div>
+        </div>
+        <!-- 4 -->
+        <div class="card">
+            <div class="ring-wrapper"><div class="ring ring-4"></div></div>
+            <div class="label">#4</div>
+            <div class="code">polygon(50% 50%,<br>100% 40%, 100% 0%,<br>0% 0%, 0% 100%,<br>100% 100%, 100% 70%,<br>50% 50%)</div>
+        </div>
+        <!-- 5 -->
+        <div class="card">
+            <div class="ring-wrapper"><div class="ring ring-5"></div></div>
+            <div class="label">#5</div>
+            <div class="code">polygon(50% 50%,<br>100% 15%, 100% 0%,<br>0% 0%, 0% 100%,<br>100% 100%, 100% 85%,<br>50% 50%)</div>
+        </div>
+        <!-- 6 -->
+        <div class="card">
+            <div class="ring-wrapper"><div class="ring ring-6"></div></div>
+            <div class="label">#6</div>
+            <div class="code">polygon(50% 50%,<br>100% 85%, 100% 100%,<br>0% 100%, 0% 0%,<br>50% 50%)</div>
+        </div>
+        <!-- 7 -->
+        <div class="card">
+            <div class="ring-wrapper"><div class="ring ring-7"></div></div>
+            <div class="label">#7</div>
+            <div class="code">polygon(50% 50%,<br>100% 15%, 100% 0%,<br>0% 0%, 0% 100%,<br>50% 50%)</div>
+        </div>
+        <!-- 8 -->
+        <div class="card">
+            <div class="ring-wrapper"><div class="ring ring-8"></div></div>
+            <div class="label">#8</div>
+            <div class="code">polygon(50% 50%,<br>100% 10%, 100% 0%,<br>0% 0%, 0% 100%,<br>100% 100%, 100% 90%,<br>50% 50%)</div>
+        </div>
+        <!-- 9 -->
+        <div class="card">
+            <div class="ring-wrapper"><div class="ring ring-9"></div></div>
+            <div class="label">#9</div>
+            <div class="code">clip-path: none<br>(anneau complet)</div>
+        </div>
+        <!-- 10 -->
+        <div class="card">
+            <div class="ring-wrapper"><div class="ring ring-10"></div></div>
+            <div class="label">#10</div>
+            <div class="code">polygon(50% 50%,<br>100% 30%, 100% 0%,<br>0% 0%, 0% 100%,<br>100% 100%, 100% 70%,<br>50% 50%)</div>
+        </div>
+        <!-- 11 -->
+        <div class="card">
+            <div class="ring-wrapper"><div class="ring ring-11"></div></div>
+            <div class="label">#11</div>
+            <div class="code">polygon(50% 50%,<br>100% 45%, 100% 0%,<br>0% 0%, 0% 100%,<br>100% 100%, 100% 20%,<br>50% 50%)</div>
+        </div>
+        <!-- 12 -->
+        <div class="card">
+            <div class="ring-wrapper"><div class="ring ring-12"></div></div>
+            <div class="label">#12</div>
+            <div class="code">polygon(50% 50%,<br>100% 25%, 100% 0%,<br>0% 0%, 0% 100%,<br>100% 100%, 100% 75%,<br>50% 50%)</div>
+        </div>
     </div>
-  </div>
-
-  <nav class="tabs" id="tabs">
-    <button class="tab is-active" data-tab="cover">Couverture</button>
-    <button class="tab" data-tab="geants">Géants</button>
-    <button class="tab" data-tab="impromptu">Impromptu</button>
-    <button class="tab" data-tab="visages">Visages</button>
-    <button class="tab" data-tab="atelier">Atelier</button>
-    <button class="tab" data-tab="contact">Contact</button>
-  </nav>
-  <div class="page-edges" id="page-edges"></div>
+    <p style="color:#9a8b78; text-align:center; margin-top:30px; font-size:0.9rem;">
+        👆 Passe la souris sur une carte pour la surligner.<br>
+        Dis‑moi quel numéro correspond à l’anneau que tu veux pour le carnet.
+    </p>
 </div>
-
-<script>
-// ─── binding rings (avec le +2 de la V1.37) ────────────────────
-const pageFrame = document.getElementById('page-frame');
-const binding = document.createElement('div');
-binding.className = 'binding';
-pageFrame.appendChild(binding);
-
-const RING_SHORT_AXIS = 16;
-
-function buildBinding() {
-  binding.innerHTML = '';
-  const vertical = window.innerWidth > 720;
-  const space = (vertical ? binding.clientHeight : binding.clientWidth) * 0.94;
-  // On ajoute +2 comme dans la V1.37 pour avoir plus d'anneaux
-  let count = Math.max(3, Math.floor(space / RING_SHORT_AXIS) + 2);
-  if (!vertical) count = Math.max(3, count - 2);
-  for (let i = 0; i < count; i++) {
-    const item = document.createElement('div');
-    item.className = 'hole-ring';
-    const hole = document.createElement('div');
-    hole.className = 'hole';
-    const front = document.createElement('div');
-    front.className = 'ring-front';
-    item.appendChild(hole);
-    item.appendChild(front);
-    binding.appendChild(item);
-  }
-}
-buildBinding();
-
-let resizeTimer;
-window.addEventListener('resize', () => {
-  clearTimeout(resizeTimer);
-  resizeTimer = setTimeout(() => { buildBinding(); render(0); }, 150);
-});
-
-// ─── données ──────────────────────────────────────────────────────
-const DATA = {
-  geants: { bg:'bg-foret', label:'Géants', pages:[
-    { img:'images/selection/sequoia.jpg', alt:"Sculpture monumentale en cours, à même un douglas, échafaudage et château en arrière-plan", cap:"Un douglas entier, sculpté debout." },
-    { img:'images/selection/couple-totem.jpg', alt:"Deux silhouettes enlacées sculptées dans un tronc debout, jardin", cap:"Deux silhouettes enlacées, à même un tronc encore debout." }
-  ]},
-  impromptu: { bg:'bg-champ', label:'Impromptu', pages:[
-    { img:'images/selection/corbeau.jpg', alt:"Oiseau facétieux au chapeau, posé sur deux jambes en bois", cap:"Un chapeau trouvé, un oiseau qui s'impose." },
-    { img:'images/selection/bouddha.jpg', alt:"Buste détaillé, mains jointes, coiffe travaillée", cap:"Un visage recueilli." },
-    { img:'images/selection/marmottes.jpg', alt:"Deux marmottes sculptées sur une souche, vue de dos", cap:"Deux marmottes, blotties sur une souche." },
-    { img:'images/selection/saxophoniste.jpg', alt:"Personnage félin anthropomorphe tenant un instrument, fond sombre", cap:"Un musicien qu'on n'attendait pas." },
-    { img:'images/selection/crapaud.jpg', alt:"Forme abstraite émergeant du bois brut, sous-bois en automne", cap:"Une forme entre figure et paysage." },
-    { img:'images/selection/lunien.jpg', alt:"Masque creusé dans une bille fendue, contre un mur de pierre", cap:"Un masque trouvé dans une bille fendue." },
-    { img:'images/selection/poteau.jpg', alt:"Poteau de bois fin avec ferrures, contre un muret moussu", cap:"Un dernier geste, plus retenu." }
-  ]},
-  visages: { bg:'bg-foret', label:'Visages', pages:[
-    { img:'images/visages/epure.jpg', alt:"Visage très épuré, traits réduits à quelques lignes, dans l'herbe", cap:"À peine esquissé." },
-    { img:'images/visages/pipe.jpg', alt:"Buste d'homme au chapeau et à la pipe, taille brute à la tronçonneuse", cap:"Le fumeur." },
-    { img:'images/visages/beret.jpg', alt:"Tête de femme au béret, traitement lisse et minimal", cap:"Poli jusqu'au silence." },
-    { img:'images/visages/ecorce-1.jpg', alt:"Visage émergeant d'une bille de bois, écorce conservée en couronne", cap:"L'écorce, gardée en couronne." },
-    { img:'images/visages/bob.jpg', alt:"Tête au carré court, lumière rasante, jardin en hiver", cap:"Lumière de givre." },
-    { img:'images/visages/couronne.jpg', alt:"Buste à la coiffe sculptée en éclats, posé en intérieur", cap:"La coiffe devient sculpture." },
-    { img:'images/visages/totem-multiple.jpg', alt:"Plusieurs visages superposés, écorce et bois clair", cap:"Plusieurs têtes, une seule bille." },
-    { img:'images/visages/brut.jpg', alt:"Visage taillé à même une branche brute", cap:"Encore aveugle, sur la branche." },
-    { img:'images/visages/ecorce-2.jpg', alt:"Visage en cours de dégrossissage, écorce encore présente", cap:"En devenir." },
-    { img:'images/visages/texture.jpg', alt:"Gros plan sur le grain du bois sculpté", cap:"Le grain, de très près." }
-  ]}
-};
-
-const SECTION_ORDER = ['geants','impromptu','visages','atelier','contact'];
-
-// ─── helpers ──────────────────────────────────────────────────────
-let tiltSeed = 0;
-function nextTilt() {
-  tiltSeed++;
-  const sign = tiltSeed % 2 === 0 ? 1 : -1;
-  const magnitude = 1.4 + Math.random() * 2.8;
-  return (sign * magnitude).toFixed(1);
-}
-function tapeHTML() {
-  const fourCorners = Math.random() < 0.5;
-  if (fourCorners) return ['tl','tr','bl','br'].map(c => `<span class="tape ${c}"></span>`).join('');
-  const diag = Math.random() < 0.5 ? ['tl','br'] : ['tr','bl'];
-  return diag.map(c => `<span class="tape ${c}"></span>`).join('');
-}
-function photoPageHTML(bgClass, label, it) {
-  const tilt = nextTilt();
-  return `
-    <div class="page ${bgClass}">
-      <span class="section-label">${label}</span>
-      <div class="polaroid" style="transform: rotate(${tilt}deg);">
-        ${tapeHTML()}
-        <img src="${it.img}" alt="${it.alt}" loading="lazy">
-        <div class="polaroid-band"><p>${it.cap}</p></div>
-      </div>
-    </div>`;
-}
-
-// ─── construction des pages ──────────────────────────────────────
-const pagesEl = document.getElementById('pages');
-let html = '';
-Object.entries(DATA).forEach(([key, section]) => {
-  section.pages.forEach(it => {
-    html += `<div data-section="${key}">${photoPageHTML(section.bg, section.label, it)}</div>`;
-  });
-});
-html += `
-  <div data-section="atelier"><div class="page page-photo-text">
-    <span class="section-label">Atelier</span>
-    <img class="photo-bg" src="images/atelier/etabli.jpg" alt="Guillaume Varet au travail, meuleuse à la main, sur un établi de chantier">
-    <div class="photo-overlay"></div>
-    <p class="photo-overlay-text">Tout commence dehors, sur un établi de chantier. La tronçonneuse d'abord, pour dégrossir — puis la meuleuse, pour faire apparaître ce qui était déjà là.</p>
-  </div></div>
-`;
-html += `
-  <div data-section="contact"><div class="page bg-champ">
-    <span class="section-label">Contact</span>
-    <img class="contact-img" src="images/carnet/contact.png" alt="Coordonnées de l'atelier">
-  </div></div>
-`;
-pagesEl.innerHTML = html;
-
-// ─── indexation des sections ─────────────────────────────────────
-const sections = {};
-SECTION_ORDER.forEach(key => {
-  sections[key] = Array.from(document.querySelectorAll(`#pages [data-section="${key}"] .page`));
-});
-
-const cover = document.getElementById('cover');
-const tabs = document.querySelectorAll('.tab');
-const pageEdges = document.getElementById('page-edges');
-const corners = Array.from(document.querySelectorAll('.corner'));
-const cornersPrev = corners.filter(c => c.dataset.dir === 'prev');
-const cornersNext = corners.filter(c => c.dataset.dir === 'next');
-const counter = document.getElementById('page-counter');
-
-// ─── séquence complète ────────────────────────────────────────────
-const sequence = [{ tab:'cover', el:cover }];
-SECTION_ORDER.forEach(key => {
-  sections[key].forEach(el => sequence.push({ tab:key, el }));
-});
-const TOTAL_PAGES = sequence.length - 1;
-let pos = 0;
-
-// ─── traits blancs ────────────────────────────────────────────────
-const LINE_WIDTH = 1;
-const STEP = 0.5;
-
-function updatePageEdges(count, activeTabEl) {
-  pageEdges.innerHTML = '';
-  if (count < 0) count = 0;
-  const visible = Math.min(count, 30);
-  for (let i = 0; i < visible; i++) {
-    const line = document.createElement('div');
-    line.className = 'edge-line';
-    line.style.right = (i * STEP) + 'px';
-    const alpha = 0.5 + 0.5 * (1 - i / Math.max(1, visible - 1));
-    line.style.opacity = alpha;
-    pageEdges.appendChild(line);
-  }
-
-  if (activeTabEl) {
-    const notebookRect = document.querySelector('.notebook').getBoundingClientRect();
-    const activeRect = activeTabEl.getBoundingClientRect();
-    const contactTab = document.querySelector('.tab[data-tab="contact"]');
-    if (contactTab) {
-      const contactRect = contactTab.getBoundingClientRect();
-      const top = activeRect.bottom - notebookRect.top;
-      const height = contactRect.bottom - activeRect.bottom;
-      pageEdges.style.top = top + 'px';
-      pageEdges.style.height = Math.max(0, height) + 'px';
-    } else {
-      pageEdges.style.top = '0';
-      pageEdges.style.height = '100%';
-    }
-  } else {
-    pageEdges.style.top = '0';
-    pageEdges.style.height = '0';
-  }
-}
-
-// ─── navigation ──────────────────────────────────────────────────
-function goNext() { if (pos < sequence.length - 1) { pos++; render(1); } }
-function goPrev() { if (pos > 0) { pos--; render(-1); } }
-
-function render(direction) {
-  sequence.forEach(s => s.el.classList.remove('is-active','flip-next','flip-prev'));
-
-  const current = sequence[pos];
-  current.el.classList.add('is-active');
-  if (direction === 1) current.el.classList.add('flip-next');
-  if (direction === -1) current.el.classList.add('flip-prev');
-
-  // ── onglets ──────────────────────────────────────────────────
-  const allTabs = document.querySelectorAll('.tab');
-  let activeIndex = -1;
-  allTabs.forEach((t, i) => {
-    t.classList.remove('highlight', 'is-active');
-    if (t.dataset.tab === current.tab) {
-      t.classList.add('is-active');
-      activeIndex = i;
-    }
-  });
-
-  if (activeIndex !== -1) {
-    for (let i = 0; i <= activeIndex; i++) {
-      allTabs[i].classList.add('highlight');
-    }
-  }
-
-  const atCover = current.tab === 'cover';
-  const atEnd = pos >= sequence.length - 1;
-
-  cornersPrev.forEach(c => { c.hidden = atCover; });
-  cornersNext.forEach(c => { c.hidden = atEnd; });
-
-  // ── compteur ──
-  if (atCover) {
-    counter.textContent = '';
-  } else {
-    const idx = sections[current.tab].indexOf(current.el);
-    const total = sections[current.tab].length;
-    counter.textContent = `${current.tab} — page ${idx + 1} / ${total}`;
-  }
-
-  // ── pages restantes ──
-  let remaining;
-  if (atCover) {
-    remaining = TOTAL_PAGES;
-  } else {
-    remaining = TOTAL_PAGES - pos;
-    if (remaining < 0) remaining = 0;
-  }
-
-  // ── largeur de la pile ──
-  let extraWidth = 0;
-  if (remaining > 0) {
-    extraWidth = (remaining - 1) * STEP + LINE_WIDTH;
-  }
-  extraWidth = Math.round(extraWidth * 100) / 100;
-
-  // ── élargir les onglets au‑dessus (sauf contact) ──
-  const tabsToEnlarge = [];
-  for (let i = 0; i <= activeIndex; i++) {
-    const tab = allTabs[i];
-    if (tab.dataset.tab !== 'contact') {
-      tabsToEnlarge.push(tab);
-    }
-  }
-  tabsToEnlarge.forEach((tab) => {
-    const isActive = tab.classList.contains('is-active');
-    const baseWidth = isActive ? 40 : 34;
-    const newWidth = baseWidth + extraWidth;
-    tab.style.width = newWidth + 'px';
-    tab.style.transform = `translateX(-${extraWidth}px)`;
-    if (isActive) {
-      tab.style.marginLeft = '-6px';
-    } else {
-      tab.style.marginLeft = '0';
-    }
-  });
-
-  // réinitialiser les autres (dont contact)
-  for (let i = 0; i < allTabs.length; i++) {
-    const tab = allTabs[i];
-    if (!tabsToEnlarge.includes(tab)) {
-      tab.style.width = '';
-      tab.style.transform = '';
-      tab.style.marginLeft = '';
-    }
-  }
-
-  // ── décaler les coins de droite ──
-  const rightCorners = document.querySelectorAll('.corner-tr, .corner-br');
-  rightCorners.forEach(c => {
-    if (!c.hidden) {
-      c.style.transform = `translateX(-${extraWidth}px) scale(${c.classList.contains('corner-tr') ? '1, -1' : '1, 1'})`;
-    } else {
-      c.style.transform = '';
-    }
-  });
-  const leftCorners = document.querySelectorAll('.corner-tl, .corner-bl');
-  leftCorners.forEach(c => { c.style.transform = ''; });
-
-  // ── mettre à jour les traits ──
-  const activeTabEl = document.querySelector('.tab.is-active');
-  updatePageEdges(remaining, activeTabEl);
-}
-
-// ─── événements ──────────────────────────────────────────────────
-tabs.forEach(t => t.addEventListener('click', () => {
-  const target = t.dataset.tab;
-  pos = sequence.findIndex(s => s.tab === target);
-  render(0);
-}));
-
-corners.forEach(c => c.addEventListener('click', () => {
-  c.dataset.dir === 'next' ? goNext() : goPrev();
-}));
-
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'ArrowRight') goNext();
-  if (e.key === 'ArrowLeft') goPrev();
-});
-
-// ─── effet de survol des coins (identique V1.28) ────────────────
-const ANCHORS = {
-  'corner-tl': ['left','top'],
-  'corner-tr': ['right','top'],
-  'corner-bl': ['left','bottom'],
-  'corner-br': ['right','bottom']
-};
-const BASE_SIZE = 52, MAX_SIZE = 118, INFLUENCE = 150;
-const maxT = new Map();
-const pageContent = document.getElementById('page-content');
-
-pageContent.addEventListener('mousemove', (e) => {
-  const frameRect = pageContent.getBoundingClientRect();
-  corners.forEach(c => {
-    if (c.hidden) return;
-    const cls = [...c.classList].find(cl => ANCHORS[cl]);
-    if (!cls) return;
-    const [hx, vy] = ANCHORS[cls];
-    const ax = hx === 'left' ? frameRect.left : frameRect.right;
-    const ay = vy === 'top' ? frameRect.top : frameRect.bottom;
-    const dist = Math.hypot(e.clientX - ax, e.clientY - ay);
-    let tNow = Math.max(0, 1 - dist / INFLUENCE);
-    const tBest = Math.max(maxT.get(c) || 0, tNow);
-    maxT.set(c, tBest);
-    const size = BASE_SIZE + tBest * (MAX_SIZE - BASE_SIZE);
-    c.style.width = size + 'px';
-    c.style.height = size + 'px';
-    c.style.setProperty('--fold-alpha', (tBest * 0.5).toFixed(2));
-    c.style.setProperty('--fold-color', tBest > 0.45 ? '192,67,47' : '70,60,46');
-  });
-});
-
-pageContent.addEventListener('mouseleave', () => {
-  corners.forEach(c => {
-    maxT.set(c, 0);
-    c.style.width = BASE_SIZE + 'px';
-    c.style.height = BASE_SIZE + 'px';
-    c.style.setProperty('--fold-alpha', '0');
-    c.style.setProperty('--fold-color', '70,60,46');
-  });
-});
-
-// ─── initialisation ─────────────────────────────────────────────
-render(0);
-window.addEventListener('load', () => { render(0); });
-</script>
-
 </body>
 </html>
