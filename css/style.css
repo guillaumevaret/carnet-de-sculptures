@@ -47,7 +47,7 @@ img{ display:block; max-width:100%; }
 
 .page-frame{
   position: absolute;
-  inset: 0;
+  top: 0; right: 0; bottom: 0; left: 24px;  /* dedicated clearance for the rings, computed exactly — see ring-front below */
   background: var(--paper);
   background-image:
     repeating-linear-gradient(0deg, transparent, transparent 27px, rgba(120,105,80,0.06) 28px);
@@ -96,8 +96,8 @@ img{ display:block; max-width:100%; }
 .ring-front{
   position: absolute;
   left: 50%; top: 50%;
-  width: 30px; height: 14px;
-  margin: -7px 0 0 -30px;
+  width: 40px; height: 16px;
+  margin: -8px 0 0 -40px;
   border-radius: 50%;
   border: 3.5px solid #7a7466;
   border-top-color: #d8d4c4;
@@ -438,6 +438,9 @@ img{ display:block; max-width:100%; }
   .notebook{ width: 90vw; height: 78vh; margin: 9vh auto 4vh; }
   .polaroid img{ height: 28vh; }
 
+  /* mobile: page-frame inset moves from left (desktop) to top, with the same calculated clearance */
+  .page-frame{ left: 0; top: 24px; }
+
   /* binding moves to the top edge for a vertical screen — tabs stay put on the right */
   .binding{
     left: 6%; right: 6%; top: 10px; bottom: auto;
@@ -447,10 +450,11 @@ img{ display:block; max-width:100%; }
   .hole-ring{ width: 20px; height: 20px; }
 
   /* on the top edge the rings stand in a vertical plane, so they read as TALL and NARROW.
-     Radial cut (cake, not baguette) — the missing wedge points down, toward the page. */
+     Radial cut (cake, not baguette) — the missing wedge points down, toward the page.
+     24px top inset on page-frame + 20px hole-center - 40px ring height = 4px clearance, computed exactly. */
   .ring-front{
-    width: 14px; height: 30px;
-    margin: -30px 0 0 -7px;
+    width: 16px; height: 40px;
+    margin: -40px 0 0 -8px;
     clip-path: polygon(50% 50%, 100% 100%, 100% 0%, 0% 0%, 0% 100%, 50% 50%);
   }
 }
