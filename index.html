@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test onglets – élargissement uniforme (corrigé)</title>
+    <title>Test onglets – décalage en V</title>
     <style>
         * {
             margin: 0;
@@ -124,12 +124,13 @@
         /* ── Onglets ── */
         .tabs {
             position: absolute;
-            right: -34px;
+            right: -34px; /* sera modifié dynamiquement en mobile */
             top: 0;
             bottom: 0;
             display: flex;
             flex-direction: column;
             z-index: 5;
+            transition: right 0.2s ease;
         }
 
         .tab {
@@ -165,12 +166,10 @@
         .tab[data-tab="atelier"] { background: #a05c4e; }
         .tab[data-tab="contact"] { background: #6e7a5e; }
 
-        /* Onglet actif : on ne gère pas de margin-left ici, tout est en JS */
         .tab.active {
             filter: brightness(1.2);
         }
 
-        /* Les onglets au‑dessus de l’actif : fond éclairci et texte blanc */
         .tab.highlight {
             filter: brightness(1.4);
             color: white !important;
@@ -207,9 +206,6 @@
         }
 
         @media (max-width: 720px) {
-            .tabs {
-                right: -30px;
-            }
             .tab {
                 width: 30px;
                 font-size: 0.7rem;
@@ -266,6 +262,7 @@
     });
 
     // ─── Gestion des onglets ──────────────────────────────────
+    const tabsContainer = document.getElementById('tabs');
     const tabs = document.querySelectorAll('.tab');
     const extraWidth = 20; // simulé
 
@@ -287,19 +284,24 @@
         for (let i = 0; i < tabArray.length; i++) {
             const tab = tabArray[i];
             if (i <= activeIndex) {
-                // Tous les onglets élargis ont la même largeur
                 const newWidth = baseWidth + extraWidth;
                 tab.style.width = newWidth + 'px';
                 tab.style.transform = `translateX(-${extraWidth}px)`;
-                // Important : pour l'onglet actif, on retire le margin-left de -6px
-                // car il est déjà décalé par le translateX, et on veut qu'il soit aligné avec les autres
                 tab.style.marginLeft = '0';
             } else {
-                // Réinitialiser pour les onglets en dessous
                 tab.style.width = '';
                 tab.style.transform = '';
                 tab.style.marginLeft = '';
             }
+        }
+
+        // ─── Décalage du conteneur en mobile ──────────────────
+        if (isMobile) {
+            // On ajoute extraWidth au right (car il est négatif), pour décaler les onglets vers la droite
+            const baseRight = -30; // valeur par défaut en mobile (voir CSS)
+            tabsContainer.style.right = (baseRight + extraWidth) + 'px';
+        } else {
+            tabsContainer.style.right = ''; // on laisse le CSS ( -34px )
         }
     }
 
@@ -309,7 +311,7 @@
         });
     });
 
-    // Initialisation : on active le premier onglet
+    // Initialisation
     updateTabs(document.querySelector('.tab[data-tab="cover"]'));
 </script>
 
