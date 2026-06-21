@@ -90,8 +90,9 @@ img{ display:block; max-width:100%; }
 }
 
 /* desktop default: binding on the LEFT — rings lie in a roughly horizontal plane,
-   so viewed from the front they are WIDE and SHORT */
-.ring-back, .ring-front{
+   so viewed from the front they are WIDE and SHORT. Only the visible 3/4 is drawn —
+   the quarter that would pass behind the page is simply omitted. */
+.ring-front{
   position: absolute;
   left: 50%; top: 50%;
   width: 40px; height: 16px;
@@ -101,11 +102,9 @@ img{ display:block; max-width:100%; }
   border-top-color: #d8d4c4;
   border-left-color: #c2bca8;
   box-sizing: border-box;
+  z-index: 10;
+  clip-path: inset(0 0 0 75%);
 }
-
-/* the quarter nearest the page (right side, since the page extends rightward) is hidden behind it */
-.ring-back{ z-index: 7; clip-path: inset(0 25% 0 0); }
-.ring-front{ z-index: 10; clip-path: inset(0 0 0 75%); }
 
 /* ---------- Side tabs (vertical, part of the notebook) ---------- */
 
@@ -424,12 +423,11 @@ img{ display:block; max-width:100%; }
   }
   .hole-ring{ width: 20px; height: 20px; }
 
-  /* on the top edge the rings stand in a vertical plane, so they read as TALL and NARROW */
-  .ring-back, .ring-front{
+  /* on the top edge the rings stand in a vertical plane, so they read as TALL and NARROW.
+     Only the visible 3/4 is drawn — the quarter behind the page is simply omitted. */
+  .ring-front{
     width: 16px; height: 40px;
     margin: -40px 0 0 -8px;
+    clip-path: inset(75% 0 0 0);
   }
-  /* the quarter nearest the page (below, since the page extends downward) is hidden behind it */
-  .ring-back{ clip-path: inset(0 0 25% 0); }
-  .ring-front{ clip-path: inset(75% 0 0 0); }
 }
