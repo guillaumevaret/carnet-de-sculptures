@@ -95,7 +95,7 @@ img{ display:block; max-width:100%; }
   position: absolute;
   left: 50%; top: 50%;
   width: 40px; height: 16px;
-  margin: -8px 0 0 -20px;
+  margin: -8px 0 0 -40px;
   border-radius: 50%;
   border: 3.5px solid #7a7466;
   border-top-color: #d8d4c4;
@@ -414,11 +414,9 @@ img{ display:block; max-width:100%; }
 @media (max-width: 720px){
   body{ overflow-y: auto; }
   .notebook{ width: 90vw; height: 78vh; margin: 9vh auto 4vh; }
-  .tabs{ right: auto; left: 0; top: -30px; bottom: auto; flex-direction: row; width: 100%; }
-  .tab{ writing-mode: horizontal-tb; width: auto; flex: 1 1 0; font-size: 0.7rem; padding: 6px 2px; border-bottom:none; border-right: 1px solid rgba(0,0,0,0.12); }
   .polaroid img{ height: 28vh; }
 
-  /* binding moves to the top edge for a vertical screen */
+  /* binding moves to the top edge for a vertical screen — tabs stay put on the right */
   .binding{
     left: 6%; right: 6%; top: 10px; bottom: auto;
     width: auto; height: 20px;
@@ -429,7 +427,7 @@ img{ display:block; max-width:100%; }
   /* on the top edge the rings stand in a vertical plane, so they read as TALL and NARROW */
   .ring-back, .ring-front{
     width: 16px; height: 40px;
-    margin: -20px 0 0 -8px;
+    margin: -40px 0 0 -8px;
   }
   /* the quarter nearest the page (below, since the page extends downward) is hidden behind it */
   .ring-back{ clip-path: inset(0 0 25% 0); }
