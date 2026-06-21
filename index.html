@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test onglets + reliure</title>
+    <title>Test onglets interactifs – élargissement</title>
     <style>
         * {
             margin: 0;
@@ -26,10 +26,9 @@
             border-radius: 4px;
             position: relative;
             box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-            overflow: visible; /* ← important pour que les onglets débordent */
+            overflow: visible; /* pour les onglets qui débordent */
         }
 
-        /* Page intérieure (avec quadrillage) */
         .page {
             position: absolute;
             inset: 0;
@@ -43,7 +42,7 @@
             z-index: 0;
         }
 
-        /* ── Reliure (inchangée, validée) ── */
+        /* ── Reliure (inchangée) ── */
         .binding {
             position: absolute;
             display: flex;
@@ -125,13 +124,12 @@
         /* ── Onglets ── */
         .tabs {
             position: absolute;
-            right: -34px;          /* déborde à droite */
+            right: -34px;
             top: 0;
             bottom: 0;
             display: flex;
             flex-direction: column;
             z-index: 5;
-            pointer-events: none;  /* pour le test, on désactive les clics */
         }
 
         .tab {
@@ -141,7 +139,6 @@
             font-size: 0.82rem;
             letter-spacing: 0.02em;
             color: #2b2417;
-            background: #c9a86a;   /* couleur générique pour le test */
             border: none;
             width: 34px;
             flex: 1 1 0;
@@ -151,17 +148,42 @@
             justify-content: center;
             border-bottom: 1px solid rgba(0,0,0,0.12);
             border-radius: 2px 0 0 2px;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s, filter 0.2s, transform 0.2s, width 0.2s;
+            will-change: transform, width;
+            /* largeur et transform seront modifiés en JS */
         }
 
-        /* On donne des couleurs différentes pour distinguer */
-        .tab:nth-child(1) { background: #7d7466; flex: 0 0 44px; }
-        .tab:nth-child(2) { background: #c9a86a; }
-        .tab:nth-child(3) { background: #b97a4f; }
-        .tab:nth-child(4) { background: #8c8a5e; }
-        .tab:nth-child(5) { background: #a05c4e; }
-        .tab:nth-child(6) { background: #6e7a5e; }
+        .tab:hover {
+            filter: brightness(1.1);
+        }
 
-        /* Étiquette d’info */
+        /* Couleurs de base */
+        .tab[data-tab="cover"] { background: #7d7466; flex: 0 0 44px; }
+        .tab[data-tab="geants"] { background: #c9a86a; }
+        .tab[data-tab="impromptu"] { background: #b97a4f; }
+        .tab[data-tab="visages"] { background: #8c8a5e; }
+        .tab[data-tab="atelier"] { background: #a05c4e; }
+        .tab[data-tab="contact"] { background: #6e7a5e; }
+
+        /* Onglet actif : agrandi et avec un texte blanc ? On laisse la couleur d'origine */
+        .tab.active {
+            width: 40px; /* largeur de base agrandie */
+            margin-left: -6px; /* pour décaler vers la gauche */
+            filter: brightness(1.2);
+        }
+
+        /* Les onglets au‑dessus de l’actif : fond éclairci et texte blanc */
+        .tab.highlight {
+            filter: brightness(1.4);
+            color: white !important;
+        }
+        .tab.highlight.active {
+            filter: brightness(1.6);
+            color: #2b2417 !important; /* on garde la couleur d'origine pour l'actif */
+        }
+
+        /* Badge d’info */
         .badge {
             position: absolute;
             bottom: 20px;
@@ -188,7 +210,6 @@
             margin-top: 2px;
         }
 
-        /* Ajustement mobile : les onglets restent à droite, mais on réduit leur taille */
         @media (max-width: 720px) {
             .tabs {
                 right: -30px;
@@ -198,36 +219,37 @@
                 font-size: 0.7rem;
                 padding: 6px 0;
             }
+            .tab.active {
+                width: 36px;
+                margin-left: -6px;
+            }
         }
     </style>
 </head>
 <body>
 
 <div class="mockup">
-    <!-- Page intérieure -->
     <div class="page"></div>
 
     <!-- Reliure -->
     <div class="binding" id="binding"></div>
 
     <!-- Onglets -->
-    <div class="tabs" id="tabs">
-        <div class="tab">Couverture</div>
-        <div class="tab">Géants</div>
-        <div class="tab">Impromptu</div>
-        <div class="tab">Visages</div>
-        <div class="tab">Atelier</div>
-        <div class="tab">Contact</div>
-    </div>
+    <nav class="tabs" id="tabs">
+        <button class="tab active" data-tab="cover">Couverture</button>
+        <button class="tab" data-tab="geants">Géants</button>
+        <button class="tab" data-tab="impromptu">Impromptu</button>
+        <button class="tab" data-tab="visages">Visages</button>
+        <button class="tab" data-tab="atelier">Atelier</button>
+        <button class="tab" data-tab="contact">Contact</button>
+    </nav>
 
-    <!-- Badge d’information -->
-    <div class="badge" id="badge">🔄 Redimensionnez pour basculer</div>
+    <div class="badge" id="badge">Cliquez sur un onglet · extraWidth = 20px (simulé)</div>
 </div>
 
 <script>
     // ─── Génération des anneaux (inchangée) ───────────────────
     const binding = document.getElementById('binding');
-    const badge = document.getElementById('badge');
     const RING_SHORT_AXIS = 16;
 
     function buildBinding() {
@@ -240,35 +262,83 @@
         for (let i = 0; i < count; i++) {
             const item = document.createElement('div');
             item.className = 'hole-ring';
-
             const hole = document.createElement('div');
             hole.className = 'hole';
-
             const front = document.createElement('div');
             front.className = 'ring-front';
-
             item.appendChild(hole);
             item.appendChild(front);
             binding.appendChild(item);
         }
+    }
+    buildBinding();
 
-        // Mise à jour du badge
-        if (vertical) {
-            badge.innerHTML = '⬆️ VERTICAL · top:10px · left/right:8px';
-        } else {
-            badge.innerHTML = '⬅️ HORIZONTAL · left:10px · top/bottom:8px';
+    window.addEventListener('resize', () => {
+        clearTimeout(window._resizeTimer);
+        window._resizeTimer = setTimeout(buildBinding, 150);
+    });
+
+    // ─── Gestion des onglets ──────────────────────────────────
+    const tabs = document.querySelectorAll('.tab');
+    const extraWidth = 20; // valeur simulée pour le test (en px)
+    // Dans la version finale, extraWidth sera calculé dynamiquement
+
+    function updateTabs(activeTab) {
+        // Retirer les classes
+        tabs.forEach(t => t.classList.remove('active', 'highlight'));
+
+        // Ajouter active sur l'onglet cliqué
+        activeTab.classList.add('active');
+
+        // Trouver l'index de l'onglet actif
+        const tabArray = Array.from(tabs);
+        const activeIndex = tabArray.indexOf(activeTab);
+
+        // Appliquer highlight à l'actif et à tous ceux au‑dessus (index <= activeIndex)
+        for (let i = 0; i <= activeIndex; i++) {
+            tabArray[i].classList.add('highlight');
+        }
+
+        // Appliquer l'élargissement aux onglets concernés (index <= activeIndex)
+        // et à ceux en dessous, on réinitialise la largeur et le transform
+        for (let i = 0; i < tabArray.length; i++) {
+            const tab = tabArray[i];
+            if (i <= activeIndex) {
+                // Déterminer la largeur de base selon qu'il est actif ou non
+                const isActive = tab.classList.contains('active');
+                // Sur desktop et mobile, les largeurs de base sont différentes, on les lit depuis le style
+                // On va définir une largeur de base : 40px si actif, 34px sinon (desktop)
+                // Mais il faut gérer le responsive. Pour simplifier, on utilise 34px + 6px si actif.
+                const baseWidth = isActive ? 40 : 34;
+                // Pour mobile, on peut ajuster, mais on garde la même logique.
+                // On va appliquer la largeur calculée
+                const newWidth = baseWidth + extraWidth;
+                tab.style.width = newWidth + 'px';
+                tab.style.transform = `translateX(-${extraWidth}px)`;
+                // Pour l'actif, on garde le margin-left de -6px pour le décalage initial
+                if (isActive) {
+                    tab.style.marginLeft = '-6px';
+                } else {
+                    tab.style.marginLeft = '0';
+                }
+            } else {
+                // Réinitialiser
+                tab.style.width = '';
+                tab.style.transform = '';
+                tab.style.marginLeft = '';
+            }
         }
     }
 
-    buildBinding();
-
-    let resizeTimer;
-    window.addEventListener('resize', () => {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(() => {
-            buildBinding();
-        }, 150);
+    // Ajouter les écouteurs de clic
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            updateTabs(tab);
+        });
     });
+
+    // Initialisation : on active le premier onglet (Couverture)
+    updateTabs(document.querySelector('.tab[data-tab="cover"]'));
 </script>
 
 </body>
