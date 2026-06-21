@@ -110,7 +110,16 @@
             border-left-color: #c2bca8;
             box-sizing: border-box;
             z-index: 10;
-            clip-path: polygon(50% 50%, 100% 15%, 0% 0%, 0% 100%, 100% 100%, 50% 50%);
+            /* clip‑path par défaut (mobile) : symétrique */
+            clip-path: polygon(50% 50%, 100% 15%, 100% 0%, 0% 0%, 0% 100%, 100% 100%, 100% 85%, 50% 50%);
+        }
+
+        /* ── version desktop : anneau à gauche avec branche supérieure plus épaisse ── */
+        @media (min-width: 721px) {
+            .ring-front {
+                /* branche du haut agrandie (40%), branche du bas réduite (30%) */
+                clip-path: polygon(50% 50%, 100% 40%, 100% 0%, 0% 0%, 0% 100%, 100% 100%, 100% 70%, 50% 50%);
+            }
         }
 
         /* ── side tabs ── */
@@ -166,11 +175,10 @@
             background: #6e7a5e;
         }
 
-        /* onglets au‑dessus de l’actif (y compris actif) : fond plus clair */
+        /* onglets au‑dessus de l’actif : fond éclairci, texte blanc (sauf actif) */
         .tab.highlight {
             filter: brightness(1.4);
         }
-        /* seul ceux qui ne sont pas actifs prennent le texte blanc */
         .tab.highlight:not(.is-active) {
             color: white !important;
         }
@@ -179,7 +187,7 @@
         .page-edges {
             position: absolute;
             right: 0;
-            width: 16px;          /* suffisant pour ~11px de pile */
+            width: 16px;
             z-index: 6;
             pointer-events: none;
             overflow: hidden;
@@ -510,6 +518,7 @@
                 width: 16px;
                 height: 40px;
                 margin: -40px 0 0 -8px;
+                /* clip‑path symétrique pour la version mobile */
                 clip-path: polygon(50% 50%, 85% 100%, 100% 0%, 0% 0%, 0% 100%, 50% 50%);
             }
             .page-edges {
@@ -537,7 +546,7 @@
                     <div class="cover-text">
                         <h1>Carnet de sculptures</h1>
                         <p>Guillaume Varet</p>
-                        <p class="cover-version">V1.30</p>
+                        <p class="cover-version">V1.31</p>
                     </div>
                 </div>
 
@@ -583,8 +592,9 @@
             binding.innerHTML = '';
             const vertical = window.innerWidth > 720;
             const space = (vertical ? binding.clientHeight : binding.clientWidth) * 0.94;
-            let count = Math.max(3, Math.floor(space / RING_SHORT_AXIS));
-            if (!vertical) count = Math.max(3, count - 2);
+            // on ajoute 2 anneaux (un en haut, un en bas)
+            let count = Math.max(3, Math.floor(space / RING_SHORT_AXIS) + 2);
+            if (!vertical) count = Math.max(3, count - 2); // ajustement pour mobile
             for (let i = 0; i < count; i++) {
                 const item = document.createElement('div');
                 item.className = 'hole-ring';
@@ -742,28 +752,24 @@
 
         // ─── page-edges (white lines) ────────────────────────────────────
         const LINE_WIDTH = 1;
-        const STEP = 0.5;          // pas entre chaque ligne (0.5px)
+        const STEP = 0.5;
 
         function updatePageEdges(count, activeTabEl) {
             pageEdges.innerHTML = '';
             if (count < 0) count = 0;
-            const visible = Math.min(count, 30); // limite de sécurité
+            const visible = Math.min(count, 30);
             for (let i = 0; i < visible; i++) {
                 const line = document.createElement('div');
                 line.className = 'edge-line';
-                // on empile depuis la droite, chaque ligne est décalée de i * STEP
                 line.style.right = (i * STEP) + 'px';
-                // opacité dégressive pour l'effet de profondeur
                 const alpha = 0.5 + 0.5 * (1 - i / Math.max(1, visible - 1));
                 line.style.opacity = alpha;
                 pageEdges.appendChild(line);
             }
 
-            // Position verticale : sous l'onglet actif jusqu'en bas du dernier onglet (contact)
             if (activeTabEl) {
                 const notebookRect = document.querySelector('.notebook').getBoundingClientRect();
                 const activeRect = activeTabEl.getBoundingClientRect();
-                // on cherche l'onglet "contact"
                 const contactTab = document.querySelector('.tab[data-tab="contact"]');
                 if (contactTab) {
                     const contactRect = contactTab.getBoundingClientRect();
@@ -772,7 +778,6 @@
                     pageEdges.style.top = top + 'px';
                     pageEdges.style.height = Math.max(0, height) + 'px';
                 } else {
-                    // fallback : on met toute la hauteur
                     pageEdges.style.top = '0';
                     pageEdges.style.height = '100%';
                 }
@@ -790,7 +795,6 @@
                 render(-1); } }
 
         function render(direction) {
-            // deactivate all
             sequence.forEach(s => s.el.classList.remove('is-active', 'flip-next', 'flip-prev'));
 
             const current = sequence[pos];
@@ -798,7 +802,6 @@
             if (direction === 1) current.el.classList.add('flip-next');
             if (direction === -1) current.el.classList.add('flip-prev');
 
-            // ── mise à jour des onglets ──────────────────────────────
             const allTabs = document.querySelectorAll('.tab');
             let activeIndex = -1;
             allTabs.forEach((t, i) => {
@@ -809,7 +812,6 @@
                 }
             });
 
-            // on applique 'highlight' à l'actif et à ceux au‑dessus
             if (activeIndex !== -1) {
                 for (let i = 0; i <= activeIndex; i++) {
                     allTabs[i].classList.add('highlight');
@@ -822,7 +824,6 @@
             cornersPrev.forEach(c => { c.hidden = atCover; });
             cornersNext.forEach(c => { c.hidden = atEnd; });
 
-            // ── page counter ──
             if (atCover) {
                 counter.textContent = '';
             } else {
@@ -831,7 +832,6 @@
                 counter.textContent = `${current.tab} — page ${idx + 1} / ${total}`;
             }
 
-            // ── white lines (remaining pages) ──
             let remaining;
             if (atCover) {
                 remaining = TOTAL_PAGES;
@@ -908,8 +908,6 @@
 
         // ─── initial render ─────────────────────────────────────────────
         render(0);
-
-        // on force une mise à jour après le chargement pour ajuster les positions
         window.addEventListener('load', () => { render(0); });
     </script>
 
