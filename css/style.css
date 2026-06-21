@@ -60,56 +60,52 @@ img{ display:block; max-width:100%; }
   overflow: hidden;
 }
 
-/* binding holes, left edge — restored to the previous look (simple dark circles) */
-.page-frame::after{
-  content:"";
-  position:absolute;
-  left: 10px; top: 6%; bottom: 6%;
-  width: 12px;
-  background-image: radial-gradient(circle, rgba(60,50,38,0.5) 32%, transparent 34%);
-  background-size: 12px 38px;
-  background-repeat: repeat-y;
-  opacity: 0.45;
-  z-index: 8;             /* sits above ring back-halves so they look threaded */
-  pointer-events: none;
-}
-
-/* the rings: side-on ellipses, pure CSS (no external image — avoids broken-image risk) */
-.ring-wrap{
+/* binding: holes and rings generated together as one entity, so they can never mismatch in count or position */
+.binding{
   position: absolute;
-  left: 10px;
-  width: 12px;
-  height: 30px;
+  left: 10px; top: 6%; bottom: 6%;
+  width: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
   pointer-events: none;
 }
 
+.hole-ring{
+  position: relative;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.hole{
+  position: absolute;
+  left: 50%; top: 50%;
+  width: 10px; height: 10px;
+  margin: -5px 0 0 -5px;
+  border-radius: 50%;
+  background: rgba(60,50,38,0.5);
+  z-index: 8;
+}
+
+/* desktop default: binding on the LEFT — rings lie in a roughly horizontal plane,
+   so viewed from the front they are WIDE and SHORT */
 .ring-back, .ring-front{
   position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 13px;
-  height: 28px;
-  margin-left: -6.5px;
-  margin-top: -14px;
+  left: 50%; top: 50%;
+  width: 40px; height: 16px;
+  margin: -8px 0 0 -20px;
   border-radius: 50%;
   border: 3.5px solid #7a7466;
   border-top-color: #d8d4c4;
   border-left-color: #c2bca8;
-  background: transparent;
   box-sizing: border-box;
 }
 
-/* only the top quarter is "behind" the page — the ring enters the hole there */
-.ring-back{
-  z-index: 7;
-  clip-path: inset(0 0 75% 0);
-}
-
-/* the remaining three quarters loop back out in front of the page */
-.ring-front{
-  z-index: 10;
-  clip-path: inset(25% 0 0 0);
-}
+/* the quarter nearest the page (right side, since the page extends rightward) is hidden behind it */
+.ring-back{ z-index: 7; clip-path: inset(0 25% 0 0); }
+.ring-front{ z-index: 10; clip-path: inset(0 0 0 75%); }
 
 /* ---------- Side tabs (vertical, part of the notebook) ---------- */
 
@@ -421,4 +417,21 @@ img{ display:block; max-width:100%; }
   .tabs{ right: auto; left: 0; top: -30px; bottom: auto; flex-direction: row; width: 100%; }
   .tab{ writing-mode: horizontal-tb; width: auto; flex: 1 1 0; font-size: 0.7rem; padding: 6px 2px; border-bottom:none; border-right: 1px solid rgba(0,0,0,0.12); }
   .polaroid img{ height: 28vh; }
+
+  /* binding moves to the top edge for a vertical screen */
+  .binding{
+    left: 6%; right: 6%; top: 10px; bottom: auto;
+    width: auto; height: 20px;
+    flex-direction: row;
+  }
+  .hole-ring{ width: 20px; height: 20px; }
+
+  /* on the top edge the rings stand in a vertical plane, so they read as TALL and NARROW */
+  .ring-back, .ring-front{
+    width: 16px; height: 40px;
+    margin: -20px 0 0 -8px;
+  }
+  /* the quarter nearest the page (below, since the page extends downward) is hidden behind it */
+  .ring-back{ clip-path: inset(0 0 25% 0); }
+  .ring-front{ clip-path: inset(75% 0 0 0); }
 }

@@ -50,22 +50,28 @@
 
 <script>
 const pageFrame = document.getElementById('page-frame');
+const binding = document.createElement('div');
+binding.className = 'binding';
+pageFrame.appendChild(binding);
+
 const RING_COUNT = 11;
 for(let i = 0; i < RING_COUNT; i++){
-  const top = 6 + (i / (RING_COUNT - 1)) * 88; // spread between 6% and 94%
-  const wrap = document.createElement('div');
-  wrap.className = 'ring-wrap';
-  wrap.style.top = `calc(${top}% - 15px)`;
+  const item = document.createElement('div');
+  item.className = 'hole-ring';
 
   const back = document.createElement('div');
   back.className = 'ring-back';
 
+  const hole = document.createElement('div');
+  hole.className = 'hole';
+
   const front = document.createElement('div');
   front.className = 'ring-front';
 
-  wrap.appendChild(back);
-  wrap.appendChild(front);
-  pageFrame.appendChild(wrap);
+  item.appendChild(back);
+  item.appendChild(hole);
+  item.appendChild(front);
+  binding.appendChild(item);
 }
 
 const STAMP = 'images/carnet/timbre-foret-jour.gif';
