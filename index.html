@@ -55,17 +55,13 @@ for(let i = 0; i < RING_COUNT; i++){
   const top = 6 + (i / (RING_COUNT - 1)) * 88; // spread between 6% and 94%
   const wrap = document.createElement('div');
   wrap.className = 'ring-wrap';
-  wrap.style.top = `calc(${top}% - 12px)`;
+  wrap.style.top = `calc(${top}% - 15px)`;
 
-  const back = document.createElement('img');
-  back.src = 'images/carnet/ring.svg';
+  const back = document.createElement('div');
   back.className = 'ring-back';
-  back.alt = '';
 
-  const front = document.createElement('img');
-  front.src = 'images/carnet/ring.svg';
+  const front = document.createElement('div');
   front.className = 'ring-front';
-  front.alt = '';
 
   wrap.appendChild(back);
   wrap.appendChild(front);

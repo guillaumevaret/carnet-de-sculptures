@@ -74,34 +74,41 @@ img{ display:block; max-width:100%; }
   pointer-events: none;
 }
 
-/* the rings: side-on ellipses, slightly taller than the holes, threaded through them */
+/* the rings: side-on ellipses, pure CSS (no external image — avoids broken-image risk) */
 .ring-wrap{
   position: absolute;
-  left: 10px;             /* aligned on the same column as the holes */
+  left: 10px;
   width: 12px;
-  height: 24px;
+  height: 30px;
   pointer-events: none;
-  z-index: 9;
 }
 
 .ring-back, .ring-front{
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 20px;
-  height: 26px;
-  transform: translate(-50%, -50%);
+  width: 13px;
+  height: 28px;
+  margin-left: -6.5px;
+  margin-top: -14px;
+  border-radius: 50%;
+  border: 3.5px solid #7a7466;
+  border-top-color: #d8d4c4;
+  border-left-color: #c2bca8;
+  background: transparent;
+  box-sizing: border-box;
 }
 
-/* back half tucked behind the page edge using clip-path: hides the portion behind the paper */
+/* only the top quarter is "behind" the page — the ring enters the hole there */
 .ring-back{
-  z-index: 7;             /* below the page-frame::after circles */
-  clip-path: inset(0 0 50% 0); /* keep only the top half (the visible "above the hole" arc on the back side) */
+  z-index: 7;
+  clip-path: inset(0 0 75% 0);
 }
 
+/* the remaining three quarters loop back out in front of the page */
 .ring-front{
-  z-index: 10;            /* above the holes */
-  clip-path: inset(50% 0 0 0); /* keep only the bottom half — the portion that comes back in front of the paper */
+  z-index: 10;
+  clip-path: inset(25% 0 0 0);
 }
 
 /* ---------- Side tabs (vertical, part of the notebook) ---------- */
