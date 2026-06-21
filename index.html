@@ -139,11 +139,13 @@
             align-items: center;
             justify-content: center;
             border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+            transition: background 0.2s, color 0.2s;
         }
         .tab.is-active {
             width: 40px;
             margin-left: -6px;
         }
+        /* couleurs de base */
         .tab[data-tab="cover"] {
             background: #7d7466;
             flex: 0 0 44px;
@@ -164,16 +166,27 @@
             background: #6e7a5e;
         }
 
+        /* onglet actif + ceux au‑dessus : texte blanc, fond éclairci */
+        .tab.highlight {
+            color: white !important;
+            filter: brightness(1.4);
+        }
+        /* l'onglet actif lui‑même encore plus clair */
+        .tab.is-active.highlight {
+            filter: brightness(1.6);
+        }
+
         /* ── page edges (white lines) ── */
         .page-edges {
             position: absolute;
-            top: 0;
-            bottom: 0;
             right: 0;
-            width: 35px;          /* suffisant pour ~20 traits fins */
+            width: 35px;
             z-index: 6;
             pointer-events: none;
             overflow: hidden;
+            /* top et height seront définis dynamiquement en JS */
+            top: 0;
+            height: 0;
         }
         .edge-line {
             position: absolute;
@@ -502,7 +515,6 @@
                 clip-path: polygon(50% 50%, 85% 100%, 100% 0%, 0% 0%, 0% 100%, 50% 50%);
             }
             .page-edges {
-                right: 0;
                 width: 30px;
             }
             .edge-line {
@@ -527,7 +539,7 @@
                     <div class="cover-text">
                         <h1>Carnet de sculptures</h1>
                         <p>Guillaume Varet</p>
-                        <p class="cover-version">V1.28</p>
+                        <p class="cover-version">V1.29</p>
                     </div>
                 </div>
 
@@ -731,24 +743,36 @@
         let pos = 0; // index into `sequence`
 
         // ─── page-edges (white lines) ────────────────────────────────────
-        const LINE_WIDTH = 1;      // largeur fine (1px)
-        const GAP = 0.8;          // espacement ultra‑fin
+        const LINE_WIDTH = 1;
+        const GAP = 0.8;
 
-        function updatePageEdges(count) {
+        function updatePageEdges(count, activeTabElement) {
             pageEdges.innerHTML = '';
             if (count < 0) count = 0;
-            // On limite le nombre pour ne pas déborder du conteneur (largeur 35px)
             const maxFit = Math.floor(35 / (LINE_WIDTH + GAP));
             const visible = Math.min(count, maxFit);
             for (let i = 0; i < visible; i++) {
                 const line = document.createElement('div');
                 line.className = 'edge-line';
-                // on empile depuis la droite : le premier (i=0) est à droite (right:0)
                 line.style.right = (i * (LINE_WIDTH + GAP)) + 'px';
-                // légère variation d'opacité pour l'effet de profondeur
                 const alpha = 0.5 + 0.5 * (1 - i / Math.max(1, visible - 1));
                 line.style.opacity = alpha;
                 pageEdges.appendChild(line);
+            }
+
+            // repositionner le conteneur sous l'onglet actif
+            if (activeTabElement) {
+                const notebookRect = document.querySelector('.notebook').getBoundingClientRect();
+                const tabRect = activeTabElement.getBoundingClientRect();
+                // on calcule la position relative au notebook
+                const top = tabRect.top - notebookRect.top;
+                const height = tabRect.height;
+                pageEdges.style.top = top + 'px';
+                pageEdges.style.height = height + 'px';
+            } else {
+                // au cas où (cover) on cache
+                pageEdges.style.top = '0';
+                pageEdges.style.height = '0';
             }
         }
 
@@ -768,7 +792,23 @@
             if (direction === 1) current.el.classList.add('flip-next');
             if (direction === -1) current.el.classList.add('flip-prev');
 
-            tabs.forEach(tt => tt.classList.toggle('is-active', tt.dataset.tab === current.tab));
+            // ── mise à jour des onglets ──────────────────────────────
+            const allTabs = document.querySelectorAll('.tab');
+            let activeIndex = -1;
+            allTabs.forEach((t, i) => {
+                t.classList.remove('highlight', 'is-active');
+                if (t.dataset.tab === current.tab) {
+                    t.classList.add('is-active');
+                    activeIndex = i;
+                }
+            });
+
+            // on applique la classe 'highlight' à l'onglet actif et à ceux situés au‑dessus (indices inférieurs)
+            if (activeIndex !== -1) {
+                for (let i = 0; i <= activeIndex; i++) {
+                    allTabs[i].classList.add('highlight');
+                }
+            }
 
             const atCover = current.tab === 'cover';
             const atEnd = pos >= sequence.length - 1;
@@ -776,7 +816,7 @@
             cornersPrev.forEach(c => { c.hidden = atCover; });
             cornersNext.forEach(c => { c.hidden = atEnd; });
 
-            // ── update page counter ──
+            // ── page counter ──
             if (atCover) {
                 counter.textContent = '';
             } else {
@@ -785,15 +825,18 @@
                 counter.textContent = `${current.tab} — page ${idx + 1} / ${total}`;
             }
 
-            // ── update white lines (remaining pages) ──
+            // ── white lines (remaining pages) ──
             let remaining;
             if (atCover) {
-                remaining = TOTAL_PAGES; // all pages are "remaining" on the cover
+                remaining = TOTAL_PAGES;
             } else {
                 remaining = TOTAL_PAGES - pos;
                 if (remaining < 0) remaining = 0;
             }
-            updatePageEdges(remaining);
+
+            // on récupère l'élément tab actif
+            const activeTabEl = document.querySelector(`.tab.is-active`);
+            updatePageEdges(remaining, activeTabEl);
         }
 
         // ─── tab clicks ──────────────────────────────────────────────────
@@ -860,6 +903,9 @@
 
         // ─── initial render ─────────────────────────────────────────────
         render(0);
+
+        // on force une mise à jour après le chargement pour ajuster les positions
+        window.addEventListener('load', () => { render(0); });
     </script>
 
 </body>
