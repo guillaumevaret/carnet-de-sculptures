@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anneaux – variantes horizontales & verticales</title>
+    <title>Validation des 2 anneaux</title>
     <style>
-        * { margin:0; padding:0; box-sizing:border-box; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             background: #1c1410;
             display: flex;
@@ -13,211 +13,84 @@
             align-items: center;
             min-height: 100vh;
             font-family: 'Segoe UI', sans-serif;
+            gap: 60px;
             padding: 20px;
-        }
-        .container {
-            max-width: 1100px;
-            width: 100%;
-            background: #2a221e;
-            border-radius: 20px;
-            padding: 30px 25px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.7);
-        }
-        h1 {
-            color: #d4c9b0;
-            text-align: center;
-            font-weight: 400;
-            font-size: 1.8rem;
-            margin-bottom: 6px;
-        }
-        .sub {
-            text-align: center;
-            color: #9a8b78;
-            font-size: 0.95rem;
-            margin-bottom: 28px;
-        }
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 20px 15px;
+            flex-wrap: wrap;
         }
         .card {
-            background: #362d27;
-            border-radius: 16px;
-            padding: 18px 8px 12px;
+            background: #2a221e;
+            border-radius: 20px;
+            padding: 30px 35px 25px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            transition: background 0.2s, border-color 0.2s;
             border: 1px solid #4d3f35;
-        }
-        .card:hover {
-            background: #443832;
-            border-color: #7a6652;
-        }
-        .ring-wrapper {
-            width: 90px;
-            height: 90px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 6px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
         }
         .ring {
-            width: 70px;
-            height: 70px;
+            width: 100px;
+            height: 100px;
             border-radius: 50%;
-            border: 5px solid #b8aa94;
+            border: 6px solid #b8aa94;
             border-top-color: #e8ddd0;
             border-left-color: #d0c2ae;
             box-sizing: border-box;
             background: transparent;
+            margin-bottom: 10px;
         }
         .label {
             color: #d4c9b0;
-            font-size: 1rem;
+            font-size: 1.2rem;
             font-weight: 600;
             background: #1f1814;
-            padding: 2px 14px;
+            padding: 4px 18px;
             border-radius: 30px;
-            margin-top: 2px;
             border: 1px solid #4d3f35;
+            margin-top: 6px;
         }
         .code {
             color: #a89880;
-            font-size: 0.6rem;
+            font-size: 0.7rem;
             text-align: center;
-            margin-top: 6px;
-            word-break: break-all;
+            margin-top: 10px;
             background: #1f1814;
-            padding: 4px 6px;
-            border-radius: 6px;
-            width: 100%;
+            padding: 8px 10px;
+            border-radius: 8px;
             font-family: monospace;
-            line-height: 1.3;
+            line-height: 1.4;
+            max-width: 280px;
         }
         .badge {
-            font-size: 0.6rem;
+            font-size: 0.7rem;
             background: #4d3f35;
             color: #d4c9b0;
-            padding: 1px 10px;
+            padding: 2px 14px;
             border-radius: 20px;
-            margin-bottom: 4px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
-        .badge.horiz { background: #5d4a3a; }
-        .badge.vert { background: #3a4d5d; }
+        .badge.h { background: #5d4a3a; }
+        .badge.v { background: #3a4d5d; }
     </style>
 </head>
 <body>
-<div class="container">
-    <h1>🧪 Variantes d’anneaux</h1>
-    <p class="sub">6 horizontaux (reliure à gauche) • 6 verticaux (reliure en haut)<br>Choisis celui qui te plaît pour chaque orientation.</p>
-    <div class="grid">
 
-        <!-- ===== HORIZONTAUX ===== -->
-        <!-- H1 : 40% / 60% (ta formule de départ) -->
-        <div class="card">
-            <div class="badge horiz">H1 · horizontal</div>
-            <div class="ring-wrapper"><div class="ring" style="clip-path: polygon(50% 50%, 100% 40%, 100% 0%, 0% 0%, 0% 100%, 50% 100%, 50% 50%);"></div></div>
-            <div class="label">#H1</div>
-            <div class="code">haut 40% · bas 60%</div>
-        </div>
-
-        <!-- H2 : 45% / 55% -->
-        <div class="card">
-            <div class="badge horiz">H2 · horizontal</div>
-            <div class="ring-wrapper"><div class="ring" style="clip-path: polygon(50% 50%, 100% 45%, 100% 0%, 0% 0%, 0% 100%, 50% 100%, 50% 50%);"></div></div>
-            <div class="label">#H2</div>
-            <div class="code">haut 45% · bas 55%</div>
-        </div>
-
-        <!-- H3 : 35% / 65% -->
-        <div class="card">
-            <div class="badge horiz">H3 · horizontal</div>
-            <div class="ring-wrapper"><div class="ring" style="clip-path: polygon(50% 50%, 100% 35%, 100% 0%, 0% 0%, 0% 100%, 50% 100%, 50% 50%);"></div></div>
-            <div class="label">#H3</div>
-            <div class="code">haut 35% · bas 65%</div>
-        </div>
-
-        <!-- H4 : 50% / 50% (symétrique) -->
-        <div class="card">
-            <div class="badge horiz">H4 · horizontal</div>
-            <div class="ring-wrapper"><div class="ring" style="clip-path: polygon(50% 50%, 100% 50%, 100% 0%, 0% 0%, 0% 100%, 50% 100%, 50% 50%);"></div></div>
-            <div class="label">#H4</div>
-            <div class="code">haut 50% · bas 50%</div>
-        </div>
-
-        <!-- H5 : 30% / 70% -->
-        <div class="card">
-            <div class="badge horiz">H5 · horizontal</div>
-            <div class="ring-wrapper"><div class="ring" style="clip-path: polygon(50% 50%, 100% 30%, 100% 0%, 0% 0%, 0% 100%, 50% 100%, 50% 50%);"></div></div>
-            <div class="label">#H5</div>
-            <div class="code">haut 30% · bas 70%</div>
-        </div>
-
-        <!-- H6 : 55% / 45% -->
-        <div class="card">
-            <div class="badge horiz">H6 · horizontal</div>
-            <div class="ring-wrapper"><div class="ring" style="clip-path: polygon(50% 50%, 100% 55%, 100% 0%, 0% 0%, 0% 100%, 50% 100%, 50% 50%);"></div></div>
-            <div class="label">#H6</div>
-            <div class="code">haut 55% · bas 45%</div>
-        </div>
-
-        <!-- ===== VERTICAUX (rotation 90° de la même formule) ===== -->
-        <!-- V1 : 40% / 60% -->
-        <div class="card">
-            <div class="badge vert">V1 · vertical</div>
-            <div class="ring-wrapper"><div class="ring" style="clip-path: polygon(50% 50%, 60% 0%, 0% 0%, 0% 100%, 100% 100%, 100% 50%, 50% 50%);"></div></div>
-            <div class="label">#V1</div>
-            <div class="code">droite 40% · gauche 60%</div>
-        </div>
-
-        <!-- V2 : 45% / 55% -->
-        <div class="card">
-            <div class="badge vert">V2 · vertical</div>
-            <div class="ring-wrapper"><div class="ring" style="clip-path: polygon(50% 50%, 55% 0%, 0% 0%, 0% 100%, 100% 100%, 100% 50%, 50% 50%);"></div></div>
-            <div class="label">#V2</div>
-            <div class="code">droite 45% · gauche 55%</div>
-        </div>
-
-        <!-- V3 : 35% / 65% -->
-        <div class="card">
-            <div class="badge vert">V3 · vertical</div>
-            <div class="ring-wrapper"><div class="ring" style="clip-path: polygon(50% 50%, 65% 0%, 0% 0%, 0% 100%, 100% 100%, 100% 50%, 50% 50%);"></div></div>
-            <div class="label">#V3</div>
-            <div class="code">droite 35% · gauche 65%</div>
-        </div>
-
-        <!-- V4 : 50% / 50% (symétrique) -->
-        <div class="card">
-            <div class="badge vert">V4 · vertical</div>
-            <div class="ring-wrapper"><div class="ring" style="clip-path: polygon(50% 50%, 50% 0%, 0% 0%, 0% 100%, 100% 100%, 100% 50%, 50% 50%);"></div></div>
-            <div class="label">#V4</div>
-            <div class="code">droite 50% · gauche 50%</div>
-        </div>
-
-        <!-- V5 : 30% / 70% -->
-        <div class="card">
-            <div class="badge vert">V5 · vertical</div>
-            <div class="ring-wrapper"><div class="ring" style="clip-path: polygon(50% 50%, 70% 0%, 0% 0%, 0% 100%, 100% 100%, 100% 50%, 50% 50%);"></div></div>
-            <div class="label">#V5</div>
-            <div class="code">droite 30% · gauche 70%</div>
-        </div>
-
-        <!-- V6 : 55% / 45% -->
-        <div class="card">
-            <div class="badge vert">V6 · vertical</div>
-            <div class="ring-wrapper"><div class="ring" style="clip-path: polygon(50% 50%, 45% 0%, 0% 0%, 0% 100%, 100% 100%, 100% 50%, 50% 50%);"></div></div>
-            <div class="label">#V6</div>
-            <div class="code">droite 55% · gauche 45%</div>
-        </div>
-
+    <!-- HORIZONTAL : haut 55%, bas 50% -->
+    <div class="card">
+        <div class="badge h">⬅️ Horizontal · reliure à gauche</div>
+        <div class="ring" style="clip-path: polygon(50% 50%, 100% 55%, 100% 0%, 0% 0%, 0% 100%, 50% 100%, 50% 50%);"></div>
+        <div class="label">H · 55% / 50%</div>
+        <div class="code">polygon(50% 50%,<br>100% 55%, 100% 0%,<br>0% 0%, 0% 100%,<br>50% 100%, 50% 50%)</div>
     </div>
 
-    <p style="color:#9a8b78; text-align:center; margin-top:30px; font-size:0.9rem;">
-        👆 Passe la souris sur une carte pour la surligner.<br>
-        Dis‑moi les numéros <strong>#H…</strong> et <strong>#V…</strong> que tu veux pour le carnet.
-    </p>
-</div>
+    <!-- VERTICAL : rotation horaire de 90° -->
+    <div class="card">
+        <div class="badge v">⬆️ Vertical · reliure en haut</div>
+        <div class="ring" style="clip-path: polygon(50% 50%, 45% 100%, 100% 100%, 100% 0%, 0% 0%, 0% 50%, 50% 50%);"></div>
+        <div class="label">V · rotation horaire</div>
+        <div class="code">polygon(50% 50%,<br>45% 100%, 100% 100%,<br>100% 0%, 0% 0%,<br>0% 50%, 50% 50%)</div>
+    </div>
+
 </body>
 </html>
