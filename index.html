@@ -79,7 +79,7 @@
             justify-content: space-between;
             align-items: center;
             pointer-events: none;
-            z-index: 2;
+            z-index: 11;
             transition: right 0.2s ease; /* pour le décalage mobile */
         }
 
@@ -167,6 +167,7 @@
             bottom: 0;
             display: flex;
             flex-direction: column;
+            align-items: flex-end;
             z-index: 5;
         }
 
@@ -181,7 +182,7 @@
             cursor: pointer;
             width: 34px;
             flex: 1 1 0;
-            padding: 10px 0;
+            padding: 10px 12px 10px 0;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -189,10 +190,9 @@
             transition: background 0.2s, color 0.2s, filter 0.2s, transform 0.2s;
             will-change: transform, width;
         }
-        .tab.is-active {
-            width: 40px;
-            margin-left: -6px;
-        }
+        /* Note : l'ancienne règle .tab.is-active{width:40px;margin-left:-6px} a été retirée —
+           elle ne s'appliquait plus qu'à Contact (seul onglet exclu du redimensionnement
+           dynamique en JS), ce qui le faisait grandir différemment des autres. */
 
         /* couleurs de base */
         .tab[data-tab="cover"] {
@@ -226,7 +226,7 @@
         /* ── page edges (white lines) ── */
         .page-edges {
             position: absolute;
-            right: 0;
+            right: -34px;
             width: 16px;
             z-index: 6;
             pointer-events: none;
@@ -241,6 +241,25 @@
             width: 1px;
             background: rgba(255, 255, 255, 0.7);
             border-radius: 0;
+        }
+
+        /* ── page edges, bord du bas (même principe, en relief sous la page) ── */
+        .page-edges-bottom {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 0;
+            height: 16px;
+            z-index: 6;
+            pointer-events: none;
+            overflow: visible;
+        }
+        .edge-line-bottom {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.7);
         }
 
         /* ── cover ── */
@@ -474,6 +493,7 @@
         }
         .corner-bl .corner-arrow {
             left: 13px;
+            transform: scaleX(-1); /* annule le scale(-1,1) du parent .corner-bl, pour garder la flèche telle que fournie */
         }
         .corner-br .corner-arrow {
             right: 13px;
@@ -483,24 +503,17 @@
             color: #c0432f;
         }
 
-        /* Flèche style V1.28 */
+        /* Flèche — tracé fourni par l'utilisateur */
         .corner-arrow svg {
             display: block;
             width: 26px;
             height: 26px;
         }
-        .corner-arrow .arrow-circle {
-            fill: none;
-            stroke: currentColor;
-            stroke-width: 9;
-            stroke-linecap: round;
-            pathLength: 100;
-            stroke-dasharray: 72 28;
-            transform: rotate(-90deg);
-            transform-origin: center;
-        }
         .corner-arrow .arrow-path {
             fill: currentColor;
+        }
+        .corner-arrow-mirror svg {
+            transform: scaleX(-1);
         }
 
         .page-counter {
@@ -565,11 +578,20 @@
                 left: 0;
                 top: 24px;
             }
+            .tabs {
+                top: 24px;
+            }
             .page-edges {
                 width: 14px;
             }
             .edge-line {
                 width: 0.8px;
+            }
+            .page-edges-bottom {
+                height: 14px;
+            }
+            .edge-line-bottom {
+                height: 0.8px;
             }
         }
     </style>
@@ -590,7 +612,7 @@
                     <div class="cover-text">
                         <h1>Carnet de sculptures</h1>
                         <p>Guillaume Varet</p>
-                        <p class="cover-version">V1.42</p>
+                        <p class="cover-version">V1.64</p>
                     </div>
                 </div>
 
@@ -599,33 +621,57 @@
 
                 <!-- corners -->
                 <button class="corner corner-tl" data-dir="prev" aria-label="Page précédente" hidden></button>
-                <button class="corner corner-tr" data-dir="next" aria-label="Page suivante" hidden>
-                    <span class="corner-arrow">
-                        <svg viewBox="0 0 40 40" width="26" height="26">
-                            <circle class="arrow-circle" cx="20" cy="20" r="13" />
-                            <path class="arrow-path" d="M3,19 L11,15 L9,25 Z" />
-                        </svg>
-                    </span>
-                </button>
+                <button class="corner corner-tr" data-dir="next" aria-label="Page suivante" hidden></button>
                 <button class="corner corner-bl" data-dir="prev" aria-label="Page précédente" hidden>
                     <span class="corner-arrow">
-                        <svg viewBox="0 0 40 40" width="26" height="26">
-                            <circle class="arrow-circle" cx="20" cy="20" r="13" />
-                            <path class="arrow-path" d="M3,19 L11,15 L9,25 Z" />
+                        <svg viewBox="0 0 300 300" width="26" height="26">
+                            <path class="arrow-path" d="
+                                M 265 15
+                                C 275 150, 240 280, 110 275
+                                C 35 270, 15 190, 45 125
+                                C 65 75, 100 70, 140 85
+                                L 165 30
+                                L 215 85
+                                L 165 140
+                                L 145 115
+                                L 155 105
+                                L 135 95
+                                L 155 88
+                                L 145 85
+                                C 100 80, 70 100, 60 140
+                                C 50 180, 70 240, 110 245
+                                C 190 250, 245 180, 255 35
+                                Z" />
                         </svg>
                     </span>
                 </button>
                 <button class="corner corner-br" data-dir="next" aria-label="Page suivante" hidden>
-                    <span class="corner-arrow">
-                        <svg viewBox="0 0 40 40" width="26" height="26">
-                            <circle class="arrow-circle" cx="20" cy="20" r="13" />
-                            <path class="arrow-path" d="M3,19 L11,15 L9,25 Z" />
+                    <span class="corner-arrow corner-arrow-mirror">
+                        <svg viewBox="0 0 300 300" width="26" height="26">
+                            <path class="arrow-path" d="
+                                M 265 15
+                                C 275 150, 240 280, 110 275
+                                C 35 270, 15 190, 45 125
+                                C 65 75, 100 70, 140 85
+                                L 165 30
+                                L 215 85
+                                L 165 140
+                                L 145 115
+                                L 155 105
+                                L 135 95
+                                L 155 88
+                                L 145 85
+                                C 100 80, 70 100, 60 140
+                                C 50 180, 70 240, 110 245
+                                C 190 250, 245 180, 255 35
+                                Z" />
                         </svg>
                     </span>
                 </button>
 
                 <div class="page-counter" id="page-counter"></div>
             </div>
+            <div class="page-edges-bottom" id="page-edges-bottom"></div>
         </div>
 
         <nav class="tabs" id="tabs">
@@ -804,7 +850,9 @@
 
         const cover = document.getElementById('cover');
         const tabs = document.querySelectorAll('.tab');
+        const tabsNav = document.getElementById('tabs');
         const pageEdges = document.getElementById('page-edges');
+        const pageEdgesBottom = document.getElementById('page-edges-bottom');
         const corners = Array.from(document.querySelectorAll('.corner'));
         const cornersPrev = corners.filter(c => c.dataset.dir === 'prev');
         const cornersNext = corners.filter(c => c.dataset.dir === 'next');
@@ -835,23 +883,45 @@
                 pageEdges.appendChild(line);
             }
 
-            if (activeTabEl) {
-                const notebookRect = document.querySelector('.notebook').getBoundingClientRect();
-                const activeRect = activeTabEl.getBoundingClientRect();
-                const contactTab = document.querySelector('.tab[data-tab="contact"]');
-                if (contactTab) {
-                    const contactRect = contactTab.getBoundingClientRect();
-                    const top = activeRect.bottom - notebookRect.top;
-                    const height = contactRect.bottom - activeRect.bottom;
-                    pageEdges.style.top = top + 'px';
-                    pageEdges.style.height = Math.max(0, height) + 'px';
-                } else {
-                    pageEdges.style.top = '0';
-                    pageEdges.style.height = '100%';
-                }
-            } else {
-                pageEdges.style.top = '0';
-                pageEdges.style.height = '0';
+            // trait droite : bande fixe, du haut de l'onglet juste après la couverture (Géants)
+            // jusqu'au bas de l'onglet Contact — mesuré en direct, ne dépend plus de l'onglet actif
+            const notebookRect = document.querySelector('.notebook').getBoundingClientRect();
+            const firstTab = document.querySelector('.tab[data-tab="geants"]');
+            const contactTab = document.querySelector('.tab[data-tab="contact"]');
+            if (firstTab && contactTab) {
+                const firstRect = firstTab.getBoundingClientRect();
+                const contactRect = contactTab.getBoundingClientRect();
+                const top = firstRect.top - notebookRect.top;
+                const height = contactRect.bottom - firstRect.top;
+                pageEdges.style.top = top + 'px';
+                pageEdges.style.height = Math.max(0, height) + 'px';
+            }
+        }
+
+        function updatePageEdgesBottom(count) {
+            pageEdgesBottom.innerHTML = '';
+
+            const notebookRect = document.querySelector('.notebook').getBoundingClientRect();
+            const pageFrameRect = document.getElementById('page-frame').getBoundingClientRect();
+            const tabsRect = tabsNav.getBoundingClientRect();
+
+            const left = pageFrameRect.left - notebookRect.left;
+            const right = tabsRect.right - notebookRect.left;
+            const top = pageFrameRect.bottom - notebookRect.top; // haut du bloc = bas de la page
+
+            pageEdgesBottom.style.left = left + 'px';
+            pageEdgesBottom.style.width = (right - left) + 'px';
+            pageEdgesBottom.style.top = top + 'px';
+
+            if (count < 0) count = 0;
+            const visible = Math.min(count, 30);
+            for (let i = 0; i < visible; i++) {
+                const line = document.createElement('div');
+                line.className = 'edge-line-bottom';
+                line.style.top = (i * STEP) + 'px'; // s'éloigne de la page au fur et à mesure
+                const alpha = 0.5 + 0.5 * (1 - i / Math.max(1, visible - 1));
+                line.style.opacity = alpha;
+                pageEdgesBottom.appendChild(line);
             }
         }
 
@@ -917,47 +987,21 @@
                 extraWidth = (remaining - 1) * STEP + LINE_WIDTH;
             }
             extraWidth = Math.round(extraWidth * 100) / 100;
-
-            // ── élargir les onglets au‑dessus (sauf contact) ──
-            const tabsToEnlarge = [];
-            for (let i = 0; i <= activeIndex; i++) {
-                const tab = allTabs[i];
-                if (tab.dataset.tab !== 'contact') {
-                    tabsToEnlarge.push(tab);
-                }
-            }
             const isMobile = window.innerWidth <= 720;
-            const baseWidth = isMobile ? 30 : 34;
 
-            tabsToEnlarge.forEach((tab) => {
-                const isActive = tab.classList.contains('is-active');
-                const newWidth = baseWidth + extraWidth;
-                tab.style.width = newWidth + 'px';
-                tab.style.transform = `translateX(-${extraWidth}px)`;
-                tab.style.marginLeft = '0';
+            // ── onglets : taille fixe pour tous, comme Contact et Atelier ──
+            // (le redimensionnement dynamique a été retiré : il créait un décalage
+            // d'autant plus visible qu'il restait de pages, donc très visible sur
+            // Géants/Impromptu/Visages et quasi invisible sur Atelier/Contact)
+            allTabs.forEach((tab) => {
+                tab.style.width = '';
+                tab.style.transform = '';
+                tab.style.marginLeft = '';
             });
 
-            // réinitialiser les autres (dont contact)
-            for (let i = 0; i < allTabs.length; i++) {
-                const tab = allTabs[i];
-                if (!tabsToEnlarge.includes(tab)) {
-                    tab.style.width = '';
-                    tab.style.transform = '';
-                    tab.style.marginLeft = '';
-                }
-            }
-
-            // ── décaler les coins de droite ──
-            const rightCorners = document.querySelectorAll('.corner-tr, .corner-br');
-            rightCorners.forEach(c => {
-                if (!c.hidden) {
-                    c.style.transform = `translateX(-${extraWidth}px) scale(${c.classList.contains('corner-tr') ? '1, -1' : '1, 1'})`;
-                } else {
-                    c.style.transform = '';
-                }
-            });
-            const leftCorners = document.querySelectorAll('.corner-tl, .corner-bl');
-            leftCorners.forEach(c => { c.style.transform = ''; });
+            // ── coins : position fixe, comme les onglets (plus de suivi de extraWidth) ──
+            // on efface juste le style inline ; chaque coin retombe sur sa règle CSS statique
+            document.querySelectorAll('.corner').forEach(c => { c.style.transform = ''; });
 
             // ── décaler la reliure en mobile ──
             if (isMobile) {
@@ -969,6 +1013,7 @@
             // ── mettre à jour les traits blancs ──
             const activeTabEl = document.querySelector('.tab.is-active');
             updatePageEdges(remaining, activeTabEl);
+            updatePageEdgesBottom(remaining);
         }
 
         // ─── tab clicks ──────────────────────────────────────────────────
