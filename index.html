@@ -139,7 +139,7 @@
             align-items: center;
             justify-content: center;
             border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-            transition: background 0.2s, color 0.2s;
+            transition: background 0.2s, color 0.2s, filter 0.2s;
         }
         .tab.is-active {
             width: 40px;
@@ -166,25 +166,23 @@
             background: #6e7a5e;
         }
 
-        /* onglet actif + ceux au‑dessus : texte blanc, fond éclairci */
+        /* onglets au‑dessus de l’actif (y compris actif) : fond plus clair */
         .tab.highlight {
-            color: white !important;
             filter: brightness(1.4);
         }
-        /* l'onglet actif lui‑même encore plus clair */
-        .tab.is-active.highlight {
-            filter: brightness(1.6);
+        /* seul ceux qui ne sont pas actifs prennent le texte blanc */
+        .tab.highlight:not(.is-active) {
+            color: white !important;
         }
 
         /* ── page edges (white lines) ── */
         .page-edges {
             position: absolute;
             right: 0;
-            width: 35px;
+            width: 16px;          /* suffisant pour ~11px de pile */
             z-index: 6;
             pointer-events: none;
             overflow: hidden;
-            /* top et height seront définis dynamiquement en JS */
             top: 0;
             height: 0;
         }
@@ -515,7 +513,7 @@
                 clip-path: polygon(50% 50%, 85% 100%, 100% 0%, 0% 0%, 0% 100%, 50% 50%);
             }
             .page-edges {
-                width: 30px;
+                width: 14px;
             }
             .edge-line {
                 width: 0.8px;
@@ -539,7 +537,7 @@
                     <div class="cover-text">
                         <h1>Carnet de sculptures</h1>
                         <p>Guillaume Varet</p>
-                        <p class="cover-version">V1.29</p>
+                        <p class="cover-version">V1.30</p>
                     </div>
                 </div>
 
@@ -744,33 +742,41 @@
 
         // ─── page-edges (white lines) ────────────────────────────────────
         const LINE_WIDTH = 1;
-        const GAP = 0.8;
+        const STEP = 0.5;          // pas entre chaque ligne (0.5px)
 
-        function updatePageEdges(count, activeTabElement) {
+        function updatePageEdges(count, activeTabEl) {
             pageEdges.innerHTML = '';
             if (count < 0) count = 0;
-            const maxFit = Math.floor(35 / (LINE_WIDTH + GAP));
-            const visible = Math.min(count, maxFit);
+            const visible = Math.min(count, 30); // limite de sécurité
             for (let i = 0; i < visible; i++) {
                 const line = document.createElement('div');
                 line.className = 'edge-line';
-                line.style.right = (i * (LINE_WIDTH + GAP)) + 'px';
+                // on empile depuis la droite, chaque ligne est décalée de i * STEP
+                line.style.right = (i * STEP) + 'px';
+                // opacité dégressive pour l'effet de profondeur
                 const alpha = 0.5 + 0.5 * (1 - i / Math.max(1, visible - 1));
                 line.style.opacity = alpha;
                 pageEdges.appendChild(line);
             }
 
-            // repositionner le conteneur sous l'onglet actif
-            if (activeTabElement) {
+            // Position verticale : sous l'onglet actif jusqu'en bas du dernier onglet (contact)
+            if (activeTabEl) {
                 const notebookRect = document.querySelector('.notebook').getBoundingClientRect();
-                const tabRect = activeTabElement.getBoundingClientRect();
-                // on calcule la position relative au notebook
-                const top = tabRect.top - notebookRect.top;
-                const height = tabRect.height;
-                pageEdges.style.top = top + 'px';
-                pageEdges.style.height = height + 'px';
+                const activeRect = activeTabEl.getBoundingClientRect();
+                // on cherche l'onglet "contact"
+                const contactTab = document.querySelector('.tab[data-tab="contact"]');
+                if (contactTab) {
+                    const contactRect = contactTab.getBoundingClientRect();
+                    const top = activeRect.bottom - notebookRect.top;
+                    const height = contactRect.bottom - activeRect.bottom;
+                    pageEdges.style.top = top + 'px';
+                    pageEdges.style.height = Math.max(0, height) + 'px';
+                } else {
+                    // fallback : on met toute la hauteur
+                    pageEdges.style.top = '0';
+                    pageEdges.style.height = '100%';
+                }
             } else {
-                // au cas où (cover) on cache
                 pageEdges.style.top = '0';
                 pageEdges.style.height = '0';
             }
@@ -803,7 +809,7 @@
                 }
             });
 
-            // on applique la classe 'highlight' à l'onglet actif et à ceux situés au‑dessus (indices inférieurs)
+            // on applique 'highlight' à l'actif et à ceux au‑dessus
             if (activeIndex !== -1) {
                 for (let i = 0; i <= activeIndex; i++) {
                     allTabs[i].classList.add('highlight');
@@ -834,8 +840,7 @@
                 if (remaining < 0) remaining = 0;
             }
 
-            // on récupère l'élément tab actif
-            const activeTabEl = document.querySelector(`.tab.is-active`);
+            const activeTabEl = document.querySelector('.tab.is-active');
             updatePageEdges(remaining, activeTabEl);
         }
 
