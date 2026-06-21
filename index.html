@@ -110,11 +110,12 @@
                 left: 6%;
                 right: 6%;
                 top: 8px;      /* fixe */
-                bottom: auto;
+                bottom: 8px;   /* fixe ! */
                 width: auto;
-                height: 20px;
+                height: 32px;  /* 16px (anneau) + 8px + 8px */
                 flex-direction: row;
                 justify-content: space-between;
+                align-items: center;  /* centrer verticalement */
             }
             .hole-ring {
                 width: 16px;
@@ -144,9 +145,6 @@
             backdrop-filter: blur(4px);
             pointer-events: none;
         }
-        .badge span {
-            display: inline-block;
-        }
     </style>
 </head>
 <body>
@@ -167,7 +165,7 @@
         const vertical = window.innerWidth <= 720;
         // Espace disponible = hauteur (desktop) ou largeur (mobile) du conteneur
         const space = vertical ? binding.clientWidth : binding.clientHeight;
-        // Calcul du nombre d'anneaux : on prend la partie entière, on ajuste pour bien remplir
+        // Calcul du nombre d'anneaux
         let count = Math.max(3, Math.floor(space / RING_SHORT_AXIS));
         if (!vertical) count = Math.max(3, count - 1); // léger ajustement pour desktop
 
