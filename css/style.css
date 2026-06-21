@@ -91,19 +91,20 @@ img{ display:block; max-width:100%; }
 
 /* desktop default: binding on the LEFT — rings lie in a roughly horizontal plane,
    so viewed from the front they are WIDE and SHORT. Only the visible 3/4 is drawn —
-   the quarter that would pass behind the page is simply omitted. */
+   cut radially from the centre (like a cake, not a sliced baguette) so the missing
+   wedge points toward the page, on the right. */
 .ring-front{
   position: absolute;
   left: 50%; top: 50%;
-  width: 40px; height: 16px;
-  margin: -8px 0 0 -40px;
+  width: 30px; height: 14px;
+  margin: -7px 0 0 -30px;
   border-radius: 50%;
   border: 3.5px solid #7a7466;
   border-top-color: #d8d4c4;
   border-left-color: #c2bca8;
   box-sizing: border-box;
   z-index: 10;
-  clip-path: inset(0 25% 0 0);
+  clip-path: polygon(50% 50%, 100% 0%, 0% 0%, 0% 100%, 100% 100%, 50% 50%);
 }
 
 /* ---------- Side tabs (vertical, part of the notebook) ---------- */
@@ -446,10 +447,10 @@ img{ display:block; max-width:100%; }
   .hole-ring{ width: 20px; height: 20px; }
 
   /* on the top edge the rings stand in a vertical plane, so they read as TALL and NARROW.
-     Only the visible 3/4 is drawn — the quarter behind the page is simply omitted. */
+     Radial cut (cake, not baguette) — the missing wedge points down, toward the page. */
   .ring-front{
-    width: 16px; height: 40px;
-    margin: -40px 0 0 -8px;
-    clip-path: inset(0 0 25% 0);
+    width: 14px; height: 30px;
+    margin: -30px 0 0 -7px;
+    clip-path: polygon(50% 50%, 100% 100%, 100% 0%, 0% 0%, 0% 100%, 50% 50%);
   }
 }

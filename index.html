@@ -24,7 +24,7 @@
         <div class="cover-text">
           <h1>Carnet de sculptures</h1>
           <p>Guillaume Varet</p>
-          <p class="cover-version">V1.22</p>
+          <p class="cover-version">V1.23</p>
         </div>
       </div>
 
@@ -56,13 +56,14 @@ const binding = document.createElement('div');
 binding.className = 'binding';
 pageFrame.appendChild(binding);
 
-const RING_SHORT_AXIS = 16; // the dimension along which rings are stacked — "touching" means count = space / this
+const RING_SHORT_AXIS = 14; // the dimension along which rings are stacked — "touching" means count = space / this
 
 function buildBinding(){
   binding.innerHTML = '';
   const vertical = window.innerWidth > 720; // matches the CSS breakpoint: column on desktop, row on mobile
   const space = (vertical ? binding.clientHeight : binding.clientWidth) * 0.94; // small safety margin so it never overflows
-  const count = Math.max(3, Math.floor(space / RING_SHORT_AXIS));
+  let count = Math.max(3, Math.floor(space / RING_SHORT_AXIS));
+  if(!vertical) count = Math.max(3, count - 2); // top layout needs extra clearance before the tabs
 
   for(let i = 0; i < count; i++){
     const item = document.createElement('div');
