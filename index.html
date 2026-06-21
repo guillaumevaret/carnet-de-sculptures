@@ -164,13 +164,13 @@
             background: #6e7a5e;
         }
 
-        /* ── page edges (the white lines) ── */
+        /* ── page edges (white lines) ── */
         .page-edges {
             position: absolute;
             top: 0;
             bottom: 0;
-            right: 4px;
-            width: 34px;
+            right: 0;
+            width: 35px;          /* suffisant pour ~20 traits fins */
             z-index: 6;
             pointer-events: none;
             overflow: hidden;
@@ -179,10 +179,9 @@
             position: absolute;
             top: 0;
             bottom: 0;
-            width: 2px;
+            width: 1px;
             background: rgba(255, 255, 255, 0.7);
-            border-radius: 1px;
-            transition: opacity 0.2s ease;
+            border-radius: 0;
         }
 
         /* ── cover ── */
@@ -503,11 +502,11 @@
                 clip-path: polygon(50% 50%, 85% 100%, 100% 0%, 0% 0%, 0% 100%, 50% 50%);
             }
             .page-edges {
-                right: 2px;
-                width: 28px;
+                right: 0;
+                width: 30px;
             }
             .edge-line {
-                width: 1.5px;
+                width: 0.8px;
             }
         }
     </style>
@@ -732,20 +731,22 @@
         let pos = 0; // index into `sequence`
 
         // ─── page-edges (white lines) ────────────────────────────────────
-        const EDGE_GAP = 1.5; // px between lines
+        const LINE_WIDTH = 1;      // largeur fine (1px)
+        const GAP = 0.8;          // espacement ultra‑fin
 
         function updatePageEdges(count) {
             pageEdges.innerHTML = '';
             if (count < 0) count = 0;
-            // clamp to a reasonable max so we don't overflow the container
-            const maxFit = Math.floor(34 / EDGE_GAP);
+            // On limite le nombre pour ne pas déborder du conteneur (largeur 35px)
+            const maxFit = Math.floor(35 / (LINE_WIDTH + GAP));
             const visible = Math.min(count, maxFit);
             for (let i = 0; i < visible; i++) {
                 const line = document.createElement('div');
                 line.className = 'edge-line';
-                line.style.left = (i * EDGE_GAP) + 'px';
-                // fade the oldest lines slightly so the stack looks deeper
-                const alpha = 0.5 + 0.5 * (i / Math.max(1, visible - 1));
+                // on empile depuis la droite : le premier (i=0) est à droite (right:0)
+                line.style.right = (i * (LINE_WIDTH + GAP)) + 'px';
+                // légère variation d'opacité pour l'effet de profondeur
+                const alpha = 0.5 + 0.5 * (1 - i / Math.max(1, visible - 1));
                 line.style.opacity = alpha;
                 pageEdges.appendChild(line);
             }
@@ -789,8 +790,6 @@
             if (atCover) {
                 remaining = TOTAL_PAGES; // all pages are "remaining" on the cover
             } else {
-                // pos is the index in sequence; cover is at pos=0
-                // pages start at pos=1
                 remaining = TOTAL_PAGES - pos;
                 if (remaining < 0) remaining = 0;
             }
