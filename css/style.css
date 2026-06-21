@@ -145,6 +145,22 @@ img{ display:block; max-width:100%; }
 .tab[data-tab="atelier"]{ background: var(--tab-4); }
 .tab[data-tab="contact"]{ background: var(--tab-5); }
 
+/* thin page-edge lines, mimicking the stacked sheets peeking out above/below the open tab */
+.page-edges{
+  position: absolute;
+  top: 0; right: -34px;
+  width: 34px; height: 100%;
+  z-index: 4; /* behind the tabs, so they read as peeking out from under them */
+  pointer-events: none;
+}
+
+.edge-line{
+  position: absolute;
+  left: 7px; right: 7px;
+  height: 1px;
+  background: rgba(40,32,20,0.4);
+}
+
 /* ---------- Cover page ---------- */
 
 .cover{
