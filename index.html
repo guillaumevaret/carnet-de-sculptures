@@ -52,7 +52,7 @@ img { display:block; max-width:100%; }
   overflow: hidden;
 }
 
-/* ── binding rings (version V1.28 inchangée) ── */
+/* ── binding rings (identique à V1.28) ── */
 .binding {
   position: absolute;
   left: 10px;
@@ -425,7 +425,7 @@ img { display:block; max-width:100%; }
         <div class="cover-text">
           <h1>Carnet de sculptures</h1>
           <p>Guillaume Varet</p>
-          <p class="cover-version">V1.38</p>
+          <p class="cover-version">V1.39</p>
         </div>
       </div>
 
@@ -474,7 +474,7 @@ img { display:block; max-width:100%; }
 </div>
 
 <script>
-// ─── binding rings (identique à V1.28) ──────────────────────────
+// ─── binding rings (avec le +2 de la V1.37) ────────────────────
 const pageFrame = document.getElementById('page-frame');
 const binding = document.createElement('div');
 binding.className = 'binding';
@@ -486,7 +486,8 @@ function buildBinding() {
   binding.innerHTML = '';
   const vertical = window.innerWidth > 720;
   const space = (vertical ? binding.clientHeight : binding.clientWidth) * 0.94;
-  let count = Math.max(3, Math.floor(space / RING_SHORT_AXIS));
+  // On ajoute +2 comme dans la V1.37 pour avoir plus d'anneaux
+  let count = Math.max(3, Math.floor(space / RING_SHORT_AXIS) + 2);
   if (!vertical) count = Math.max(3, count - 2);
   for (let i = 0; i < count; i++) {
     const item = document.createElement('div');
