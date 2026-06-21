@@ -243,6 +243,45 @@
             border-radius: 0;
         }
 
+        /* ── dos de la page précédente : feuillet fantôme qui s'estompe vers le fond ── */
+        .page-back {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 60px;
+            background: #cdbf9a;
+            border-radius: 2px;
+            z-index: 1;
+            -webkit-mask-image: linear-gradient(to left, black 25%, transparent 95%);
+            mask-image: linear-gradient(to left, black 25%, transparent 95%);
+            display: none;
+            pointer-events: none;
+        }
+        .page-back.is-visible { display: block; }
+        .page-back .ghost-hole {
+            position: absolute;
+            right: 14px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(60, 50, 38, 0.4);
+        }
+        /* mode anneaux en haut : le dos passe au-dessus, s'estompe vers le haut */
+        .page-back.top-mode {
+            top: auto;
+            left: 0;
+            right: 0;
+            bottom: auto;
+            width: auto;
+            height: 60px;
+            -webkit-mask-image: linear-gradient(to top, black 25%, transparent 95%);
+            mask-image: linear-gradient(to top, black 25%, transparent 95%);
+        }
+        .page-back.top-mode .ghost-hole {
+            right: auto;
+            bottom: 14px;
+        }
+
         /* ── page edges, bord du bas (même principe, en relief sous la page) ── */
         .page-edges-bottom {
             position: absolute;
@@ -449,17 +488,27 @@
             height: 52px;
             cursor: pointer;
             z-index: 6;
+            background-color: transparent;
+            border: none;
+            padding: 0;
             transition: width 0.16s ease, height 0.16s ease, transform 0.2s ease;
-            background-image: linear-gradient(135deg, rgba(var(--fold-color), var(--fold-alpha)), rgba(var(--fold-color), var(--fold-alpha))),
-                url('../images/carnet/page-curl.svg');
+            background-image: linear-gradient(135deg, rgba(var(--fold-color), var(--fold-alpha)), rgba(var(--fold-color), var(--fold-alpha)));
             background-size: 100% 100%;
             background-repeat: no-repeat;
             mix-blend-mode: normal;
             will-change: transform;
         }
+        .curl-svg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            display: block;
+        }
         .corner-tl {
             top: 0;
-            left: 0;
+            left: -64px;
             transform: scale(-1, -1);
         }
         .corner-tr {
@@ -469,7 +518,7 @@
         }
         .corner-bl {
             bottom: 0;
-            left: 0;
+            left: -64px;
             transform: scale(-1, 1);
         }
         .corner-br {
@@ -492,7 +541,7 @@
             justify-content: center;
         }
         .corner-bl .corner-arrow {
-            left: 13px;
+            right: 13px;
             transform: scaleX(-1); /* annule le scale(-1,1) du parent .corner-bl, pour garder la flèche telle que fournie */
         }
         .corner-br .corner-arrow {
@@ -593,6 +642,12 @@
             .edge-line-bottom {
                 height: 0.8px;
             }
+            .corner-tl, .corner-bl {
+                left: 0; /* annule le décalage horizontal du mode bureau, ne s'applique pas ici */
+            }
+            .corner-tl, .corner-tr {
+                top: -64px; /* remonté sur la zone du dos fantôme, qui est en haut en mode mobile */
+            }
         }
     </style>
 </head>
@@ -601,6 +656,7 @@
     <div class="desk" aria-hidden="true"></div>
 
     <div class="notebook">
+        <div class="page-back" id="page-back"></div>
         <div class="page-frame" id="page-frame">
             <div class="page-content" id="page-content">
 
@@ -612,65 +668,100 @@
                     <div class="cover-text">
                         <h1>Carnet de sculptures</h1>
                         <p>Guillaume Varet</p>
-                        <p class="cover-version">V1.72</p>
+                        <p class="cover-version">V1.80-exp</p>
                     </div>
                 </div>
 
                 <!-- pages injected by JS -->
                 <div id="pages"></div>
 
-                <!-- corners -->
-                <button class="corner corner-tl" data-dir="prev" aria-label="Page précédente" hidden></button>
-                <button class="corner corner-tr" data-dir="next" aria-label="Page suivante" hidden></button>
-                <button class="corner corner-bl" data-dir="prev" aria-label="Page précédente" hidden>
-                    <span class="corner-arrow">
-                        <svg viewBox="0 0 300 300" width="26" height="26">
-                            <path class="arrow-path" d="
-                                M 265 15
-                                C 275 150, 240 280, 110 275
-                                C 35 270, 15 190, 45 125
-                                C 65 75, 100 70, 140 85
-                                L 165 30
-                                L 215 85
-                                L 165 140
-                                L 145 115
-                                L 155 105
-                                L 135 95
-                                L 155 88
-                                L 145 85
-                                C 100 80, 70 100, 60 140
-                                C 50 180, 70 240, 110 245
-                                C 190 250, 245 180, 255 35
-                                Z" />
-                        </svg>
-                    </span>
-                </button>
-                <button class="corner corner-br" data-dir="next" aria-label="Page suivante" hidden>
-                    <span class="corner-arrow corner-arrow-mirror">
-                        <svg viewBox="0 0 300 300" width="26" height="26">
-                            <path class="arrow-path" d="
-                                M 265 15
-                                C 275 150, 240 280, 110 275
-                                C 35 270, 15 190, 45 125
-                                C 65 75, 100 70, 140 85
-                                L 165 30
-                                L 215 85
-                                L 165 140
-                                L 145 115
-                                L 155 105
-                                L 135 95
-                                L 155 88
-                                L 145 85
-                                C 100 80, 70 100, 60 140
-                                C 50 180, 70 240, 110 245
-                                C 190 250, 245 180, 255 35
-                                Z" />
-                        </svg>
-                    </span>
-                </button>
-
                 <div class="page-counter" id="page-counter"></div>
             </div>
+
+            <!-- les 4 coins sont sortis de .page-content (qui a overflow:hidden) pour pouvoir
+                 déborder vers .page-back sans être rognés -->
+            <button class="corner corner-tl" data-dir="prev" aria-label="Page précédente" hidden>
+                <svg class="curl-svg" viewBox="0 0 1000 1000" preserveAspectRatio="none">
+                    <defs>
+                        <filter id="shadowBlur-tl" x="-30%" y="-30%" width="160%" height="160%">
+                            <feDropShadow dx="-10" dy="-10" stdDeviation="15" flood-color="#000000" flood-opacity="0.4" />
+                        </filter>
+                    </defs>
+                    <polygon class="curl-polygon" id="curl-tl" points="1000,200 250,800 350,950" fill="#000000" filter="url(#shadowBlur-tl)" />
+                </svg>
+            </button>
+            <button class="corner corner-tr" data-dir="next" aria-label="Page suivante" hidden>
+                <svg class="curl-svg" viewBox="0 0 1000 1000" preserveAspectRatio="none">
+                    <defs>
+                        <filter id="shadowBlur-tr" x="-30%" y="-30%" width="160%" height="160%">
+                            <feDropShadow dx="-10" dy="-10" stdDeviation="15" flood-color="#000000" flood-opacity="0.4" />
+                        </filter>
+                    </defs>
+                    <polygon class="curl-polygon" id="curl-tr" points="1000,200 250,800 350,950" fill="#000000" filter="url(#shadowBlur-tr)" />
+                </svg>
+            </button>
+            <button class="corner corner-bl" data-dir="prev" aria-label="Page précédente" hidden>
+                <svg class="curl-svg" viewBox="0 0 1000 1000" preserveAspectRatio="none">
+                    <defs>
+                        <filter id="shadowBlur-bl" x="-30%" y="-30%" width="160%" height="160%">
+                            <feDropShadow dx="-10" dy="-10" stdDeviation="15" flood-color="#000000" flood-opacity="0.4" />
+                        </filter>
+                    </defs>
+                    <polygon class="curl-polygon" id="curl-bl" points="1000,200 250,800 350,950" fill="#000000" filter="url(#shadowBlur-bl)" />
+                </svg>
+                <span class="corner-arrow">
+                    <svg viewBox="0 0 300 300" width="26" height="26">
+                        <path class="arrow-path" d="
+                            M 265 15
+                            C 275 150, 240 280, 110 275
+                            C 35 270, 15 190, 45 125
+                            C 65 75, 100 70, 140 85
+                            L 165 30
+                            L 215 85
+                            L 165 140
+                            L 145 115
+                            L 155 105
+                            L 135 95
+                            L 155 88
+                            L 145 85
+                            C 100 80, 70 100, 60 140
+                            C 50 180, 70 240, 110 245
+                            C 190 250, 245 180, 255 35
+                            Z" />
+                    </svg>
+                </span>
+            </button>
+            <button class="corner corner-br" data-dir="next" aria-label="Page suivante" hidden>
+                <svg class="curl-svg" viewBox="0 0 1000 1000" preserveAspectRatio="none">
+                    <defs>
+                        <filter id="shadowBlur-br" x="-30%" y="-30%" width="160%" height="160%">
+                            <feDropShadow dx="-10" dy="-10" stdDeviation="15" flood-color="#000000" flood-opacity="0.4" />
+                        </filter>
+                    </defs>
+                    <polygon class="curl-polygon" id="curl-br" points="1000,200 250,800 350,950" fill="#000000" filter="url(#shadowBlur-br)" />
+                </svg>
+                <span class="corner-arrow corner-arrow-mirror">
+                    <svg viewBox="0 0 300 300" width="26" height="26">
+                        <path class="arrow-path" d="
+                            M 265 15
+                            C 275 150, 240 280, 110 275
+                            C 35 270, 15 190, 45 125
+                            C 65 75, 100 70, 140 85
+                            L 165 30
+                            L 215 85
+                            L 165 140
+                            L 145 115
+                            L 155 105
+                            L 135 95
+                            L 155 88
+                            L 145 85
+                            C 100 80, 70 100, 60 140
+                            C 50 180, 70 240, 110 245
+                            C 190 250, 245 180, 255 35
+                            Z" />
+                    </svg>
+                </span>
+            </button>
             <div class="page-edges-bottom" id="page-edges-bottom"></div>
         </div>
 
@@ -696,6 +787,53 @@
         // On récupère le conteneur binding créé (celui qui est dans le DOM)
         const bindingEl = document.querySelector('.binding');
         const RING_SHORT_AXIS = 16;
+        const pageBackEl = document.getElementById('page-back');
+
+        function buildPageBack(visible) {
+            pageBackEl.innerHTML = '';
+            pageBackEl.classList.toggle('is-visible', visible);
+            if (!visible) return;
+
+            const vertical = window.innerWidth <= 720; // true = anneaux en haut (mobile)
+            const notebookRect = document.querySelector('.notebook').getBoundingClientRect();
+            const pageFrameRect = document.getElementById('page-frame').getBoundingClientRect();
+            const GAP = 4;
+
+            pageBackEl.classList.toggle('top-mode', vertical);
+
+            if (vertical) {
+                // anneaux en haut : le dos se place au-dessus de la page, 4px d'écart
+                const bottom = pageFrameRect.top - notebookRect.top - GAP;
+                pageBackEl.style.top = '';
+                pageBackEl.style.left = '';
+                pageBackEl.style.width = '';
+                pageBackEl.style.bottom = (notebookRect.height - bottom) + 'px';
+            } else {
+                // anneaux à gauche : le dos se place à gauche de la page, 4px d'écart
+                const right = pageFrameRect.left - notebookRect.left - GAP;
+                pageBackEl.style.bottom = '';
+                pageBackEl.style.left = (right - 60) + 'px'; // largeur 60px, finit pile au bord droit calculé
+                pageBackEl.style.width = '60px';
+            }
+
+            // mêmes trous que la reliure réelle, mêmes positions/espacement (alignement visuel)
+            const space = vertical ? bindingEl.clientWidth : bindingEl.clientHeight;
+            let count = Math.max(3, Math.floor(space / RING_SHORT_AXIS) + 2);
+            if (!vertical) count = Math.max(3, count - 2);
+
+            for (let i = 0; i < count; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'ghost-hole';
+                const pos = (i / Math.max(1, count - 1)) * 100;
+                if (vertical) {
+                    dot.style.left = pos + '%';
+                } else {
+                    dot.style.top = pos + '%';
+                }
+                pageBackEl.appendChild(dot);
+            }
+        }
+
 
         function buildBinding() {
             bindingEl.innerHTML = '';
@@ -966,6 +1104,8 @@
             cornersPrev.forEach(c => { c.hidden = atCover; });
             cornersNext.forEach(c => { c.hidden = atEnd; });
 
+            buildPageBack(!atCover);
+
             // ── page counter ──
             if (atCover) {
                 counter.textContent = '';
@@ -1050,15 +1190,16 @@
         const maxT = new Map();
         const pageContent = document.getElementById('page-content');
 
-        pageContent.addEventListener('mousemove', (e) => {
+        pageFrame.addEventListener('mousemove', (e) => {
             const frameRect = pageContent.getBoundingClientRect();
             corners.forEach(c => {
                 if (c.hidden) return;
                 const cls = [...c.classList].find(cl => ANCHORS[cl]);
                 if (!cls) return;
                 const [hx, vy] = ANCHORS[cls];
-                const ax = hx === 'left' ? frameRect.left : frameRect.right;
-                const ay = vy === 'top' ? frameRect.top : frameRect.bottom;
+                const mobileNow = window.innerWidth <= 720;
+                const ax = hx === 'left' ? frameRect.left - (mobileNow ? 0 : 64) : frameRect.right;
+                const ay = vy === 'top' ? frameRect.top - (mobileNow ? 64 : 0) : frameRect.bottom;
                 const dist = Math.hypot(e.clientX - ax, e.clientY - ay);
                 let tNow = Math.max(0, 1 - dist / INFLUENCE);
                 const tBest = Math.max(maxT.get(c) || 0, tNow);
@@ -1068,16 +1209,26 @@
                 c.style.height = size + 'px';
                 c.style.setProperty('--fold-alpha', (tBest * 0.5).toFixed(2));
                 c.style.setProperty('--fold-color', tBest > 0.45 ? '192,67,47' : '70,60,46');
+
+                // anime le point mobile du triangle (250,800) -> (350,500) selon la même proximité
+                const poly = c.querySelector('.curl-polygon');
+                if (poly) {
+                    const mx = 250 + tBest * (350 - 250);
+                    const my = 800 + tBest * (500 - 800);
+                    poly.setAttribute('points', `1000,200 ${mx.toFixed(1)},${my.toFixed(1)} 350,950`);
+                }
             });
         });
 
-        pageContent.addEventListener('mouseleave', () => {
+        pageFrame.addEventListener('mouseleave', () => {
             corners.forEach(c => {
                 maxT.set(c, 0);
                 c.style.width = BASE_SIZE + 'px';
                 c.style.height = BASE_SIZE + 'px';
                 c.style.setProperty('--fold-alpha', '0');
                 c.style.setProperty('--fold-color', '70,60,46');
+                const poly = c.querySelector('.curl-polygon');
+                if (poly) poly.setAttribute('points', '1000,200 250,800 350,950');
             });
         });
 
