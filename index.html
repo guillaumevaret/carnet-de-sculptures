@@ -282,6 +282,26 @@
             bottom: 14px;
         }
 
+        /* ── pile sous .page-back : pages déjà tournées, même logique que la bande du bas ── */
+        .page-back-bottom {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 0;
+            height: 16px;
+            z-index: 1;
+            pointer-events: none;
+            overflow: visible;
+            display: none;
+        }
+        .page-back-bottom.is-visible { display: block; }
+        .edge-line-back-bottom {
+            position: absolute;
+            left: 0;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.7);
+        }
+
         /* ── page edges, bord du bas (même principe, en relief sous la page) ── */
         .page-edges-bottom {
             position: absolute;
@@ -296,7 +316,6 @@
         .edge-line-bottom {
             position: absolute;
             left: 0;
-            right: 0;
             height: 1px;
             background: rgba(255, 255, 255, 0.7);
         }
@@ -642,6 +661,12 @@
             .edge-line-bottom {
                 height: 0.8px;
             }
+            .page-back-bottom {
+                height: 14px;
+            }
+            .edge-line-back-bottom {
+                height: 0.8px;
+            }
             .corner-tl, .corner-bl {
                 left: 0; /* annule le décalage horizontal du mode bureau, ne s'applique pas ici */
             }
@@ -657,6 +682,7 @@
 
     <div class="notebook">
         <div class="page-back" id="page-back"></div>
+        <div class="page-back-bottom" id="page-back-bottom"></div>
         <div class="page-frame" id="page-frame">
             <div class="page-content" id="page-content">
 
@@ -668,7 +694,7 @@
                     <div class="cover-text">
                         <h1>Carnet de sculptures</h1>
                         <p>Guillaume Varet</p>
-                        <p class="cover-version">V1.80-exp</p>
+                        <p class="cover-version">V2.02</p>
                     </div>
                 </div>
 
@@ -788,6 +814,7 @@
         const bindingEl = document.querySelector('.binding');
         const RING_SHORT_AXIS = 16;
         const pageBackEl = document.getElementById('page-back');
+        const pageBackBottomEl = document.getElementById('page-back-bottom');
 
         function buildPageBack(visible) {
             pageBackEl.innerHTML = '';
@@ -831,6 +858,53 @@
                     dot.style.top = pos + '%';
                 }
                 pageBackEl.appendChild(dot);
+            }
+        }
+
+        // pile de pages déjà tournées, sous .page-back — même angle, même accent 1/5 noir que la bande du bas
+        function updatePageBackBottom(idxPassed, visible) {
+            pageBackBottomEl.innerHTML = '';
+            const mobileNow = window.innerWidth <= 720;
+            pageBackBottomEl.classList.toggle('is-visible', !!visible && !mobileNow);
+            if (!visible || mobileNow) return; // abandonné en mobile : se superposait avec l'autre pile au même endroit
+
+            const notebookRect = document.querySelector('.notebook').getBoundingClientRect();
+            const pageFrameRect = document.getElementById('page-frame').getBoundingClientRect();
+            const backRect = pageBackEl.getBoundingClientRect();
+
+            const left = backRect.left - notebookRect.left;
+            const width = backRect.width;
+            const top = pageFrameRect.bottom - notebookRect.top; // même hauteur que la bande du bas principale
+
+            pageBackBottomEl.style.left = left + 'px';
+            pageBackBottomEl.style.width = width + 'px';
+            pageBackBottomEl.style.top = top + 'px';
+
+            const count = Math.max(0, idxPassed);
+            const lines = Math.min(count, 30);
+            if (lines <= 0) return;
+            const yMax = (lines - 1) * STEP;
+            const tan30 = Math.tan(30 * Math.PI / 180);
+            const NUDGE = 4; // décalage fixe vers la droite
+
+            for (let i = 0; i < lines; i++) {
+                const line = document.createElement('div');
+                line.className = 'edge-line-back-bottom';
+                const y = i * STEP;
+                const x1 = y * tan30 + NUDGE;
+                const x2 = width - (yMax - y) * tan30 + NUDGE;
+                line.style.top = y + 'px';
+                line.style.left = x1.toFixed(2) + 'px';
+                line.style.width = Math.max(0, x2 - x1) + 'px';
+                const isAccent = (i % 5) === 4;
+                if (isAccent) {
+                    line.style.background = 'rgba(0,0,0,0.55)';
+                    line.style.opacity = '1';
+                } else {
+                    const alpha = 0.5 + 0.5 * (1 - i / Math.max(1, lines - 1));
+                    line.style.opacity = alpha;
+                }
+                pageBackBottomEl.appendChild(line);
             }
         }
 
@@ -1016,39 +1090,54 @@
                 const line = document.createElement('div');
                 line.className = 'edge-line';
                 line.style.right = (i * STEP) + 'px';
-                const alpha = 0.5 + 0.5 * (1 - i / Math.max(1, visible - 1));
-                line.style.opacity = alpha;
+                const isAccent = (i % 5) === 4; // 1 ligne sur 5, en noir, pour le relief
+                if (isAccent) {
+                    line.style.background = 'rgba(0,0,0,0.55)';
+                    line.style.opacity = '1';
+                } else {
+                    const alpha = 0.5 + 0.5 * (1 - i / Math.max(1, visible - 1));
+                    line.style.opacity = alpha;
+                }
                 pageEdges.appendChild(line);
             }
 
-            // trait droite : bande fixe, du haut de l'onglet juste après la couverture (Géants)
-            // jusqu'au bas de l'onglet Contact — mesuré en direct, ne dépend plus de l'onglet actif
+            // trait droite : du bas de l'onglet ACTIF jusqu'au bas de Contact — suit l'onglet courant
+            // (comportement d'origine, restauré — perdu en route quand j'avais figé la bande sur Géants)
             const notebookRect = document.querySelector('.notebook').getBoundingClientRect();
-            const firstTab = document.querySelector('.tab[data-tab="geants"]');
             const contactTab = document.querySelector('.tab[data-tab="contact"]');
-            if (firstTab && contactTab) {
-                const firstRect = firstTab.getBoundingClientRect();
+            const refTab = activeTabEl || document.querySelector('.tab[data-tab="geants"]');
+            if (refTab && contactTab) {
+                const refRect = refTab.getBoundingClientRect();
                 const contactRect = contactTab.getBoundingClientRect();
-                const top = firstRect.top - notebookRect.top;
-                const height = contactRect.bottom - firstRect.top;
+                // épaisseur RÉELLEMENT utilisée par les lignes de la bande du bas (pas la hauteur fixe du conteneur,
+                // qui elle ne bouge jamais) — c'est ça qui diminue quand il reste moins de pages
+                const visibleBottom = Math.min(Math.max(count, 0), 30);
+                const bottomBandThickness = visibleBottom > 0 ? (visibleBottom - 1) * STEP : 0;
+                const top = refRect.bottom - notebookRect.top;
+                const height = (contactRect.bottom - refRect.bottom) + bottomBandThickness;
                 pageEdges.style.top = top + 'px';
                 pageEdges.style.height = Math.max(0, height) + 'px';
+
+                // découpe diagonale, ancrée en BAS-DROITE (longueur max, intacte), GAUCHE raccourcie — perspective
+                const tan30 = Math.tan(30 * Math.PI / 180);
+                const shearPx = bottomBandThickness * tan30;
+                const hPct = (height > 0) ? (100 - (shearPx / height) * 100) : 100;
+                pageEdges.style.clipPath = `polygon(0 0, 100% 0, 100% 100%, 0 ${hPct.toFixed(2)}%)`;
             }
         }
 
         function updatePageEdgesBottom(count) {
             pageEdgesBottom.innerHTML = '';
 
-            const notebookRect = document.querySelector('.notebook').getBoundingClientRect();
             const pageFrameRect = document.getElementById('page-frame').getBoundingClientRect();
             const contactTabRect = document.querySelector('.tab[data-tab="contact"]').getBoundingClientRect();
 
-            // bord gauche réel de .ring-front, relatif à .page-frame :
-            // left:50% de .hole-ring (binding_left 10 + hole_ring_w/2 8 = 18) puis margin-left:-40 -> -22
-            const RING_LEFT_OFFSET = 22;
-            const left = pageFrameRect.left - notebookRect.left - RING_LEFT_OFFSET;
-            const right = contactTabRect.right - notebookRect.left - 24; // affiné à -24
-            const top = pageFrameRect.bottom - notebookRect.top; // haut du bloc = bas de la page
+            // #page-edges-bottom est en fait À L'INTÉRIEUR de #page-frame (son vrai bloc englobant) —
+            // donc tout doit être calculé relativement à pageFrameRect, pas notebookRect.
+            // Bord gauche aligné directement avec le bord gauche de la page (0, dans le repère de .page-frame).
+            const left = 0;
+            const right = contactTabRect.right - pageFrameRect.left;
+            const top = pageFrameRect.bottom - pageFrameRect.top; // = hauteur de .page-frame, place le bloc à son propre bas
 
             pageEdgesBottom.style.left = left + 'px';
             pageEdgesBottom.style.width = (right - left) + 'px';
@@ -1056,12 +1145,28 @@
 
             if (count < 0) count = 0;
             const visible = Math.min(count, 30);
+            const yMax = (visible - 1) * STEP; // profondeur de la dernière ligne (la plus basse)
+            const tan30 = Math.tan(30 * Math.PI / 180);
+
             for (let i = 0; i < visible; i++) {
                 const line = document.createElement('div');
                 line.className = 'edge-line-bottom';
-                line.style.top = (i * STEP) + 'px'; // s'éloigne de la page au fur et à mesure
-                const alpha = 0.5 + 0.5 * (1 - i / Math.max(1, visible - 1));
-                line.style.opacity = alpha;
+                const y = i * STEP;
+                // cisaillement uniforme : les deux bords avancent du même pas vers la droite avec la profondeur,
+                // le bord droit de la ligne la plus basse retombe pile sur la position d'origine (avant l'angle)
+                const x1 = y * tan30;
+                const x2 = (right - left) - (yMax - y) * tan30;
+                line.style.top = y + 'px';
+                line.style.left = x1.toFixed(2) + 'px';
+                line.style.width = Math.max(0, x2 - x1) + 'px';
+                const isAccent = (i % 5) === 4; // 1 ligne sur 5, en noir, pour le relief
+                if (isAccent) {
+                    line.style.background = 'rgba(0,0,0,0.55)';
+                    line.style.opacity = '1';
+                } else {
+                    const alpha = 0.5 + 0.5 * (1 - i / Math.max(1, visible - 1));
+                    line.style.opacity = alpha;
+                }
                 pageEdgesBottom.appendChild(line);
             }
         }
@@ -1155,8 +1260,12 @@
 
             // ── mettre à jour les traits blancs ──
             const activeTabEl = document.querySelector('.tab.is-active');
-            updatePageEdges(remaining, activeTabEl);
             updatePageEdgesBottom(remaining);
+            updatePageEdges(remaining, activeTabEl);
+
+            // ── pile des pages déjà tournées, sous le dos fantôme ──
+            const passed = TOTAL_PAGES - remaining; // cohérent avec le calcul global de `remaining` ci-dessus
+            updatePageBackBottom(passed, !atCover);
         }
 
         // ─── tab clicks ──────────────────────────────────────────────────
