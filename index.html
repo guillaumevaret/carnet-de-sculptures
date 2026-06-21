@@ -3,13 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laboratoire d’anneaux – choisissez votre clip-path</title>
+    <title>Anneaux – variantes horizontales & verticales</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin:0; padding:0; box-sizing:border-box; }
         body {
             background: #1c1410;
             display: flex;
@@ -20,40 +16,39 @@
             padding: 20px;
         }
         .container {
-            max-width: 1200px;
+            max-width: 1100px;
             width: 100%;
             background: #2a221e;
             border-radius: 20px;
-            padding: 30px;
+            padding: 30px 25px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.7);
         }
         h1 {
             color: #d4c9b0;
             text-align: center;
             font-weight: 400;
-            font-size: 1.6rem;
-            margin-bottom: 10px;
-            letter-spacing: 2px;
+            font-size: 1.8rem;
+            margin-bottom: 6px;
         }
         .sub {
             text-align: center;
             color: #9a8b78;
             font-size: 0.95rem;
-            margin-bottom: 30px;
+            margin-bottom: 28px;
         }
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
             gap: 20px 15px;
         }
         .card {
             background: #362d27;
             border-radius: 16px;
-            padding: 20px 10px 14px;
+            padding: 18px 8px 12px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            transition: background 0.2s;
+            transition: background 0.2s, border-color 0.2s;
             border: 1px solid #4d3f35;
         }
         .card:hover {
@@ -61,23 +56,22 @@
             border-color: #7a6652;
         }
         .ring-wrapper {
-            width: 80px;
-            height: 80px;
+            width: 90px;
+            height: 90px;
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
         .ring {
-            width: 64px;
-            height: 64px;
+            width: 70px;
+            height: 70px;
             border-radius: 50%;
             border: 5px solid #b8aa94;
             border-top-color: #e8ddd0;
             border-left-color: #d0c2ae;
             box-sizing: border-box;
             background: transparent;
-            /* chaque carte aura son propre clip-path via une classe */
         }
         .label {
             color: #d4c9b0;
@@ -86,143 +80,143 @@
             background: #1f1814;
             padding: 2px 14px;
             border-radius: 30px;
-            margin-top: 4px;
+            margin-top: 2px;
             border: 1px solid #4d3f35;
         }
         .code {
             color: #a89880;
-            font-size: 0.65rem;
+            font-size: 0.6rem;
             text-align: center;
             margin-top: 6px;
             word-break: break-all;
             background: #1f1814;
-            padding: 4px 8px;
+            padding: 4px 6px;
             border-radius: 6px;
             width: 100%;
             font-family: monospace;
             line-height: 1.3;
         }
-
-        /* ─── les 12 variantes de clip-path ─── */
-
-        /* 1 – original V1.28 (coupe en bas à droite) */
-        .ring-1 { clip-path: polygon(50% 50%, 100% 15%, 0% 0%, 0% 100%, 100% 100%, 50% 50%); }
-
-        /* 2 – symétrique vertical (coupe à gauche) */
-        .ring-2 { clip-path: polygon(50% 50%, 100% 15%, 100% 0%, 0% 0%, 0% 100%, 50% 100%, 50% 50%); }
-
-        /* 3 – coupe en bas (moitié inférieure enlevée) */
-        .ring-3 { clip-path: polygon(50% 50%, 100% 15%, 100% 0%, 0% 0%, 0% 100%, 50% 50%); }
-
-        /* 4 – coupe à droite (branche haute épaisse) */
-        .ring-4 { clip-path: polygon(50% 50%, 100% 40%, 100% 0%, 0% 0%, 0% 100%, 100% 100%, 100% 70%, 50% 50%); }
-
-        /* 5 – coupe à droite (branche basse épaisse) */
-        .ring-5 { clip-path: polygon(50% 50%, 100% 15%, 100% 0%, 0% 0%, 0% 100%, 100% 100%, 100% 85%, 50% 50%); }
-
-        /* 6 – coupe en haut (branche basse seule) */
-        .ring-6 { clip-path: polygon(50% 50%, 100% 85%, 100% 100%, 0% 100%, 0% 0%, 50% 50%); }
-
-        /* 7 – coupe en bas (branche haute seule) */
-        .ring-7 { clip-path: polygon(50% 50%, 100% 15%, 100% 0%, 0% 0%, 0% 100%, 50% 50%); }
-
-        /* 8 – anneau presque complet (petite encoche à droite) */
-        .ring-8 { clip-path: polygon(50% 50%, 100% 10%, 100% 0%, 0% 0%, 0% 100%, 100% 100%, 100% 90%, 50% 50%); }
-
-        /* 9 – anneau complet (pas de coupe) */
-        .ring-9 { clip-path: none; }
-
-        /* 10 – coupe en bas à droite (plus large) */
-        .ring-10 { clip-path: polygon(50% 50%, 100% 30%, 100% 0%, 0% 0%, 0% 100%, 100% 100%, 100% 70%, 50% 50%); }
-
-        /* 11 – coupe à gauche (branche haute épaisse, basse fine) */
-        .ring-11 { clip-path: polygon(50% 50%, 100% 45%, 100% 0%, 0% 0%, 0% 100%, 100% 100%, 100% 20%, 50% 50%); }
-
-        /* 12 – coupe à droite avec deux branches fines */
-        .ring-12 { clip-path: polygon(50% 50%, 100% 25%, 100% 0%, 0% 0%, 0% 100%, 100% 100%, 100% 75%, 50% 50%); }
+        .badge {
+            font-size: 0.6rem;
+            background: #4d3f35;
+            color: #d4c9b0;
+            padding: 1px 10px;
+            border-radius: 20px;
+            margin-bottom: 4px;
+        }
+        .badge.horiz { background: #5d4a3a; }
+        .badge.vert { background: #3a4d5d; }
     </style>
 </head>
 <body>
 <div class="container">
-    <h1>🧪 Laboratoire d’anneaux</h1>
-    <p class="sub">Chaque anneau a un <code>clip-path</code> différent. Choisis celui qui ressemble le plus à une reliure réelle.</p>
+    <h1>🧪 Variantes d’anneaux</h1>
+    <p class="sub">6 horizontaux (reliure à gauche) • 6 verticaux (reliure en haut)<br>Choisis celui qui te plaît pour chaque orientation.</p>
     <div class="grid">
-        <!-- 1 -->
+
+        <!-- ===== HORIZONTAUX ===== -->
+        <!-- H1 : 40% / 60% (ta formule de départ) -->
         <div class="card">
-            <div class="ring-wrapper"><div class="ring ring-1"></div></div>
-            <div class="label">#1</div>
-            <div class="code">polygon(50% 50%,<br>100% 15%, 0% 0%,<br>0% 100%, 100% 100%,<br>50% 50%)</div>
+            <div class="badge horiz">H1 · horizontal</div>
+            <div class="ring-wrapper"><div class="ring" style="clip-path: polygon(50% 50%, 100% 40%, 100% 0%, 0% 0%, 0% 100%, 50% 100%, 50% 50%);"></div></div>
+            <div class="label">#H1</div>
+            <div class="code">haut 40% · bas 60%</div>
         </div>
-        <!-- 2 -->
+
+        <!-- H2 : 45% / 55% -->
         <div class="card">
-            <div class="ring-wrapper"><div class="ring ring-2"></div></div>
-            <div class="label">#2</div>
-            <div class="code">polygon(50% 50%,<br>100% 15%, 100% 0%,<br>0% 0%, 0% 100%,<br>50% 100%, 50% 50%)</div>
+            <div class="badge horiz">H2 · horizontal</div>
+            <div class="ring-wrapper"><div class="ring" style="clip-path: polygon(50% 50%, 100% 45%, 100% 0%, 0% 0%, 0% 100%, 50% 100%, 50% 50%);"></div></div>
+            <div class="label">#H2</div>
+            <div class="code">haut 45% · bas 55%</div>
         </div>
-        <!-- 3 -->
+
+        <!-- H3 : 35% / 65% -->
         <div class="card">
-            <div class="ring-wrapper"><div class="ring ring-3"></div></div>
-            <div class="label">#3</div>
-            <div class="code">polygon(50% 50%,<br>100% 15%, 100% 0%,<br>0% 0%, 0% 100%,<br>50% 50%)</div>
+            <div class="badge horiz">H3 · horizontal</div>
+            <div class="ring-wrapper"><div class="ring" style="clip-path: polygon(50% 50%, 100% 35%, 100% 0%, 0% 0%, 0% 100%, 50% 100%, 50% 50%);"></div></div>
+            <div class="label">#H3</div>
+            <div class="code">haut 35% · bas 65%</div>
         </div>
-        <!-- 4 -->
+
+        <!-- H4 : 50% / 50% (symétrique) -->
         <div class="card">
-            <div class="ring-wrapper"><div class="ring ring-4"></div></div>
-            <div class="label">#4</div>
-            <div class="code">polygon(50% 50%,<br>100% 40%, 100% 0%,<br>0% 0%, 0% 100%,<br>100% 100%, 100% 70%,<br>50% 50%)</div>
+            <div class="badge horiz">H4 · horizontal</div>
+            <div class="ring-wrapper"><div class="ring" style="clip-path: polygon(50% 50%, 100% 50%, 100% 0%, 0% 0%, 0% 100%, 50% 100%, 50% 50%);"></div></div>
+            <div class="label">#H4</div>
+            <div class="code">haut 50% · bas 50%</div>
         </div>
-        <!-- 5 -->
+
+        <!-- H5 : 30% / 70% -->
         <div class="card">
-            <div class="ring-wrapper"><div class="ring ring-5"></div></div>
-            <div class="label">#5</div>
-            <div class="code">polygon(50% 50%,<br>100% 15%, 100% 0%,<br>0% 0%, 0% 100%,<br>100% 100%, 100% 85%,<br>50% 50%)</div>
+            <div class="badge horiz">H5 · horizontal</div>
+            <div class="ring-wrapper"><div class="ring" style="clip-path: polygon(50% 50%, 100% 30%, 100% 0%, 0% 0%, 0% 100%, 50% 100%, 50% 50%);"></div></div>
+            <div class="label">#H5</div>
+            <div class="code">haut 30% · bas 70%</div>
         </div>
-        <!-- 6 -->
+
+        <!-- H6 : 55% / 45% -->
         <div class="card">
-            <div class="ring-wrapper"><div class="ring ring-6"></div></div>
-            <div class="label">#6</div>
-            <div class="code">polygon(50% 50%,<br>100% 85%, 100% 100%,<br>0% 100%, 0% 0%,<br>50% 50%)</div>
+            <div class="badge horiz">H6 · horizontal</div>
+            <div class="ring-wrapper"><div class="ring" style="clip-path: polygon(50% 50%, 100% 55%, 100% 0%, 0% 0%, 0% 100%, 50% 100%, 50% 50%);"></div></div>
+            <div class="label">#H6</div>
+            <div class="code">haut 55% · bas 45%</div>
         </div>
-        <!-- 7 -->
+
+        <!-- ===== VERTICAUX (rotation 90° de la même formule) ===== -->
+        <!-- V1 : 40% / 60% -->
         <div class="card">
-            <div class="ring-wrapper"><div class="ring ring-7"></div></div>
-            <div class="label">#7</div>
-            <div class="code">polygon(50% 50%,<br>100% 15%, 100% 0%,<br>0% 0%, 0% 100%,<br>50% 50%)</div>
+            <div class="badge vert">V1 · vertical</div>
+            <div class="ring-wrapper"><div class="ring" style="clip-path: polygon(50% 50%, 60% 0%, 0% 0%, 0% 100%, 100% 100%, 100% 50%, 50% 50%);"></div></div>
+            <div class="label">#V1</div>
+            <div class="code">droite 40% · gauche 60%</div>
         </div>
-        <!-- 8 -->
+
+        <!-- V2 : 45% / 55% -->
         <div class="card">
-            <div class="ring-wrapper"><div class="ring ring-8"></div></div>
-            <div class="label">#8</div>
-            <div class="code">polygon(50% 50%,<br>100% 10%, 100% 0%,<br>0% 0%, 0% 100%,<br>100% 100%, 100% 90%,<br>50% 50%)</div>
+            <div class="badge vert">V2 · vertical</div>
+            <div class="ring-wrapper"><div class="ring" style="clip-path: polygon(50% 50%, 55% 0%, 0% 0%, 0% 100%, 100% 100%, 100% 50%, 50% 50%);"></div></div>
+            <div class="label">#V2</div>
+            <div class="code">droite 45% · gauche 55%</div>
         </div>
-        <!-- 9 -->
+
+        <!-- V3 : 35% / 65% -->
         <div class="card">
-            <div class="ring-wrapper"><div class="ring ring-9"></div></div>
-            <div class="label">#9</div>
-            <div class="code">clip-path: none<br>(anneau complet)</div>
+            <div class="badge vert">V3 · vertical</div>
+            <div class="ring-wrapper"><div class="ring" style="clip-path: polygon(50% 50%, 65% 0%, 0% 0%, 0% 100%, 100% 100%, 100% 50%, 50% 50%);"></div></div>
+            <div class="label">#V3</div>
+            <div class="code">droite 35% · gauche 65%</div>
         </div>
-        <!-- 10 -->
+
+        <!-- V4 : 50% / 50% (symétrique) -->
         <div class="card">
-            <div class="ring-wrapper"><div class="ring ring-10"></div></div>
-            <div class="label">#10</div>
-            <div class="code">polygon(50% 50%,<br>100% 30%, 100% 0%,<br>0% 0%, 0% 100%,<br>100% 100%, 100% 70%,<br>50% 50%)</div>
+            <div class="badge vert">V4 · vertical</div>
+            <div class="ring-wrapper"><div class="ring" style="clip-path: polygon(50% 50%, 50% 0%, 0% 0%, 0% 100%, 100% 100%, 100% 50%, 50% 50%);"></div></div>
+            <div class="label">#V4</div>
+            <div class="code">droite 50% · gauche 50%</div>
         </div>
-        <!-- 11 -->
+
+        <!-- V5 : 30% / 70% -->
         <div class="card">
-            <div class="ring-wrapper"><div class="ring ring-11"></div></div>
-            <div class="label">#11</div>
-            <div class="code">polygon(50% 50%,<br>100% 45%, 100% 0%,<br>0% 0%, 0% 100%,<br>100% 100%, 100% 20%,<br>50% 50%)</div>
+            <div class="badge vert">V5 · vertical</div>
+            <div class="ring-wrapper"><div class="ring" style="clip-path: polygon(50% 50%, 70% 0%, 0% 0%, 0% 100%, 100% 100%, 100% 50%, 50% 50%);"></div></div>
+            <div class="label">#V5</div>
+            <div class="code">droite 30% · gauche 70%</div>
         </div>
-        <!-- 12 -->
+
+        <!-- V6 : 55% / 45% -->
         <div class="card">
-            <div class="ring-wrapper"><div class="ring ring-12"></div></div>
-            <div class="label">#12</div>
-            <div class="code">polygon(50% 50%,<br>100% 25%, 100% 0%,<br>0% 0%, 0% 100%,<br>100% 100%, 100% 75%,<br>50% 50%)</div>
+            <div class="badge vert">V6 · vertical</div>
+            <div class="ring-wrapper"><div class="ring" style="clip-path: polygon(50% 50%, 45% 0%, 0% 0%, 0% 100%, 100% 100%, 100% 50%, 50% 50%);"></div></div>
+            <div class="label">#V6</div>
+            <div class="code">droite 55% · gauche 45%</div>
         </div>
+
     </div>
+
     <p style="color:#9a8b78; text-align:center; margin-top:30px; font-size:0.9rem;">
         👆 Passe la souris sur une carte pour la surligner.<br>
-        Dis‑moi quel numéro correspond à l’anneau que tu veux pour le carnet.
+        Dis‑moi les numéros <strong>#H…</strong> et <strong>#V…</strong> que tu veux pour le carnet.
     </p>
 </div>
 </body>
