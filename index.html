@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Validation finale – H / V</title>
+    <title>Test onglets + reliure</title>
     <style>
         * {
             margin: 0;
@@ -26,10 +26,10 @@
             border-radius: 4px;
             position: relative;
             box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-            overflow: hidden;
+            overflow: visible; /* ← important pour que les onglets débordent */
         }
 
-        /* Fond quadrillé pour visualiser les bords */
+        /* Page intérieure (avec quadrillage) */
         .page {
             position: absolute;
             inset: 0;
@@ -38,14 +38,18 @@
                 linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px);
             background-size: 20px 20px;
+            border-radius: 4px;
+            overflow: hidden;
+            z-index: 0;
         }
 
-        /* ── Reliure ── */
+        /* ── Reliure (inchangée, validée) ── */
         .binding {
             position: absolute;
             display: flex;
             align-items: center;
             pointer-events: none;
+            z-index: 2;
         }
 
         .hole-ring {
@@ -78,12 +82,12 @@
             z-index: 1;
         }
 
-        /* ── HORIZONTAL (desktop) ── */
+        /* HORIZONTAL (desktop) */
         @media (min-width: 721px) {
             .binding {
-                left: 10px;      /* position de la reliure */
-                top: 8px;        /* offset haut */
-                bottom: 8px;     /* offset bas */
+                left: 10px;
+                top: 8px;
+                bottom: 8px;
                 width: 20px;
                 height: auto;
                 flex-direction: column;
@@ -97,12 +101,12 @@
             }
         }
 
-        /* ── VERTICAL (mobile) ── */
+        /* VERTICAL (mobile) */
         @media (max-width: 720px) {
             .binding {
-                top: 10px;       /* position de la reliure */
-                left: 8px;       /* offset gauche */
-                right: 8px;      /* offset droite */
+                top: 10px;
+                left: 8px;
+                right: 8px;
                 bottom: auto;
                 width: auto;
                 height: 20px;
@@ -118,7 +122,46 @@
             }
         }
 
-        /* Étiquette d’information */
+        /* ── Onglets ── */
+        .tabs {
+            position: absolute;
+            right: -34px;          /* déborde à droite */
+            top: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 5;
+            pointer-events: none;  /* pour le test, on désactive les clics */
+        }
+
+        .tab {
+            writing-mode: vertical-rl;
+            font-family: 'Segoe UI', sans-serif;
+            font-weight: 700;
+            font-size: 0.82rem;
+            letter-spacing: 0.02em;
+            color: #2b2417;
+            background: #c9a86a;   /* couleur générique pour le test */
+            border: none;
+            width: 34px;
+            flex: 1 1 0;
+            padding: 10px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid rgba(0,0,0,0.12);
+            border-radius: 2px 0 0 2px;
+        }
+
+        /* On donne des couleurs différentes pour distinguer */
+        .tab:nth-child(1) { background: #7d7466; flex: 0 0 44px; }
+        .tab:nth-child(2) { background: #c9a86a; }
+        .tab:nth-child(3) { background: #b97a4f; }
+        .tab:nth-child(4) { background: #8c8a5e; }
+        .tab:nth-child(5) { background: #a05c4e; }
+        .tab:nth-child(6) { background: #6e7a5e; }
+
+        /* Étiquette d’info */
         .badge {
             position: absolute;
             bottom: 20px;
@@ -128,7 +171,7 @@
             color: #fff;
             padding: 6px 18px;
             border-radius: 30px;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: 600;
             z-index: 10;
             backdrop-filter: blur(4px);
@@ -141,20 +184,48 @@
             font-weight: 400;
             opacity: 0.7;
             display: block;
-            font-size: 0.65rem;
+            font-size: 0.6rem;
             margin-top: 2px;
+        }
+
+        /* Ajustement mobile : les onglets restent à droite, mais on réduit leur taille */
+        @media (max-width: 720px) {
+            .tabs {
+                right: -30px;
+            }
+            .tab {
+                width: 30px;
+                font-size: 0.7rem;
+                padding: 6px 0;
+            }
         }
     </style>
 </head>
 <body>
 
 <div class="mockup">
+    <!-- Page intérieure -->
     <div class="page"></div>
+
+    <!-- Reliure -->
     <div class="binding" id="binding"></div>
+
+    <!-- Onglets -->
+    <div class="tabs" id="tabs">
+        <div class="tab">Couverture</div>
+        <div class="tab">Géants</div>
+        <div class="tab">Impromptu</div>
+        <div class="tab">Visages</div>
+        <div class="tab">Atelier</div>
+        <div class="tab">Contact</div>
+    </div>
+
+    <!-- Badge d’information -->
     <div class="badge" id="badge">🔄 Redimensionnez pour basculer</div>
 </div>
 
 <script>
+    // ─── Génération des anneaux (inchangée) ───────────────────
     const binding = document.getElementById('binding');
     const badge = document.getElementById('badge');
     const RING_SHORT_AXIS = 16;
@@ -162,7 +233,6 @@
     function buildBinding() {
         binding.innerHTML = '';
         const vertical = window.innerWidth <= 720;
-        // Espace disponible = hauteur (desktop) ou largeur (mobile) du conteneur
         const space = vertical ? binding.clientWidth : binding.clientHeight;
         let count = Math.max(3, Math.floor(space / RING_SHORT_AXIS));
         if (!vertical) count = Math.max(3, count - 1);
@@ -182,7 +252,7 @@
             binding.appendChild(item);
         }
 
-        // Mettre à jour l’étiquette avec les valeurs exactes
+        // Mise à jour du badge
         if (vertical) {
             badge.innerHTML = '⬆️ VERTICAL · top:10px · left/right:8px';
         } else {
