@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anneaux validés H / V (avec trou et bord de feuille)</title>
+    <title>Anneaux H / V avec trou et bord de page</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -20,7 +20,7 @@
         .mockup {
             background: #f3ecd9;
             border-radius: 8px;
-            padding: 25px 30px;
+            padding: 30px 35px 25px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.7);
             display: flex;
             flex-direction: column;
@@ -30,8 +30,8 @@
         .mockup-title {
             color: #4f4a40;
             font-weight: 600;
-            font-size: 1rem;
-            margin-bottom: 15px;
+            font-size: 0.9rem;
+            margin-bottom: 12px;
             background: rgba(0,0,0,0.05);
             padding: 4px 16px;
             border-radius: 20px;
@@ -42,7 +42,7 @@
             align-items: center;
             justify-content: center;
         }
-        /* Page edge simulation (le bord de la feuille) */
+        /* Simule le bord de la page */
         .page-edge {
             background: #e8dccc;
             border-radius: 2px;
@@ -68,47 +68,47 @@
         }
         .ring-wrapper-h {
             top: 50%;
-            right: -15px;
+            right: -20px;    /* déborde du bord droit */
             transform: translateY(-50%);
-            width: 80px;
-            height: 32px;
+            width: 40px;
+            height: 16px;
         }
         .ring-wrapper-v {
             left: 50%;
-            bottom: -15px;
+            bottom: -20px;   /* déborde du bord inférieur */
             transform: translateX(-50%);
-            width: 32px;
-            height: 80px;
+            width: 16px;
+            height: 40px;
         }
 
         /* L’anneau (ellipse) */
         .ring {
             position: absolute;
             border-radius: 50%;
-            border: 5px solid #b8aa94;
-            border-top-color: #e8ddd0;
-            border-left-color: #d0c2ae;
+            border: 3.5px solid #7a7466;
+            border-top-color: #d8d4c4;
+            border-left-color: #c2bca8;
             box-sizing: border-box;
             background: transparent;
         }
         .ring-h {
-            width: 80px;
-            height: 32px;
+            width: 40px;
+            height: 16px;
             clip-path: polygon(50% 50%, 100% 55%, 100% 0%, 0% 0%, 0% 100%, 50% 100%, 50% 50%);
         }
         .ring-v {
-            width: 32px;
-            height: 80px;
-            clip-path: polygon(50% 50%, 55% 0%, 0% 0%, 0% 100%, 100% 100%, 100% 50%, 50% 50%);
+            width: 16px;
+            height: 40px;
+            clip-path: polygon(50% 50%, 45% 100%, 100% 100%, 100% 0%, 0% 0%, 0% 50%, 50% 50%);
         }
 
         /* Le trou (perforation) */
         .hole {
             position: absolute;
-            width: 12px;
-            height: 12px;
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
-            background: rgba(60, 50, 38, 0.6);
+            background: rgba(60, 50, 38, 0.5);
             z-index: 2;
             top: 50%;
             left: 50%;
@@ -117,16 +117,16 @@
         }
 
         .info {
-            margin-top: 18px;
+            margin-top: 16px;
             color: #4f4a40;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             text-align: center;
             background: rgba(0,0,0,0.04);
             padding: 6px 12px;
             border-radius: 6px;
             font-family: monospace;
             word-break: break-all;
-            max-width: 280px;
+            max-width: 300px;
             line-height: 1.4;
         }
         .badge {
@@ -134,9 +134,9 @@
             font-weight: 700;
             background: #2a221e;
             color: #d4c9b0;
-            padding: 2px 12px;
+            padding: 2px 14px;
             border-radius: 20px;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
         }
     </style>
 </head>
@@ -168,7 +168,7 @@
             </div>
         </div>
         <div class="info">
-            clip-path: polygon(50% 50%,<br>55% 0%, 0% 0%,<br>0% 100%, 100% 100%,<br>100% 50%, 50% 50%)
+            clip-path: polygon(50% 50%,<br>45% 100%, 100% 100%,<br>100% 0%, 0% 0%,<br>0% 50%, 50% 50%)
         </div>
     </div>
 
