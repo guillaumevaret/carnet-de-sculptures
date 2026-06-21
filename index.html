@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reliure – test d'anneaux</title>
+    <title>Reliure – offset fixe en pixels</title>
     <style>
         * {
             margin: 0;
@@ -27,19 +27,23 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.6);
             overflow: hidden;
         }
-        /* La page est simplement un fond beige */
         .page {
             position: absolute;
             inset: 0;
             background: #f3ecd9;
+            background-image: 
+                linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px);
+            background-size: 20px 20px;
         }
 
-        /* ── Reliure ── */
+        /* ── Reliure avec OFFSET FIXE en pixels ── */
         .binding {
             position: absolute;
             left: 10px;
-            top: 4%;
-            bottom: 4%;
+            /* 🔴 OFFSET FIXE en pixels */
+            top: 20px;
+            bottom: 20px;
             width: 20px;
             display: flex;
             flex-direction: column;
@@ -86,8 +90,8 @@
         @media (min-width: 721px) {
             .binding {
                 left: 10px;
-                top: 4%;
-                bottom: 4%;
+                top: 20px;
+                bottom: 20px;
                 flex-direction: column;
                 width: 20px;
                 height: auto;
@@ -128,26 +132,21 @@
 <body>
 
     <div class="mockup">
-        <!-- Page blanche -->
         <div class="page"></div>
-
-        <!-- Reliure -->
         <div class="binding" id="binding"></div>
     </div>
 
     <script>
-        // ─── Génération des anneaux ──────────────────────────────────
         const binding = document.getElementById('binding');
         const RING_SHORT_AXIS = 16;
 
         function buildBinding() {
             binding.innerHTML = '';
             const vertical = window.innerWidth > 720;
-            // Calcul de l'espace disponible
+            // L'espace disponible est la hauteur (ou largeur en mobile) du conteneur
             const space = vertical ? binding.clientHeight : binding.clientWidth;
-            // On veut environ 2 anneaux de moins que le maximum pour laisser de l'air
+            // On calcule le nombre d'anneaux
             let count = Math.max(3, Math.floor(space / RING_SHORT_AXIS));
-            // En mobile, on réduit un peu pour éviter le chevauchement
             if (!vertical) count = Math.max(3, count - 2);
 
             for (let i = 0; i < count; i++) {
@@ -168,7 +167,6 @@
 
         buildBinding();
 
-        // Recalculer au redimensionnement
         let resizeTimer;
         window.addEventListener('resize', () => {
             clearTimeout(resizeTimer);
