@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Validation des 2 anneaux</title>
+    <title>Anneaux elliptiques validés</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -27,20 +27,31 @@
             border: 1px solid #4d3f35;
             box-shadow: 0 10px 30px rgba(0,0,0,0.6);
         }
+        .ring-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 10px;
+        }
         .ring {
-            width: 100px;
-            height: 100px;
             border-radius: 50%;
-            border: 6px solid #b8aa94;
+            border: 5px solid #b8aa94;
             border-top-color: #e8ddd0;
             border-left-color: #d0c2ae;
             box-sizing: border-box;
             background: transparent;
-            margin-bottom: 10px;
+        }
+        .ring-h {
+            width: 80px;
+            height: 32px;   /* ellipse horizontale */
+        }
+        .ring-v {
+            width: 32px;
+            height: 80px;   /* ellipse verticale */
         }
         .label {
             color: #d4c9b0;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: 600;
             background: #1f1814;
             padding: 4px 18px;
@@ -50,7 +61,7 @@
         }
         .code {
             color: #a89880;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             text-align: center;
             margin-top: 10px;
             background: #1f1814;
@@ -79,7 +90,9 @@
     <!-- HORIZONTAL : haut 55%, bas 50% -->
     <div class="card">
         <div class="badge h">⬅️ Horizontal · reliure à gauche</div>
-        <div class="ring" style="clip-path: polygon(50% 50%, 100% 55%, 100% 0%, 0% 0%, 0% 100%, 50% 100%, 50% 50%);"></div>
+        <div class="ring-wrapper">
+            <div class="ring ring-h" style="clip-path: polygon(50% 50%, 100% 55%, 100% 0%, 0% 0%, 0% 100%, 50% 100%, 50% 50%);"></div>
+        </div>
         <div class="label">H · 55% / 50%</div>
         <div class="code">polygon(50% 50%,<br>100% 55%, 100% 0%,<br>0% 0%, 0% 100%,<br>50% 100%, 50% 50%)</div>
     </div>
@@ -87,9 +100,11 @@
     <!-- VERTICAL : rotation horaire de 90° -->
     <div class="card">
         <div class="badge v">⬆️ Vertical · reliure en haut</div>
-        <div class="ring" style="clip-path: polygon(50% 50%, 45% 100%, 100% 100%, 100% 0%, 0% 0%, 0% 50%, 50% 50%);"></div>
+        <div class="ring-wrapper">
+            <div class="ring ring-v" style="clip-path: polygon(50% 50%, 55% 0%, 0% 0%, 0% 100%, 100% 100%, 100% 50%, 50% 50%);"></div>
+        </div>
         <div class="label">V · rotation horaire</div>
-        <div class="code">polygon(50% 50%,<br>45% 100%, 100% 100%,<br>100% 0%, 0% 0%,<br>0% 50%, 50% 50%)</div>
+        <div class="code">polygon(50% 50%,<br>55% 0%, 0% 0%,<br>0% 100%, 100% 100%,<br>100% 50%, 50% 50%)</div>
     </div>
 
 </body>
