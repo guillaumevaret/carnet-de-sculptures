@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test onglets – décalage en V</title>
+    <title>Test onglets – décalage du binding en V (corrigé)</title>
     <style>
         * {
             margin: 0;
@@ -42,7 +42,7 @@
             z-index: 0;
         }
 
-        /* ── Reliure (inchangée) ── */
+        /* ── Reliure ── */
         .binding {
             position: absolute;
             display: flex;
@@ -105,7 +105,7 @@
             .binding {
                 top: 10px;
                 left: 8px;
-                right: 8px;
+                right: 8px;       /* valeur par défaut, sera augmentée dynamiquement */
                 bottom: auto;
                 width: auto;
                 height: 20px;
@@ -124,13 +124,12 @@
         /* ── Onglets ── */
         .tabs {
             position: absolute;
-            right: -34px; /* sera modifié dynamiquement en mobile */
+            right: -34px;
             top: 0;
             bottom: 0;
             display: flex;
             flex-direction: column;
             z-index: 5;
-            transition: right 0.2s ease;
         }
 
         .tab {
@@ -158,7 +157,6 @@
             filter: brightness(1.1);
         }
 
-        /* Couleurs de base */
         .tab[data-tab="cover"] { background: #7d7466; flex: 0 0 44px; }
         .tab[data-tab="geants"] { background: #c9a86a; }
         .tab[data-tab="impromptu"] { background: #b97a4f; }
@@ -262,7 +260,6 @@
     });
 
     // ─── Gestion des onglets ──────────────────────────────────
-    const tabsContainer = document.getElementById('tabs');
     const tabs = document.querySelectorAll('.tab');
     const extraWidth = 20; // simulé
 
@@ -275,12 +272,12 @@
         const isMobile = window.innerWidth <= 720;
         const baseWidth = isMobile ? 30 : 34;
 
-        // Appliquer highlight aux onglets au‑dessus (inclus l'actif)
+        // Highlight
         for (let i = 0; i <= activeIndex; i++) {
             tabArray[i].classList.add('highlight');
         }
 
-        // Appliquer l'élargissement
+        // Élargissement
         for (let i = 0; i < tabArray.length; i++) {
             const tab = tabArray[i];
             if (i <= activeIndex) {
@@ -295,13 +292,14 @@
             }
         }
 
-        // ─── Décalage du conteneur en mobile ──────────────────
+        // ─── Décalage du conteneur de reliure en mobile ──────
         if (isMobile) {
-            // On ajoute extraWidth au right (car il est négatif), pour décaler les onglets vers la droite
-            const baseRight = -30; // valeur par défaut en mobile (voir CSS)
-            tabsContainer.style.right = (baseRight + extraWidth) + 'px';
+            // Le binding a un right: 8px par défaut en CSS
+            // On ajoute extraWidth pour décaler vers la droite
+            binding.style.right = (8 + extraWidth) + 'px';
         } else {
-            tabsContainer.style.right = ''; // on laisse le CSS ( -34px )
+            // En desktop, on remet le right par défaut (pas de style inline)
+            binding.style.right = '';
         }
     }
 
