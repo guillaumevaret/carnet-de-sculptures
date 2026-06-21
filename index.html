@@ -564,7 +564,7 @@
                     <div class="cover-text">
                         <h1>Carnet de sculptures</h1>
                         <p>Guillaume Varet</p>
-                        <p class="cover-version">V1.35</p>
+                        <p class="cover-version">V1.36</p>
                     </div>
                 </div>
 
@@ -829,6 +829,7 @@
                 render(-1); } }
 
         function render(direction) {
+            // Désactiver toutes les pages
             sequence.forEach(s => s.el.classList.remove('is-active', 'flip-next', 'flip-prev'));
 
             const current = sequence[pos];
@@ -836,6 +837,7 @@
             if (direction === 1) current.el.classList.add('flip-next');
             if (direction === -1) current.el.classList.add('flip-prev');
 
+            // ── Mise à jour des onglets ──────────────────────────────
             const allTabs = document.querySelectorAll('.tab');
             let activeIndex = -1;
             allTabs.forEach((t, i) => {
@@ -846,6 +848,7 @@
                 }
             });
 
+            // Appliquer highlight aux onglets au‑dessus (incluant l'actif)
             if (activeIndex !== -1) {
                 for (let i = 0; i <= activeIndex; i++) {
                     allTabs[i].classList.add('highlight');
@@ -858,6 +861,7 @@
             cornersPrev.forEach(c => { c.hidden = atCover; });
             cornersNext.forEach(c => { c.hidden = atEnd; });
 
+            // ── Compteur de page ──
             if (atCover) {
                 counter.textContent = '';
             } else {
@@ -866,6 +870,7 @@
                 counter.textContent = `${current.tab} — page ${idx + 1} / ${total}`;
             }
 
+            // ── Calcul du nombre de pages restantes ──
             let remaining;
             if (atCover) {
                 remaining = TOTAL_PAGES;
@@ -874,18 +879,17 @@
                 if (remaining < 0) remaining = 0;
             }
 
-            // ── calcul de la largeur supplémentaire ──
+            // ── Largeur de la pile de traits blancs ──
             let extraWidth = 0;
             if (remaining > 0) {
                 extraWidth = (remaining - 1) * STEP + LINE_WIDTH;
             }
             extraWidth = Math.round(extraWidth * 100) / 100;
 
-            // ── Appliquer l'élargissement aux onglets au‑dessus, SAUF "contact" ──
+            // ── Élargir les onglets au‑dessus (sauf "contact") ──
             const tabsToEnlarge = [];
             for (let i = 0; i <= activeIndex; i++) {
                 const tab = allTabs[i];
-                // Ne jamais élargir l'onglet "contact"
                 if (tab.dataset.tab !== 'contact') {
                     tabsToEnlarge.push(tab);
                 }
@@ -903,7 +907,7 @@
                 }
             });
 
-            // Réinitialiser les autres onglets (dont "contact" et ceux en dessous)
+            // Réinitialiser les autres (dont "contact")
             for (let i = 0; i < allTabs.length; i++) {
                 const tab = allTabs[i];
                 if (!tabsToEnlarge.includes(tab)) {
@@ -922,11 +926,13 @@
                     c.style.transform = '';
                 }
             });
+            // Les coins de gauche restent en place
             const leftCorners = document.querySelectorAll('.corner-tl, .corner-bl');
             leftCorners.forEach(c => {
                 c.style.transform = '';
             });
 
+            // ── Mise à jour des traits blancs ──
             const activeTabEl = document.querySelector('.tab.is-active');
             updatePageEdges(remaining, activeTabEl);
         }
