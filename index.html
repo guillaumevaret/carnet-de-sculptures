@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test onglets – élargissement uniforme</title>
+    <title>Test onglets – élargissement uniforme (corrigé)</title>
     <style>
         * {
             margin: 0;
@@ -140,7 +140,7 @@
             letter-spacing: 0.02em;
             color: #2b2417;
             border: none;
-            width: 34px;          /* largeur de base */
+            width: 34px;
             flex: 1 1 0;
             padding: 10px 0;
             display: flex;
@@ -165,9 +165,8 @@
         .tab[data-tab="atelier"] { background: #a05c4e; }
         .tab[data-tab="contact"] { background: #6e7a5e; }
 
-        /* Onglet actif : on ne définit plus de width fixe ici, tout est géré par JS */
+        /* Onglet actif : on ne gère pas de margin-left ici, tout est en JS */
         .tab.active {
-            margin-left: -6px;   /* décalage vers la gauche */
             filter: brightness(1.2);
         }
 
@@ -178,10 +177,9 @@
         }
         .tab.highlight.active {
             filter: brightness(1.6);
-            color: #2b2417 !important; /* on garde la couleur d'origine pour l'actif */
+            color: #2b2417 !important;
         }
 
-        /* Badge d’info */
         .badge {
             position: absolute;
             bottom: 20px;
@@ -213,12 +211,9 @@
                 right: -30px;
             }
             .tab {
-                width: 30px;       /* largeur de base mobile */
+                width: 30px;
                 font-size: 0.7rem;
                 padding: 6px 0;
-            }
-            .tab.active {
-                margin-left: -6px;
             }
         }
     </style>
@@ -227,11 +222,7 @@
 
 <div class="mockup">
     <div class="page"></div>
-
-    <!-- Reliure -->
     <div class="binding" id="binding"></div>
-
-    <!-- Onglets -->
     <nav class="tabs" id="tabs">
         <button class="tab active" data-tab="cover">Couverture</button>
         <button class="tab" data-tab="geants">Géants</button>
@@ -240,8 +231,7 @@
         <button class="tab" data-tab="atelier">Atelier</button>
         <button class="tab" data-tab="contact">Contact</button>
     </nav>
-
-    <div class="badge" id="badge">Cliquez sur un onglet · extraWidth = 20px (simulé)</div>
+    <div class="badge" id="badge">Cliquez sur un onglet · extraWidth = 20px</div>
 </div>
 
 <script>
@@ -277,23 +267,18 @@
 
     // ─── Gestion des onglets ──────────────────────────────────
     const tabs = document.querySelectorAll('.tab');
-    const extraWidth = 20; // valeur simulée (en px)
+    const extraWidth = 20; // simulé
 
     function updateTabs(activeTab) {
-        // Retirer les classes
         tabs.forEach(t => t.classList.remove('active', 'highlight'));
-
-        // Ajouter active sur l'onglet cliqué
         activeTab.classList.add('active');
 
         const tabArray = Array.from(tabs);
         const activeIndex = tabArray.indexOf(activeTab);
-
-        // Déterminer la largeur de base selon la taille d'écran
         const isMobile = window.innerWidth <= 720;
         const baseWidth = isMobile ? 30 : 34;
 
-        // Appliquer highlight aux onglets au‑dessus (index <= activeIndex)
+        // Appliquer highlight aux onglets au‑dessus (inclus l'actif)
         for (let i = 0; i <= activeIndex; i++) {
             tabArray[i].classList.add('highlight');
         }
@@ -306,12 +291,9 @@
                 const newWidth = baseWidth + extraWidth;
                 tab.style.width = newWidth + 'px';
                 tab.style.transform = `translateX(-${extraWidth}px)`;
-                // L'onglet actif garde son margin-left de -6px
-                if (tab === activeTab) {
-                    tab.style.marginLeft = '-6px';
-                } else {
-                    tab.style.marginLeft = '0';
-                }
+                // Important : pour l'onglet actif, on retire le margin-left de -6px
+                // car il est déjà décalé par le translateX, et on veut qu'il soit aligné avec les autres
+                tab.style.marginLeft = '0';
             } else {
                 // Réinitialiser pour les onglets en dessous
                 tab.style.width = '';
@@ -321,14 +303,13 @@
         }
     }
 
-    // Ajouter les écouteurs de clic
     tabs.forEach(tab => {
         tab.addEventListener('click', () => {
             updateTabs(tab);
         });
     });
 
-    // Initialisation : on active le premier onglet (Couverture)
+    // Initialisation : on active le premier onglet
     updateTabs(document.querySelector('.tab[data-tab="cover"]'));
 </script>
 
