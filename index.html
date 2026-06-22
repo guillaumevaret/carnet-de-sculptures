@@ -694,7 +694,7 @@
                     <div class="cover-text">
                         <h1>Carnet de sculptures</h1>
                         <p>Guillaume Varet</p>
-                        <p class="cover-version">V2.03</p>
+                        <p class="cover-version">V2.04</p>
                     </div>
                 </div>
 
@@ -796,8 +796,8 @@
             <button class="tab" data-tab="geants">Géants</button>
             <button class="tab" data-tab="impromptu">Impromptu</button>
             <button class="tab" data-tab="visages">Visages</button>
-            <button class="tab" data-tab="atelier">Atelier</button>
-            <button class="tab" data-tab="contact">Contact</button>
+            <button class="tab" data-tab="atelier">Noir&amp;Blanc</button>
+            <button class="tab" data-tab="contact">Atelier</button>
         </nav>
 
         <div class="page-edges" id="page-edges"></div>
@@ -1038,16 +1038,20 @@
 
         html += `
           <div data-section="atelier"><div class="page page-photo-text">
-            <span class="section-label">Atelier</span>
-            <img class="photo-bg" src="images/atelier/etabli.jpg" alt="Guillaume Varet au travail, meuleuse à la main, sur un établi de chantier">
+            <span class="section-label">Noir&amp;Blanc</span>
+            <img class="photo-bg" src="images/atelier/noir-blanc.jpg" alt="Visages sculptés au sol, lumière de forêt">
             <div class="photo-overlay"></div>
-            <p class="photo-overlay-text">Tout commence dehors, sur un établi de chantier. La tronçonneuse d'abord, pour dégrossir — puis la meuleuse, pour faire apparaître ce qui était déjà là.</p>
           </div></div>
         `;
 
         html += `
+          <div data-section="contact"><div class="page page-photo-text">
+            <span class="section-label">Atelier</span>
+            <img class="photo-bg" src="images/atelier/couple-couche.jpg" alt="Couple-totem couché, sculpture en bois">
+            <div class="photo-overlay"></div>
+          </div></div>
           <div data-section="contact"><div class="page bg-champ">
-            <span class="section-label">Contact</span>
+            <span class="section-label">Atelier</span>
             <img class="contact-img" src="images/carnet/contact.png" alt="Coordonnées de l'atelier">
           </div></div>
         `;
