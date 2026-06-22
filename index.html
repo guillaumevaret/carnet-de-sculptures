@@ -33,7 +33,7 @@
             position: fixed;
             inset: 0;
             z-index: -1;
-            background: #1c1410 url('../images/desk-bg.jpg') center/cover no-repeat;
+            background: #1c1410 url('images/desk-bg.jpg') center/cover no-repeat;
         }
         .desk::after {
             content: "";
@@ -389,10 +389,10 @@
             display: flex;
         }
         .page.bg-foret {
-            background: linear-gradient(rgba(243, 236, 217, 0.3), rgba(243, 236, 217, 0.45)), url('../images/carnet/aquarelle-foret.jpg') center/cover no-repeat;
+            background: linear-gradient(rgba(243, 236, 217, 0.3), rgba(243, 236, 217, 0.45)), url('images/aquarelle-foret.jpg') center/cover no-repeat;
         }
         .page.bg-champ {
-            background: linear-gradient(rgba(243, 236, 217, 0.32), rgba(243, 236, 217, 0.5)), url('../images/carnet/aquarelle-champ.jpg') center/cover no-repeat;
+            background: linear-gradient(rgba(243, 236, 217, 0.32), rgba(243, 236, 217, 0.5)), url('images/aquarelle-champ.jpg') center/cover no-repeat;
         }
 
         .section-label {
@@ -690,11 +690,11 @@
                 <div class="cover is-active" id="cover">
                     <img class="cover-bg" src="images/guillaume-varet-01.jpg" alt="Profil d'une sculpture en bois sur fond sombre incandescent" />
                     <div class="cover-overlay"></div>
-                    <img class="stamp" src="images/carnet/timbre-foret-jour.gif" alt="" />
+                    <img class="stamp" src="images/timbre-foret-jour.gif" alt="" />
                     <div class="cover-text">
                         <h1>Carnet de sculptures</h1>
                         <p>Guillaume Varet</p>
-                        <p class="cover-version">V2.04</p>
+                        <p class="cover-version">V2.05</p>
                     </div>
                 </div>
 
@@ -947,47 +947,47 @@
         // ─── data ──────────────────────────────────────────────────────────
         const DATA = {
             geants: { bg: 'bg-foret', label: 'Géants', pages: [
-                    { img: 'images/selection/sequoia.jpg', alt: "Sculpture monumentale en cours, à même un douglas, échafaudage et château en arrière-plan",
+                    { img: 'images/sequoia.jpg', alt: "Sculpture monumentale en cours, à même un douglas, échafaudage et château en arrière-plan",
                         cap: "Un douglas entier, sculpté debout." },
-                    { img: 'images/selection/couple-totem.jpg', alt: "Deux silhouettes enlacées sculptées dans un tronc debout, jardin",
+                    { img: 'images/couple-totem.jpg', alt: "Deux silhouettes enlacées sculptées dans un tronc debout, jardin",
                         cap: "Deux silhouettes enlacées, à même un tronc encore debout." }
                 ] },
             impromptu: { bg: 'bg-champ', label: 'Impromptu', pages: [
-                    { img: 'images/selection/corbeau.jpg', alt: "Oiseau facétieux au chapeau, posé sur deux jambes en bois",
+                    { img: 'images/corbeau.jpg', alt: "Oiseau facétieux au chapeau, posé sur deux jambes en bois",
                         cap: "Un chapeau trouvé, un oiseau qui s'impose." },
-                    { img: 'images/selection/bouddha.jpg', alt: "Buste détaillé, mains jointes, coiffe travaillée",
+                    { img: 'images/bouddha.jpg', alt: "Buste détaillé, mains jointes, coiffe travaillée",
                         cap: "Un visage recueilli." },
-                    { img: 'images/selection/marmottes.jpg', alt: "Deux marmottes sculptées sur une souche, vue de dos",
+                    { img: 'images/marmottes.jpg', alt: "Deux marmottes sculptées sur une souche, vue de dos",
                         cap: "Deux marmottes, blotties sur une souche." },
-                    { img: 'images/selection/saxophoniste.jpg', alt: "Personnage félin anthropomorphe tenant un instrument, fond sombre",
+                    { img: 'images/saxophoniste.jpg', alt: "Personnage félin anthropomorphe tenant un instrument, fond sombre",
                         cap: "Un musicien qu'on n'attendait pas." },
-                    { img: 'images/selection/crapaud.jpg', alt: "Forme abstraite émergeant du bois brut, sous-bois en automne",
+                    { img: 'images/crapaud.jpg', alt: "Forme abstraite émergeant du bois brut, sous-bois en automne",
                         cap: "Une forme entre figure et paysage." },
-                    { img: 'images/selection/lunien.jpg', alt: "Masque creusé dans une bille fendue, contre un mur de pierre",
+                    { img: 'images/lunien.jpg', alt: "Masque creusé dans une bille fendue, contre un mur de pierre",
                         cap: "Un masque trouvé dans une bille fendue." },
-                    { img: 'images/selection/poteau.jpg', alt: "Poteau de bois fin avec ferrures, contre un muret moussu",
+                    { img: 'images/poteau.jpg', alt: "Poteau de bois fin avec ferrures, contre un muret moussu",
                         cap: "Un dernier geste, plus retenu." }
                 ] },
             visages: { bg: 'bg-foret', label: 'Visages', pages: [
-                    { img: 'images/visages/epure.jpg', alt: "Visage très épuré, traits réduits à quelques lignes, dans l'herbe",
+                    { img: 'images/epure.jpg', alt: "Visage très épuré, traits réduits à quelques lignes, dans l'herbe",
                         cap: "À peine esquissé." },
-                    { img: 'images/visages/pipe.jpg', alt: "Buste d'homme au chapeau et à la pipe, taille brute à la tronçonneuse",
+                    { img: 'images/pipe.jpg', alt: "Buste d'homme au chapeau et à la pipe, taille brute à la tronçonneuse",
                         cap: "Le fumeur." },
-                    { img: 'images/visages/beret.jpg', alt: "Tête de femme au béret, traitement lisse et minimal",
+                    { img: 'images/beret.jpg', alt: "Tête de femme au béret, traitement lisse et minimal",
                         cap: "Poli jusqu'au silence." },
-                    { img: 'images/visages/ecorce-1.jpg', alt: "Visage émergeant d'une bille de bois, écorce conservée en couronne",
+                    { img: 'images/ecorce-1.jpg', alt: "Visage émergeant d'une bille de bois, écorce conservée en couronne",
                         cap: "L'écorce, gardée en couronne." },
-                    { img: 'images/visages/bob.jpg', alt: "Tête au carré court, lumière rasante, jardin en hiver",
+                    { img: 'images/bob.jpg', alt: "Tête au carré court, lumière rasante, jardin en hiver",
                         cap: "Lumière de givre." },
-                    { img: 'images/visages/couronne.jpg', alt: "Buste à la coiffe sculptée en éclats, posé en intérieur",
+                    { img: 'images/couronne.jpg', alt: "Buste à la coiffe sculptée en éclats, posé en intérieur",
                         cap: "La coiffe devient sculpture." },
-                    { img: 'images/visages/totem-multiple.jpg', alt: "Plusieurs visages superposés, écorce et bois clair",
+                    { img: 'images/totem-multiple.jpg', alt: "Plusieurs visages superposés, écorce et bois clair",
                         cap: "Plusieurs têtes, une seule bille." },
-                    { img: 'images/visages/brut.jpg', alt: "Visage taillé à même une branche brute",
+                    { img: 'images/brut.jpg', alt: "Visage taillé à même une branche brute",
                         cap: "Encore aveugle, sur la branche." },
-                    { img: 'images/visages/ecorce-2.jpg', alt: "Visage en cours de dégrossissage, écorce encore présente",
+                    { img: 'images/ecorce-2.jpg', alt: "Visage en cours de dégrossissage, écorce encore présente",
                         cap: "En devenir." },
-                    { img: 'images/visages/texture.jpg', alt: "Gros plan sur le grain du bois sculpté",
+                    { img: 'images/texture.jpg', alt: "Gros plan sur le grain du bois sculpté",
                         cap: "Le grain, de très près." }
                 ] }
         };
@@ -1039,7 +1039,7 @@
         html += `
           <div data-section="atelier"><div class="page page-photo-text">
             <span class="section-label">Noir&amp;Blanc</span>
-            <img class="photo-bg" src="images/atelier/noir-blanc.jpg" alt="Visages sculptés au sol, lumière de forêt">
+            <img class="photo-bg" src="images/noir-blanc.jpg" alt="Visages sculptés au sol, lumière de forêt">
             <div class="photo-overlay"></div>
           </div></div>
         `;
@@ -1047,12 +1047,12 @@
         html += `
           <div data-section="contact"><div class="page page-photo-text">
             <span class="section-label">Atelier</span>
-            <img class="photo-bg" src="images/atelier/couple-couche.jpg" alt="Couple-totem couché, sculpture en bois">
+            <img class="photo-bg" src="images/couple-couche.jpg" alt="Couple-totem couché, sculpture en bois">
             <div class="photo-overlay"></div>
           </div></div>
           <div data-section="contact"><div class="page bg-champ">
             <span class="section-label">Atelier</span>
-            <img class="contact-img" src="images/carnet/contact.png" alt="Coordonnées de l'atelier">
+            <img class="contact-img" src="images/contact.png" alt="Coordonnées de l'atelier">
           </div></div>
         `;
 
