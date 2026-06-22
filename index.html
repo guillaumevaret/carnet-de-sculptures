@@ -520,6 +520,8 @@
             padding: 0 9% 10%;
         }
         .contact-img {
+            position: relative;
+            z-index: 2;
             width: min(82%, 380px);
             margin-top: 0.6rem;
         }
@@ -720,7 +722,7 @@
                     <div class="cover-text">
                         <h1>Carnet de sculptures</h1>
                         <p>Guillaume Varet</p>
-                        <p class="cover-version">V2.07</p>
+                        <p class="cover-version">V2.09</p>
                     </div>
                 </div>
 
@@ -1077,11 +1079,8 @@
         html += `
           <div data-section="contact"><div class="page page-photo-text">
             <span class="section-label">Atelier</span>
-            <img class="photo-bg" src="images/couple-couche.jpg" alt="Couple-totem couché, sculpture en bois">
+            <img class="photo-bg" src="images/etabli.jpg" alt="Guillaume Varet au travail, établi de chantier">
             <div class="photo-overlay"></div>
-          </div></div>
-          <div data-section="contact"><div class="page bg-champ">
-            <span class="section-label">Atelier</span>
             <img class="contact-img" src="images/contact.png" alt="Coordonnées de l'atelier">
           </div></div>
         `;
