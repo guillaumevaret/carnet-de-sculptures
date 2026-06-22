@@ -413,8 +413,9 @@
         .stamp {
             position: absolute;
             top: 5%;
-            right: 6%;
-            width: clamp(58px, 9vw, 84px);
+            right: calc(6% + 50px);
+            width: clamp(113px, 17.5vw, 164px);
+            transform: rotate(-3deg);
         }
 
         /* ── content pages ── */
@@ -467,8 +468,13 @@
             width: 100%;
             height: 34vh;
             object-fit: cover;
+            object-position: center;
             display: block;
         }
+        .polaroid img.focus-left   { object-position: left center; }
+        .polaroid img.focus-right  { object-position: right center; }
+        .polaroid img.focus-top    { object-position: center top; }
+        .polaroid img.focus-bottom { object-position: center bottom; }
         .polaroid-band {
             height: 92px;
             display: flex;
@@ -742,7 +748,7 @@
                     <div class="cover-text">
                         <h1>Carnet de sculptures</h1>
                         <p>Guillaume Varet</p>
-                        <p class="cover-version">V2.22</p>
+                        <p class="cover-version">V2.33</p>
                     </div>
                 </div>
 
@@ -994,21 +1000,10 @@
 
         // ─── data ──────────────────────────────────────────────────────────
         const DATA = {
-            geants: { bg: 'bg-foret', label: 'Géants', pages: [
-                    { img: 'images/sequoia.jpg', alt: "Sculpture monumentale en cours, à même un douglas, échafaudage et château en arrière-plan",
-                        cap: "Un douglas entier, sculpté debout." },
-                    { img: 'images/couple-totem.jpg', alt: "Deux silhouettes enlacées sculptées dans un tronc debout, jardin",
-                        cap: "Deux silhouettes enlacées, à même un tronc encore debout." }
-                ] },
+            geants: { bg: 'bg-foret', label: 'Géants', pages: [] },
             impromptu: { bg: 'bg-champ', label: 'Impromptu', pages: [
-                    { img: 'images/corbeau.jpg', alt: "Oiseau facétieux au chapeau, posé sur deux jambes en bois",
-                        cap: "Un chapeau trouvé, un oiseau qui s'impose." },
-                    { img: 'images/bouddha.jpg', alt: "Buste détaillé, mains jointes, coiffe travaillée",
-                        cap: "Un visage recueilli." },
-                    { img: 'images/marmottes.jpg', alt: "Deux marmottes sculptées sur une souche, vue de dos",
-                        cap: "Deux marmottes, blotties sur une souche." },
                     { img: 'images/saxophoniste.jpg', alt: "Personnage félin anthropomorphe tenant un instrument, fond sombre",
-                        cap: "Un musicien qu'on n'attendait pas." },
+                        cap: "Et Manu, tu descends ?" },
                     { img: 'images/crapaud.jpg', alt: "Forme abstraite émergeant du bois brut, sous-bois en automne",
                         cap: "Une forme entre figure et paysage." },
                     { img: 'images/lunien.jpg', alt: "Masque creusé dans une bille fendue, contre un mur de pierre",
@@ -1188,15 +1183,13 @@
             return `
               <div class="polaroid" style="position:absolute; left:${left}px; top:${top}px; transform:rotate(${tilt}deg); z-index:${z};">
                 ${tapeHTML()}
-                <img src="${it.img}" alt="${it.alt}" loading="lazy">
+                <img src="${it.img}" alt="${it.alt}" class="${it.focus ?? ''}" loading="lazy">
                 <div class="polaroid-band"><p>${it.cap ?? ''}</p></div>
               </div>`;
         }
 
         function photoPageHTML(bgClass, label, it) {
             const tilt = nextTilt();
-            // Offset gaussien autour du centre, clampé pour ne pas sortir de la page
-            // sigma=35 → ~99% des valeurs dans ±100, valeurs extrêmes capées dans ±90/±60
             const dx = Math.max(-90, Math.min(90, gauss(35)));
             const dy = Math.max(-60, Math.min(60, gauss(25)));
             return `
@@ -1204,7 +1197,7 @@
               <span class="section-label">${label}</span>
               <div class="polaroid" style="transform: translate(${dx.toFixed(0)}px, ${dy.toFixed(0)}px) rotate(${tilt}deg); position:relative; margin:auto;">
                 ${tapeHTML()}
-                <img src="${it.img}" alt="${it.alt}" loading="lazy">
+                <img src="${it.img}" alt="${it.alt}" class="${it.focus ?? ''}" loading="lazy">
                 <div class="polaroid-band"><p>${it.cap}</p></div>
               </div>
             </div>`;
@@ -1221,6 +1214,49 @@
             });
         });
 
+        // ── Géants : sequoia + couple-totem sur la même page ──────────────
+        const geantsItems = [
+            { img: 'images/sequoia.jpg',     alt: "Douglas sculpté debout",              cap: "Souche de douglas, 8m40 × 2m\u2300", focus: 'focus-right' },
+            { img: 'images/couple-totem.jpg', alt: "Deux silhouettes enlacées dans un tronc debout", cap: "Deux silhouettes entrelacées, à même le bois", focus: 'focus-right', prio: 1 }
+        ];
+        html += `<div data-section="geants"><div class="page bg-foret" id="page-geants-double" style="overflow:hidden;">
+            <span class="section-label">Géants</span>
+          </div></div>`;
+
+        // marmottes
+        html += `<div data-section="geants">${photoPageHTML('bg-foret', 'Géants', {
+            img: 'images/marmottes.jpg',
+            alt: 'Deux marmottes sculptées sur une souche, vue de dos',
+            cap: 'Sœur marmotte, ne vois-tu rien venir…'
+        })}</div>`;
+
+        // coucher de soleil, cadré haut
+        html += `<div data-section="geants">${photoPageHTML('bg-foret', 'Géants', {
+            img: 'images/coucher-de-soleil.jpg',
+            alt: 'Silhouette de sculpture au coucher de soleil',
+            cap: 'Que le soleil qui rougeoit…',
+            focus: 'focus-top'
+        })}</div>`;
+
+        // ── Impromptu : corbeau + balade-velo sur la même page ─────────────
+        const corbeauItems = [
+            { img: 'images/corbeau.jpg',    alt: 'Oiseau au chapeau sur deux jambes en bois', cap: 'Le corbak au chapeau', prio: 1 },
+            { img: 'images/balade-velo.jpg', alt: 'Oiseau bizarre en balade à vélo',           cap: '' }
+        ];
+        html += `<div data-section="impromptu"><div class="page bg-champ" id="page-corbeau-double" style="overflow:hidden;">
+            <span class="section-label">Impromptu</span>
+          </div></div>`;
+
+        // ── Impromptu : bouddha triple page ────────────────────────────────
+        const bouddhaItems = [
+            { img: 'images/bouddha2.jpg', alt: 'Bouddha de dos dans la forêt',           cap: '', prio: 1 },
+            { img: 'images/bouddha.jpg',  alt: 'Buste détaillé, mains jointes',          cap: '', prio: 2 },
+            { img: 'images/bouddha1.jpg', alt: 'Bouddha de face, regard apaisé',         cap: '', prio: 3 }
+        ];
+        html += `<div data-section="impromptu"><div class="page bg-champ" id="page-bouddha-triple" style="overflow:hidden;">
+            <span class="section-label">Impromptu</span>
+          </div></div>`;
+
         const nb1Dx = Math.max(-90, Math.min(90, gauss(35)));
         const nb1Dy = Math.max(-60, Math.min(60, gauss(25)));
         const nb1Tilt = nextTilt();
@@ -1230,14 +1266,14 @@
             <div class="polaroid" style="transform: translate(${nb1Dx.toFixed(0)}px, ${nb1Dy.toFixed(0)}px) rotate(${nb1Tilt}deg); position:relative; margin:auto;">
               ${tapeHTML()}
               <img src="images/nb-3.jpg" alt="Spirales sculptées, cernes du bois apparents">
-              <div class="polaroid-band"><p>A m'assoir sur un...</p></div>
+              <div class="polaroid-band"><p></p></div>
             </div>
           </div></div>
         `;
 
         const nbItems2 = [
-            { img: 'images/couple-couche.jpg', alt: 'Couple-totem couché', cap: '' },
-            { img: 'images/nb-2.jpg', alt: 'Visages sculptés au sol', cap: '' }
+            { img: 'images/couple-couche.jpg', alt: 'Couple-totem couché', cap: '', focus: 'focus-right' },
+            { img: 'images/nb-2.jpg', alt: 'Visages sculptés au sol', cap: "A m'assoir sur un banc...", prio: 1, focus: 'focus-left' }
         ];
 
         html += `
@@ -1248,6 +1284,84 @@
 
         // Les polaroids de la page double sont injectés après que le DOM existe,
         // pour pouvoir mesurer les vraies dimensions de la page
+        function buildBouddhaTriple() {
+            const pageEl = document.getElementById('page-bouddha-triple');
+            if (!pageEl || pageEl.querySelector('.polaroid')) return;
+            const mobile = window.innerWidth <= 720;
+            const tilts = [parseFloat(nextTilt()), parseFloat(nextTilt()), parseFloat(nextTilt())];
+            const positions = mobile ? [
+                { left: '4%',  top: '6%' },
+                { right: '4%', top: '6%' },
+                { left: '15%', bottom: '4%' }
+            ] : [
+                { left: '6%',  top: '4%' },
+                { right: '4%', top: '4%' },
+                { left: '20%', bottom: '4%' }
+            ];
+            // trier par prio décroissante → z plus élevé pour prio plus petite
+            const sorted = bouddhaItems.map((it, i) => ({ it, i }))
+                .sort((a, b) => (a.it.prio ?? 0) - (b.it.prio ?? 0));
+            const zMap = {}; sorted.forEach(({ i }, rank) => { zMap[i] = bouddhaItems.length - rank; });
+
+            bouddhaItems.forEach((it, i) => {
+                const pos = positions[i];
+                const posCss = Object.entries(pos).map(([k, v]) => `${k}:${v}`).join(';');
+                const div = document.createElement('div');
+                div.className = 'polaroid';
+                div.style.cssText = `position:absolute;${posCss};transform:rotate(${tilts[i]}deg);z-index:${zMap[i]};`;
+                div.innerHTML = `${tapeHTML()}<img src="${it.img}" alt="${it.alt}" class="${it.focus ?? ''}" loading="lazy"><div class="polaroid-band"><p>${it.cap}</p></div>`;
+                pageEl.appendChild(div);
+            });
+        }
+
+        function buildCorbeauDouble() {
+            const pageEl = document.getElementById('page-corbeau-double');
+            if (!pageEl || pageEl.querySelector('.polaroid')) return;
+            const mobile = window.innerWidth <= 720;
+            const tilts = [parseFloat(nextTilt()), parseFloat(nextTilt())];
+            const positions = mobile ? [
+                { left: '4%',  top: '8%' },
+                { right: '4%', bottom: '4%' }
+            ] : [
+                { left: '6%',  top: '4%' },
+                { right: '4%', bottom: '4%' }
+            ];
+            corbeauItems.forEach((it, i) => {
+                const pos = positions[i];
+                const posCss = Object.entries(pos).map(([k, v]) => `${k}:${v}`).join(';');
+                const z = it.prio === 1 ? 3 : 1;
+                const div = document.createElement('div');
+                div.className = 'polaroid';
+                div.style.cssText = `position:absolute;${posCss};transform:rotate(${tilts[i]}deg);z-index:${z};`;
+                div.innerHTML = `${tapeHTML()}<img src="${it.img}" alt="${it.alt}" class="${it.focus ?? ''}" loading="lazy"><div class="polaroid-band"><p>${it.cap}</p></div>`;
+                pageEl.appendChild(div);
+            });
+        }
+
+        function buildGeantsDouble() {
+            const pageEl = document.getElementById('page-geants-double');
+            if (!pageEl || pageEl.querySelector('.polaroid')) return;
+            const mobile = window.innerWidth <= 720;
+            const tilts = [parseFloat(nextTilt()), parseFloat(nextTilt())];
+            const positions = mobile ? [
+                { left: '4%',  top: '8%' },
+                { right: '4%', bottom: '4%' }
+            ] : [
+                { left: '6%',  top: '4%' },
+                { right: '4%', bottom: '4%' }
+            ];
+            geantsItems.forEach((it, i) => {
+                const pos = positions[i];
+                const posCss = Object.entries(pos).map(([k, v]) => `${k}:${v}`).join(';');
+                const z = it.prio === 1 ? 3 : 1;
+                const div = document.createElement('div');
+                div.className = 'polaroid';
+                div.style.cssText = `position:absolute;${posCss};transform:rotate(${tilts[i]}deg);z-index:${z};`;
+                div.innerHTML = `${tapeHTML()}<img src="${it.img}" alt="${it.alt}" class="${it.focus ?? ''}" loading="lazy"><div class="polaroid-band"><p>${it.cap}</p></div>`;
+                pageEl.appendChild(div);
+            });
+        }
+
         function buildNbDouble() {
             const pageEl = document.getElementById('page-nb2');
             if (!pageEl) return;
@@ -1271,10 +1385,11 @@
             nbItems2.forEach((it, i) => {
                 const pos = positions[i];
                 const posCss = Object.entries(pos).map(([k, v]) => `${k}:${v}`).join(';');
+                const z = it.prio === 1 ? 3 : it.prio === 2 ? 2 : 1;
                 const div = document.createElement('div');
                 div.className = 'polaroid';
-                div.style.cssText = `position:absolute;${posCss};transform:rotate(${tilts[i]}deg);z-index:${2 - i};`;
-                div.innerHTML = `${tapeHTML()}<img src="${it.img}" alt="${it.alt}" loading="lazy"><div class="polaroid-band"><p>${it.cap}</p></div>`;
+                div.style.cssText = `position:absolute;${posCss};transform:rotate(${tilts[i]}deg);z-index:${z};`;
+                div.innerHTML = `${tapeHTML()}<img src="${it.img}" alt="${it.alt}" class="${it.focus ?? ''}" loading="lazy"><div class="polaroid-band"><p>${it.cap}</p></div>`;
                 pageEl.appendChild(div);
             });
         }
@@ -1288,6 +1403,9 @@
         `;
 
         pagesEl.innerHTML = html;
+        buildBouddhaTriple();
+        buildCorbeauDouble();
+        buildGeantsDouble();
         buildNbDouble();
 
         // ─── index pages by section ──────────────────────────────────────
@@ -1521,6 +1639,15 @@
             if (e.key === 'ArrowRight') goNext();
             if (e.key === 'ArrowLeft') goPrev();
         });
+
+        // Roulette souris : passe les pages, debouncé pour éviter de sauter plusieurs pages d'un coup
+        let wheelTimer = null;
+        document.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            if (wheelTimer) return;
+            if (e.deltaY > 0) goNext(); else goPrev();
+            wheelTimer = setTimeout(() => { wheelTimer = null; }, 400);
+        }, { passive: false });
 
         // ─── corner hover expansion ─────────────────────────────────────
         const ANCHORS = {
