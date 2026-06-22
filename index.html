@@ -443,6 +443,8 @@
         }
 
         .section-label {
+            display: none;
+        }
             position: absolute;
             top: 5%;
             left: 9%;
@@ -748,7 +750,7 @@
                     <div class="cover-text">
                         <h1>Carnet de sculptures</h1>
                         <p>Guillaume Varet</p>
-                        <p class="cover-version">V2.33</p>
+                        <p class="cover-version">V2.49</p>
                     </div>
                 </div>
 
@@ -1004,34 +1006,24 @@
             impromptu: { bg: 'bg-champ', label: 'Impromptu', pages: [
                     { img: 'images/saxophoniste.jpg', alt: "Personnage félin anthropomorphe tenant un instrument, fond sombre",
                         cap: "Et Manu, tu descends ?" },
-                    { img: 'images/crapaud.jpg', alt: "Forme abstraite émergeant du bois brut, sous-bois en automne",
-                        cap: "Une forme entre figure et paysage." },
                     { img: 'images/lunien.jpg', alt: "Masque creusé dans une bille fendue, contre un mur de pierre",
-                        cap: "Un masque trouvé dans une bille fendue." },
+                        cap: "the flying moonspaceship" },
                     { img: 'images/poteau.jpg', alt: "Poteau de bois fin avec ferrures, contre un muret moussu",
-                        cap: "Un dernier geste, plus retenu." }
+                        cap: "Derrière le masque se cache..." }
                 ] },
             visages: { bg: 'bg-foret', label: 'Visages', pages: [
                     { img: 'images/epure.jpg', alt: "Visage très épuré, traits réduits à quelques lignes, dans l'herbe",
                         cap: "À peine esquissé." },
                     { img: 'images/pipe.jpg', alt: "Buste d'homme au chapeau et à la pipe, taille brute à la tronçonneuse",
-                        cap: "Le fumeur." },
+                        cap: "Pinocchio." },
                     { img: 'images/beret.jpg', alt: "Tête de femme au béret, traitement lisse et minimal",
-                        cap: "Poli jusqu'au silence." },
-                    { img: 'images/ecorce-1.jpg', alt: "Visage émergeant d'une bille de bois, écorce conservée en couronne",
-                        cap: "L'écorce, gardée en couronne." },
+                        cap: "Un peu de crème solaire ?" },
                     { img: 'images/bob.jpg', alt: "Tête au carré court, lumière rasante, jardin en hiver",
                         cap: "Lumière de givre." },
                     { img: 'images/couronne.jpg', alt: "Buste à la coiffe sculptée en éclats, posé en intérieur",
                         cap: "La coiffe devient sculpture." },
                     { img: 'images/totem-multiple.jpg', alt: "Plusieurs visages superposés, écorce et bois clair",
                         cap: "Plusieurs têtes, une seule bille." },
-                    { img: 'images/brut.jpg', alt: "Visage taillé à même une branche brute",
-                        cap: "Encore aveugle, sur la branche." },
-                    { img: 'images/ecorce-2.jpg', alt: "Visage en cours de dégrossissage, écorce encore présente",
-                        cap: "En devenir." },
-                    { img: 'images/texture.jpg', alt: "Gros plan sur le grain du bois sculpté",
-                        cap: "Le grain, de très près." }
                 ] }
         };
 
@@ -1238,6 +1230,15 @@
             focus: 'focus-top'
         })}</div>`;
 
+        // ── Géants : murène + danseuse de paille ──────────────────────────
+        const mureneItems = [
+            { img: 'images/murene.jpg',        alt: 'Murène sculptée en bois, gueule ouverte', cap: 'avec Collectif Atout A Z\'art' },
+            { img: 'images/danseuse-paille.jpg', alt: 'Danseuse de paille en posture yoga, montagne', cap: 'avec collectif' }
+        ];
+        html += `<div data-section="geants"><div class="page bg-foret" id="page-murene-double" style="overflow:hidden;">
+            <span class="section-label">Géants</span>
+          </div></div>`;
+
         // ── Impromptu : corbeau + balade-velo sur la même page ─────────────
         const corbeauItems = [
             { img: 'images/corbeau.jpg',    alt: 'Oiseau au chapeau sur deux jambes en bois', cap: 'Le corbak au chapeau', prio: 1 },
@@ -1249,13 +1250,61 @@
 
         // ── Impromptu : bouddha triple page ────────────────────────────────
         const bouddhaItems = [
-            { img: 'images/bouddha2.jpg', alt: 'Bouddha de dos dans la forêt',           cap: '', prio: 1 },
+            { img: 'images/bouddha2.jpg', alt: 'Bouddha de dos dans la forêt',           cap: '', prio: 2 },
             { img: 'images/bouddha.jpg',  alt: 'Buste détaillé, mains jointes',          cap: '', prio: 2 },
-            { img: 'images/bouddha1.jpg', alt: 'Bouddha de face, regard apaisé',         cap: '', prio: 3 }
+            { img: 'images/bouddha1.jpg', alt: 'Bouddha de face, regard apaisé',         cap: '', prio: 2 }
         ];
         html += `<div data-section="impromptu"><div class="page bg-champ" id="page-bouddha-triple" style="overflow:hidden;">
             <span class="section-label">Impromptu</span>
           </div></div>`;
+
+        // ── Impromptu : crapaud + la-bête + marvin ────────────────────────
+        const crapaudItems = [
+            { img: 'images/crapaud.jpg',  alt: 'Forme abstraite émergeant du bois brut', cap: 'Miammm (dixit le Goblin)', prio: 1 },
+            { img: 'images/la-bete.jpg',  alt: 'La bête, sculpture en bois',              cap: 'La bête',                  prio: 2 },
+            { img: 'images/marvin.jpg',   alt: 'Marvin, sculpture en bois',               cap: 'Marvin',                   prio: 2 }
+        ];
+        html += `<div data-section="impromptu"><div class="page bg-champ" id="page-crapaud-triple" style="overflow:hidden;">
+            <span class="section-label">Impromptu</span>
+          </div></div>`;
+
+        html += `<div data-section="impromptu">${photoPageHTML('bg-champ', 'Impromptu', {
+            img: 'images/penseur-mali.jpg',
+            alt: 'Penseur de Mali, sculpture en bois',
+            cap: "j'ai faim"
+        })}</div>`;
+
+        html += `<div data-section="impromptu">${photoPageHTML('bg-champ', 'Impromptu', {
+            img: 'images/jour-dorage.jpg',
+            alt: 'Sculpture accroupie devant une yourte, jour d\'orage',
+            cap: "Jour d'orage à la Yourte"
+        })}</div>`;
+
+        // ── Visages : ecorce-1 (sans texte) + brut ────────────────────────
+        const ecorceItems = [
+            { img: 'images/ecorce-1.jpg', alt: "Visage émergeant d'une bille, écorce en couronne", cap: '', prio: 1 },
+            { img: 'images/brut.jpg',     alt: "Visage taillé à même une branche brute",            cap: 'Encore aveugle, sur la branche.' }
+        ];
+        html += `<div data-section="visages"><div class="page bg-foret" id="page-ecorce-double" style="overflow:hidden;">
+            <span class="section-label">Visages</span>
+          </div></div>`;
+
+        // ── Visages : ecorce-2 + texture ──────────────────────────────────
+        const texturItems = [
+            { img: 'images/ecorce-2.jpg', alt: "Visage en cours de dégrossissage, écorce encore présente", cap: 'En devenir.' },
+            { img: 'images/texture.jpg',  alt: "Gros plan sur le grain du bois sculpté",                   cap: 'Le grain, de très près.' }
+        ];
+        html += `<div data-section="visages"><div class="page bg-foret" id="page-textur-double" style="overflow:hidden;">
+            <span class="section-label">Visages</span>
+          </div></div>`;
+
+        html += `<div data-section="visages">${photoPageHTML('bg-foret', 'Visages', {
+            img: 'images/visage-sanglier.jpg', alt: 'Visage-sanglier sculpté en bois', cap: ''
+        })}</div>`;
+
+        html += `<div data-section="visages">${photoPageHTML('bg-foret', 'Visages', {
+            img: 'images/visage-dino.jpg', alt: 'Visage-dinosaure sculpté en bois, neige sur la tête', cap: ''
+        })}</div>`;
 
         const nb1Dx = Math.max(-90, Math.min(90, gauss(35)));
         const nb1Dy = Math.max(-60, Math.min(60, gauss(25)));
@@ -1284,6 +1333,93 @@
 
         // Les polaroids de la page double sont injectés après que le DOM existe,
         // pour pouvoir mesurer les vraies dimensions de la page
+        // Tri par priorité, avec bruit aléatoire sur les ex-æquo pour varier l'ordre à chaque chargement
+        function prioSort(items) {
+            return items.map((it, i) => ({ it, i, noise: Math.random() }))
+                .sort((a, b) => {
+                    const diff = (a.it.prio ?? 0) - (b.it.prio ?? 0);
+                    return diff !== 0 ? diff : a.noise - b.noise; // même prio → ordre aléatoire
+                });
+        }
+
+        function buildTexturDouble() {
+            const pageEl = document.getElementById('page-textur-double');
+            if (!pageEl || pageEl.querySelector('.polaroid')) return;
+            const mobile = window.innerWidth <= 720;
+            const tilts = [parseFloat(nextTilt()), parseFloat(nextTilt())];
+            const positions = mobile ? [
+                { left: '4%',  top: '8%' },
+                { right: '4%', bottom: '4%' }
+            ] : [
+                { left: '6%',  top: '4%' },
+                { right: '4%', bottom: '4%' }
+            ];
+            texturItems.forEach((it, i) => {
+                const pos = positions[i];
+                const posCss = Object.entries(pos).map(([k, v]) => `${k}:${v}`).join(';');
+                const div = document.createElement('div');
+                div.className = 'polaroid';
+                div.style.cssText = `position:absolute;${posCss};transform:rotate(${tilts[i]}deg);z-index:${2 - i};`;
+                div.innerHTML = `${tapeHTML()}<img src="${it.img}" alt="${it.alt}" class="${it.focus ?? ''}" loading="lazy"><div class="polaroid-band"><p>${it.cap}</p></div>`;
+                pageEl.appendChild(div);
+            });
+        }
+
+        function buildEcorceDouble() {
+            const pageEl = document.getElementById('page-ecorce-double');
+            if (!pageEl || pageEl.querySelector('.polaroid')) return;
+            const mobile = window.innerWidth <= 720;
+            const tilts = [parseFloat(nextTilt()), parseFloat(nextTilt())];
+            const positions = mobile ? [
+                { left: '4%',  top: '8%' },
+                { right: '4%', bottom: '4%' }
+            ] : [
+                { left: '6%',  top: '4%' },
+                { right: '4%', bottom: '4%' }
+            ];
+            ecorceItems.forEach((it, i) => {
+                const pos = positions[i];
+                const posCss = Object.entries(pos).map(([k, v]) => `${k}:${v}`).join(';');
+                const z = it.prio === 1 ? 3 : 1;
+                const div = document.createElement('div');
+                div.className = 'polaroid';
+                div.style.cssText = `position:absolute;${posCss};transform:rotate(${tilts[i]}deg);z-index:${z};`;
+                div.innerHTML = `${tapeHTML()}<img src="${it.img}" alt="${it.alt}" class="${it.focus ?? ''}" loading="lazy"><div class="polaroid-band"><p>${it.cap}</p></div>`;
+                pageEl.appendChild(div);
+            });
+        }
+
+        function buildCrapaudTriple() {
+            const pageEl = document.getElementById('page-crapaud-triple');
+            if (!pageEl || pageEl.querySelector('.polaroid')) return;
+            const mobile = window.innerWidth <= 720;
+            const tilts = [parseFloat(nextTilt()), parseFloat(nextTilt()), parseFloat(nextTilt())];
+            const positions = mobile ? [
+                { left: '4%',  top: '6%' },
+                { right: '4%', top: '6%' },
+                { left: '15%', bottom: '4%' }
+            ] : [
+                { left: '6%',  top: '4%' },
+                { right: '4%', top: '4%' },
+                { left: '20%', bottom: '4%' }
+            ];
+            const sorted = prioSort(crapaudItems);
+            const zMap = {}, posMap = {};
+            sorted.forEach(({ i }, rank) => {
+                zMap[i] = crapaudItems.length - rank;
+                posMap[i] = positions[rank]; // position assignée selon rang trié = aléatoire pour les ex-æquo
+            });
+            crapaudItems.forEach((it, i) => {
+                const pos = posMap[i];
+                const posCss = Object.entries(pos).map(([k, v]) => `${k}:${v}`).join(';');
+                const div = document.createElement('div');
+                div.className = 'polaroid';
+                div.style.cssText = `position:absolute;${posCss};transform:rotate(${tilts[i]}deg);z-index:${zMap[i]};`;
+                div.innerHTML = `${tapeHTML()}<img src="${it.img}" alt="${it.alt}" class="${it.focus ?? ''}" loading="lazy"><div class="polaroid-band"><p>${it.cap}</p></div>`;
+                pageEl.appendChild(div);
+            });
+        }
+
         function buildBouddhaTriple() {
             const pageEl = document.getElementById('page-bouddha-triple');
             if (!pageEl || pageEl.querySelector('.polaroid')) return;
@@ -1299,12 +1435,15 @@
                 { left: '20%', bottom: '4%' }
             ];
             // trier par prio décroissante → z plus élevé pour prio plus petite
-            const sorted = bouddhaItems.map((it, i) => ({ it, i }))
-                .sort((a, b) => (a.it.prio ?? 0) - (b.it.prio ?? 0));
-            const zMap = {}; sorted.forEach(({ i }, rank) => { zMap[i] = bouddhaItems.length - rank; });
+            const sorted = prioSort(bouddhaItems);
+            const zMap = {}, posMap = {};
+            sorted.forEach(({ i }, rank) => {
+                zMap[i] = bouddhaItems.length - rank;
+                posMap[i] = positions[rank];
+            });
 
             bouddhaItems.forEach((it, i) => {
-                const pos = positions[i];
+                const pos = posMap[i];
                 const posCss = Object.entries(pos).map(([k, v]) => `${k}:${v}`).join(';');
                 const div = document.createElement('div');
                 div.className = 'polaroid';
@@ -1333,6 +1472,29 @@
                 const div = document.createElement('div');
                 div.className = 'polaroid';
                 div.style.cssText = `position:absolute;${posCss};transform:rotate(${tilts[i]}deg);z-index:${z};`;
+                div.innerHTML = `${tapeHTML()}<img src="${it.img}" alt="${it.alt}" class="${it.focus ?? ''}" loading="lazy"><div class="polaroid-band"><p>${it.cap}</p></div>`;
+                pageEl.appendChild(div);
+            });
+        }
+
+        function buildMureneDouble() {
+            const pageEl = document.getElementById('page-murene-double');
+            if (!pageEl || pageEl.querySelector('.polaroid')) return;
+            const mobile = window.innerWidth <= 720;
+            const tilts = [parseFloat(nextTilt()), parseFloat(nextTilt())];
+            const positions = mobile ? [
+                { left: '4%',  top: '8%' },
+                { right: '4%', bottom: '4%' }
+            ] : [
+                { left: '6%',  top: '4%' },
+                { right: '4%', bottom: '4%' }
+            ];
+            mureneItems.forEach((it, i) => {
+                const pos = positions[i];
+                const posCss = Object.entries(pos).map(([k, v]) => `${k}:${v}`).join(';');
+                const div = document.createElement('div');
+                div.className = 'polaroid';
+                div.style.cssText = `position:absolute;${posCss};transform:rotate(${tilts[i]}deg);z-index:${2 - i};`;
                 div.innerHTML = `${tapeHTML()}<img src="${it.img}" alt="${it.alt}" class="${it.focus ?? ''}" loading="lazy"><div class="polaroid-band"><p>${it.cap}</p></div>`;
                 pageEl.appendChild(div);
             });
@@ -1403,6 +1565,10 @@
         `;
 
         pagesEl.innerHTML = html;
+        buildMureneDouble();
+        buildTexturDouble();
+        buildEcorceDouble();
+        buildCrapaudTriple();
         buildBouddhaTriple();
         buildCorbeauDouble();
         buildGeantsDouble();
