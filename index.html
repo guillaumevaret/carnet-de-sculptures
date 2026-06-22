@@ -750,7 +750,7 @@
                     <div class="cover-text">
                         <h1>Carnet de sculptures</h1>
                         <p>Guillaume Varet</p>
-                        <p class="cover-version">V2.49</p>
+                        <p class="cover-version">V2.50</p>
                     </div>
                 </div>
 
@@ -1239,6 +1239,15 @@
             <span class="section-label">Géants</span>
           </div></div>`;
 
+        // ── Géants : chat-teigne + totem-detail ───────────────────────────
+        const chatTeigneItems = [
+            { img: 'images/chat-teigne.jpg',  alt: 'Totem et petite sculpture, festival', cap: 'le chat teigne' },
+            { img: 'images/totem-detail.jpg', alt: 'Détail de visage sculpté sur un totem', cap: '' }
+        ];
+        html += `<div data-section="geants"><div class="page bg-foret" id="page-chat-double" style="overflow:hidden;">
+            <span class="section-label">Géants</span>
+          </div></div>`;
+
         // ── Impromptu : corbeau + balade-velo sur la même page ─────────────
         const corbeauItems = [
             { img: 'images/corbeau.jpg',    alt: 'Oiseau au chapeau sur deux jambes en bois', cap: 'Le corbak au chapeau', prio: 1 },
@@ -1477,6 +1486,29 @@
             });
         }
 
+        function buildChatDouble() {
+            const pageEl = document.getElementById('page-chat-double');
+            if (!pageEl || pageEl.querySelector('.polaroid')) return;
+            const mobile = window.innerWidth <= 720;
+            const tilts = [parseFloat(nextTilt()), parseFloat(nextTilt())];
+            const positions = mobile ? [
+                { left: '4%',  top: '8%' },
+                { right: '4%', bottom: '4%' }
+            ] : [
+                { left: '6%',  top: '4%' },
+                { right: '4%', bottom: '4%' }
+            ];
+            chatTeigneItems.forEach((it, i) => {
+                const pos = positions[i];
+                const posCss = Object.entries(pos).map(([k, v]) => `${k}:${v}`).join(';');
+                const div = document.createElement('div');
+                div.className = 'polaroid';
+                div.style.cssText = `position:absolute;${posCss};transform:rotate(${tilts[i]}deg);z-index:${2 - i};`;
+                div.innerHTML = `${tapeHTML()}<img src="${it.img}" alt="${it.alt}" class="${it.focus ?? ''}" loading="lazy"><div class="polaroid-band"><p>${it.cap}</p></div>`;
+                pageEl.appendChild(div);
+            });
+        }
+
         function buildMureneDouble() {
             const pageEl = document.getElementById('page-murene-double');
             if (!pageEl || pageEl.querySelector('.polaroid')) return;
@@ -1565,6 +1597,7 @@
         `;
 
         pagesEl.innerHTML = html;
+        buildChatDouble();
         buildMureneDouble();
         buildTexturDouble();
         buildEcorceDouble();
