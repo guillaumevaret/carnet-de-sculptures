@@ -320,7 +320,25 @@
             background: rgba(255, 255, 255, 0.7);
         }
 
-        /* ── page Noir&Blanc : 2 photos côte à côte (ou 1 centrée) ── */
+        /* ── double polaroid : diagonale, superposition minimale, max page utilisée ── */
+        .page-double-polaroid {
+            position: relative;
+            overflow: hidden;
+        }
+        .page-double-polaroid .polaroid:first-of-type {
+            position: absolute;
+            top: 2%;
+            left: 2%;
+            z-index: 2;
+        }
+        .page-double-polaroid .polaroid:last-of-type {
+            position: absolute;
+            bottom: 2%;
+            right: 2%;
+            z-index: 1;
+        }
+
+
         .page-nb {
             padding: 8px !important;
             flex-direction: row;
@@ -418,6 +436,9 @@
         }
         .page.bg-champ {
             background: linear-gradient(rgba(243, 236, 217, 0.32), rgba(243, 236, 217, 0.5)), url('images/aquarelle-champ.jpg') center/cover no-repeat;
+        }
+        .page.bg-nb {
+            background: url('images/noir-blanc.jpg') center/cover no-repeat;
         }
 
         .section-label {
@@ -721,7 +742,7 @@
                     <div class="cover-text">
                         <h1>Carnet de sculptures</h1>
                         <p>Guillaume Varet</p>
-                        <p class="cover-version">V2.11</p>
+                        <p class="cover-version">V2.22</p>
                     </div>
                 </div>
 
@@ -1025,8 +1046,7 @@
         let tiltSeed = 0;
 
         function nextTilt() {
-            tiltSeed++;
-            const sign = tiltSeed % 2 === 0 ? 1 : -1;
+            const sign = Math.random() < 0.5 ? 1 : -1; // signe vraiment random
             const magnitude = 1.4 + Math.random() * 2.8;
             return (sign * magnitude).toFixed(1);
         }
@@ -1040,18 +1060,156 @@
             return diag.map(c => `<span class="tape ${c}"></span>`).join('');
         }
 
+        // ─── placement random de polaroids dans la zone safe ──────────────
+        // PAGE_W/H : dimensions de .page-frame (desktop)
+        // BIND : espace réservé aux anneaux (gauche desktop, haut mobile)
+        const PAGE_W = 736, PAGE_H = 640;
+        const BIND_LEFT = 24, BIND_TOP_MOBILE = 24;
+        // Polaroid dimensions (doivent rester constantes, réalité physique)
+        const POL_W = 320, POL_H = 332; // largeur + photo 34vh≈230 + band 92
+
+        // Gaussienne simple (Box-Muller) centrée en 0, écart-type sigma
+        function gauss(sigma) {
+            const u = 1 - Math.random(), v = Math.random();
+            return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v) * sigma;
+        }
+
+        // Bounding box d'un polaroid centré en (cx,cy) avec rotation deg
+        function bbox(cx, cy, w, h, deg) {
+            const r = deg * Math.PI / 180;
+            const cos = Math.abs(Math.cos(r)), sin = Math.abs(Math.sin(r));
+            const bw = w * cos + h * sin, bh = w * sin + h * cos;
+            return { x: cx - bw / 2, y: cy - bh / 2, w: bw, h: bh };
+        }
+
+        // Zone safe : left=BIND_LEFT, top=0, right=PAGE_W, bottom=PAGE_H
+        function safeZone(mobile) {
+            return {
+                x1: mobile ? 0 : BIND_LEFT,
+                y1: mobile ? BIND_TOP_MOBILE : 0,
+                x2: PAGE_W,
+                y2: PAGE_H
+            };
+        }
+
+        function clampToSafe(cx, cy, w, h, deg, mobile) {
+            const z = safeZone(mobile);
+            const r = deg * Math.PI / 180;
+            const cos = Math.abs(Math.cos(r)), sin = Math.abs(Math.sin(r));
+            const bw = (w * cos + h * sin) / 2, bh = (w * sin + h * cos) / 2;
+            return {
+                cx: Math.min(Math.max(cx, z.x1 + bw), z.x2 - bw),
+                cy: Math.min(Math.max(cy, z.y1 + bh), z.y2 - bh)
+            };
+        }
+
+        // Chevauchement entre deux bboxes (approximation rectangulaire)
+        function overlap(a, b) {
+            return Math.max(0, Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x)) *
+                   Math.max(0, Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y));
+        }
+
+        // Positions cibles selon le nombre et l'index (coins / bords / centre)
+        function targetPositions(n, mobile) {
+            const z = safeZone(mobile);
+            const cx = (z.x1 + z.x2) / 2, cy = (z.y1 + z.y2) / 2;
+            const mx = (z.x2 - z.x1) * 0.28, my = (z.y2 - z.y1) * 0.28;
+            if (n === 1) return [{ cx, cy }]; // centre
+            if (n === 2) return [
+                { cx: cx - mx, cy: cy - my }, // coin haut-gauche
+                { cx: cx + mx, cy: cy + my }  // coin bas-droite
+            ];
+            if (n === 3) return [
+                { cx: cx - mx, cy: cy - my },
+                { cx: cx + mx, cy: cy - my },
+                { cx, cy: cy + my }
+            ];
+            // >3 : coins + centre
+            return [
+                { cx: cx - mx, cy: cy - my },
+                { cx: cx + mx, cy: cy - my },
+                { cx: cx - mx, cy: cy + my },
+                { cx: cx + mx, cy: cy + my },
+                { cx, cy }
+            ].slice(0, n);
+        }
+
+        // Place n polaroids, retourne tableau de {cx, cy, tilt, z}
+        function placePolaroids(items, mobile) {
+            const n = items.length;
+            const tilts = items.map(() => parseFloat(nextTilt()));
+            const targets = targetPositions(n, mobile);
+
+            // Trier par priorité (undefined=0=random z parmi les non-prioritaires)
+            const sorted = items.map((it, i) => ({ it, i, prio: it.prio ?? 0, tilt: tilts[i], target: targets[i] }));
+            // prio 0 = random order among themselves
+            sorted.sort((a, b) => (b.prio || 0) - (a.prio || 0));
+
+            const placed = [];
+            sorted.forEach((item, rank) => {
+                // Position de base = target + bruit gaussien léger
+                let cx = item.target.cx + gauss(18);
+                let cy = item.target.cy + gauss(18);
+                const clamped = clampToSafe(cx, cy, POL_W, POL_H, item.tilt, mobile);
+                cx = clamped.cx; cy = clamped.cy;
+
+                // Si chevauchement excessif avec déjà placés, nudge vers zone libre
+                let attempts = 0;
+                while (attempts < 20) {
+                    const bb = bbox(cx, cy, POL_W, POL_H, item.tilt);
+                    const totalOverlap = placed.reduce((s, p) => s + overlap(bb, bbox(p.cx, p.cy, POL_W, POL_H, p.tilt)), 0);
+                    if (totalOverlap < POL_W * POL_H * 0.35) break; // <35% de chevauchement = ok
+                    // Pousse vers la cible en s'éloignant du centre de masse des placés
+                    const mass = placed.reduce((acc, p) => ({ x: acc.x + p.cx, y: acc.y + p.cy }), { x: 0, y: 0 });
+                    const mx2 = placed.length ? mass.x / placed.length : cx;
+                    const my2 = placed.length ? mass.y / placed.length : cy;
+                    const dx = cx - mx2, dy = cy - my2;
+                    const len = Math.sqrt(dx * dx + dy * dy) || 1;
+                    cx += (dx / len) * 20; cy += (dy / len) * 20;
+                    const c2 = clampToSafe(cx, cy, POL_W, POL_H, item.tilt, mobile);
+                    cx = c2.cx; cy = c2.cy;
+                    attempts++;
+                }
+
+                placed.push({ ...item, cx, cy, z: n - rank }); // prio haute = z plus grand
+            });
+
+            // Remettre dans l'ordre original pour la génération HTML
+            const result = new Array(n);
+            placed.forEach(p => { result[p.i] = p; });
+            return result;
+        }
+
+        function polaroidHTML(it, placement) {
+            const { cx, cy, tilt, z } = placement;
+            // left/top = coin haut-gauche du polaroid (pas le centre)
+            const left = (cx - POL_W / 2).toFixed(1);
+            const top  = (cy - POL_H / 2).toFixed(1);
+            return `
+              <div class="polaroid" style="position:absolute; left:${left}px; top:${top}px; transform:rotate(${tilt}deg); z-index:${z};">
+                ${tapeHTML()}
+                <img src="${it.img}" alt="${it.alt}" loading="lazy">
+                <div class="polaroid-band"><p>${it.cap ?? ''}</p></div>
+              </div>`;
+        }
+
         function photoPageHTML(bgClass, label, it) {
             const tilt = nextTilt();
+            // Offset gaussien autour du centre, clampé pour ne pas sortir de la page
+            // sigma=35 → ~99% des valeurs dans ±100, valeurs extrêmes capées dans ±90/±60
+            const dx = Math.max(-90, Math.min(90, gauss(35)));
+            const dy = Math.max(-60, Math.min(60, gauss(25)));
             return `
             <div class="page ${bgClass}">
               <span class="section-label">${label}</span>
-              <div class="polaroid" style="transform: rotate(${tilt}deg);">
+              <div class="polaroid" style="transform: translate(${dx.toFixed(0)}px, ${dy.toFixed(0)}px) rotate(${tilt}deg); position:relative; margin:auto;">
                 ${tapeHTML()}
                 <img src="${it.img}" alt="${it.alt}" loading="lazy">
                 <div class="polaroid-band"><p>${it.cap}</p></div>
               </div>
             </div>`;
         }
+
 
         // ─── build pages ──────────────────────────────────────────────────
         const pagesEl = document.getElementById('pages');
@@ -1063,28 +1221,74 @@
             });
         });
 
+        const nb1Dx = Math.max(-90, Math.min(90, gauss(35)));
+        const nb1Dy = Math.max(-60, Math.min(60, gauss(25)));
+        const nb1Tilt = nextTilt();
         html += `
-          <div data-section="atelier"><div class="page page-nb">
-            <span class="section-label">Noir&Blanc</span>
-            <div class="nb-photo"><img src="images/nb-1.jpg" alt="Couple-totem couché, visages enchevêtrés, vue rapprochée"></div>
-            <div class="nb-photo"><img src="images/nb-2.jpg" alt="Série de visages sculptés au sol, lumière de forêt tachée"></div>
-          </div></div>
-          <div data-section="atelier"><div class="page page-nb">
-            <span class="section-label">Noir&Blanc</span>
-            <div class="nb-photo solo"><img src="images/nb-3.jpg" alt="Détail de spirales sculptées, cernes du bois apparents, vue plongeante"></div>
+          <div data-section="atelier"><div class="page bg-nb">
+            <span class="section-label">Noir&amp;Blanc</span>
+            <div class="polaroid" style="transform: translate(${nb1Dx.toFixed(0)}px, ${nb1Dy.toFixed(0)}px) rotate(${nb1Tilt}deg); position:relative; margin:auto;">
+              ${tapeHTML()}
+              <img src="images/nb-3.jpg" alt="Spirales sculptées, cernes du bois apparents">
+              <div class="polaroid-band"><p>A m'assoir sur un...</p></div>
+            </div>
           </div></div>
         `;
 
+        const nbItems2 = [
+            { img: 'images/couple-couche.jpg', alt: 'Couple-totem couché', cap: '' },
+            { img: 'images/nb-2.jpg', alt: 'Visages sculptés au sol', cap: '' }
+        ];
+
         html += `
-          <div data-section="contact"><div class="page page-photo-text">
-            <span class="section-label">Atelier</span>
+          <div data-section="atelier"><div class="page bg-nb" id="page-nb2" style="overflow:hidden;">
+            <span class="section-label">Noir&amp;Blanc</span>
+          </div></div>
+        `;
+
+        // Les polaroids de la page double sont injectés après que le DOM existe,
+        // pour pouvoir mesurer les vraies dimensions de la page
+        function buildNbDouble() {
+            const pageEl = document.getElementById('page-nb2');
+            if (!pageEl) return;
+            if (pageEl.querySelector('.polaroid')) return;
+
+            const mobile = window.innerWidth <= 720;
+            const tilts = [parseFloat(nextTilt()), parseFloat(nextTilt())];
+
+            // Positions en pourcentages — fonctionnent indépendamment des dimensions réelles,
+            // et sont calculées par rapport à .page qui est position:absolute inset:0 dans .page-frame.
+            // En desktop, la zone safe commence à 24px de la gauche (anneaux) — on s'en éloigne via left:6%.
+            // En mobile, la zone safe commence à 24px du haut — on s'en éloigne via top:6%.
+            const positions = mobile ? [
+                { left: '4%',  top: '8%' },               // polaroid 1 : haut, sous les anneaux
+                { right: '4%', bottom: '4%' }              // polaroid 2 : bas-droite
+            ] : [
+                { left: '6%',  top: '4%' },               // polaroid 1 : haut-gauche, après anneaux
+                { right: '4%', bottom: '4%' }              // polaroid 2 : bas-droite
+            ];
+
+            nbItems2.forEach((it, i) => {
+                const pos = positions[i];
+                const posCss = Object.entries(pos).map(([k, v]) => `${k}:${v}`).join(';');
+                const div = document.createElement('div');
+                div.className = 'polaroid';
+                div.style.cssText = `position:absolute;${posCss};transform:rotate(${tilts[i]}deg);z-index:${2 - i};`;
+                div.innerHTML = `${tapeHTML()}<img src="${it.img}" alt="${it.alt}" loading="lazy"><div class="polaroid-band"><p>${it.cap}</p></div>`;
+                pageEl.appendChild(div);
+            });
+        }
+
+        html += `
+          <div data-section="contact"><div class="page page-photo-text" style="justify-content:center !important; padding-bottom:20% !important;">
             <img class="photo-bg" src="images/etabli.jpg" alt="Atelier de Guillaume Varet">
             <div class="photo-overlay"></div>
-            <img class="contact-img" src="images/contact.png" alt="Coordonnées de l'atelier">
+            <img class="contact-img" src="images/contact.gif" alt="Coordonnées de l'atelier">
           </div></div>
         `;
 
         pagesEl.innerHTML = html;
+        buildNbDouble();
 
         // ─── index pages by section ──────────────────────────────────────
         const sections = {};
