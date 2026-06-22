@@ -1,0 +1,1382 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Carnet de sculptures — Guillaume Varet</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet" />
+    <style>
+        /* ── reset & base ── */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html,
+        body {
+            height: 100%;
+        }
+        body {
+            font-family: 'Caveat', cursive;
+            color: #4f4a40;
+            overflow: hidden;
+        }
+        img {
+            display: block;
+            max-width: 100%;
+        }
+
+        /* ── desk background ── */
+        .desk {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background: #1c1410 url('images/desk-bg.jpg') center/cover no-repeat;
+        }
+        .desk::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.6) 82%);
+        }
+
+        /* ── notebook ── */
+        .notebook {
+            position: relative;
+            width: min(92vw, 760px);
+            height: min(86vh, 640px);
+            margin: 7vh auto 0;
+        }
+
+        .page-frame {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 24px;
+            background: #f3ecd9;
+            background-image: repeating-linear-gradient(0deg, transparent, transparent 27px, rgba(120, 105, 80, 0.06) 28px);
+            border-radius: 2px;
+        }
+
+        .page-content {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+        }
+
+        /* ── binding rings ── */
+        .binding {
+            position: absolute;
+            left: 10px;
+            top: 8px;
+            bottom: 8px;
+            width: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            pointer-events: none;
+            z-index: 11;
+            transition: right 0.2s ease; /* pour le décalage mobile */
+        }
+
+        .hole-ring {
+            position: relative;
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+        }
+        .hole {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 10px;
+            height: 10px;
+            margin: -5px 0 0 -5px;
+            border-radius: 50%;
+            background: rgba(60, 50, 38, 0.5);
+            z-index: 8;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .ring-front {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 40px;
+            height: 16px;
+            margin: -8px 0 0 -40px;
+            border-radius: 50%;
+            border: 3.5px solid #7a7466;
+            border-top-color: #d8d4c4;
+            border-left-color: #c2bca8;
+            box-sizing: border-box;
+            z-index: 10;
+            /* clip‑path vertical par défaut (mobile) */
+            clip-path: polygon(50% 50%, 45% 100%, 100% 100%, 100% 0%, 0% 0%, 0% 50%, 50% 50%);
+        }
+
+        /* ── version desktop : anneau horizontal ── */
+        @media (min-width: 721px) {
+            .binding {
+                left: 10px;
+                top: 8px;
+                bottom: 8px;
+                right: auto; /* on annule le right dynamique */
+                width: 20px;
+                height: auto;
+                flex-direction: column;
+                justify-content: space-between;
+            }
+            .ring-front {
+                width: 40px;
+                height: 16px;
+                margin: -8px 0 0 -40px;
+                clip-path: polygon(50% 50%, 100% 55%, 100% 0%, 0% 0%, 0% 100%, 50% 100%, 50% 50%);
+            }
+        }
+
+        /* ── version mobile : anneau vertical (reliure en haut) ── */
+        @media (max-width: 720px) {
+            .binding {
+                top: 10px;
+                left: 8px;
+                right: 8px; /* valeur par défaut, sera augmentée dynamiquement */
+                bottom: auto;
+                width: auto;
+                height: 20px;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .ring-front {
+                width: 16px;
+                height: 40px;
+                margin: -40px 0 0 -8px;
+                clip-path: polygon(50% 50%, 45% 100%, 100% 100%, 100% 0%, 0% 0%, 0% 50%, 50% 50%);
+            }
+        }
+
+        /* ── side tabs ── */
+        .tabs {
+            position: absolute;
+            right: -34px;
+            top: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            z-index: 5;
+        }
+
+        .tab {
+            writing-mode: vertical-rl;
+            font-family: 'Kalam', cursive;
+            font-weight: 700;
+            font-size: 0.82rem;
+            letter-spacing: 0.02em;
+            color: #2b2417;
+            border: none;
+            cursor: pointer;
+            width: 34px;
+            flex: 1 1 0;
+            padding: 10px 12px 10px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+            transition: background 0.2s, color 0.2s, filter 0.2s, transform 0.2s;
+            will-change: transform, width;
+        }
+        /* Note : l'ancienne règle .tab.is-active{width:40px;margin-left:-6px} a été retirée —
+           elle ne s'appliquait plus qu'à Contact (seul onglet exclu du redimensionnement
+           dynamique en JS), ce qui le faisait grandir différemment des autres. */
+
+        /* couleurs de base */
+        .tab[data-tab="cover"] {
+            background: #7d7466;
+            flex: 0 0 44px;
+        }
+        .tab[data-tab="geants"] {
+            background: #c9a86a;
+        }
+        .tab[data-tab="impromptu"] {
+            background: #b97a4f;
+        }
+        .tab[data-tab="visages"] {
+            background: #8c8a5e;
+        }
+        .tab[data-tab="atelier"] {
+            background: #a05c4e;
+        }
+        .tab[data-tab="contact"] {
+            background: #6e7a5e;
+        }
+
+        /* onglets au‑dessus de l’actif : fond éclairci, texte blanc (sauf actif) */
+        .tab.highlight {
+            filter: brightness(1.4);
+        }
+        .tab.highlight:not(.is-active) {
+            color: white !important;
+        }
+
+        /* ── page edges (white lines) ── */
+        .page-edges {
+            position: absolute;
+            right: -34px;
+            width: 16px;
+            z-index: 6;
+            pointer-events: none;
+            overflow: hidden;
+            top: 0;
+            height: 0;
+        }
+        .edge-line {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 0;
+        }
+
+        /* ── dos de la page précédente : feuillet fantôme qui s'estompe vers le fond ── */
+        .page-back {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 60px;
+            background: #cdbf9a;
+            border-radius: 2px;
+            z-index: 1;
+            -webkit-mask-image: linear-gradient(to left, black 25%, transparent 95%);
+            mask-image: linear-gradient(to left, black 25%, transparent 95%);
+            display: none;
+            pointer-events: none;
+        }
+        .page-back.is-visible { display: block; }
+        .page-back .ghost-hole {
+            position: absolute;
+            right: 14px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(60, 50, 38, 0.4);
+        }
+        /* mode anneaux en haut : le dos passe au-dessus, s'estompe vers le haut */
+        .page-back.top-mode {
+            top: auto;
+            left: 0;
+            right: 0;
+            bottom: auto;
+            width: auto;
+            height: 60px;
+            -webkit-mask-image: linear-gradient(to top, black 25%, transparent 95%);
+            mask-image: linear-gradient(to top, black 25%, transparent 95%);
+        }
+        .page-back.top-mode .ghost-hole {
+            right: auto;
+            bottom: 14px;
+        }
+
+        /* ── pile sous .page-back : pages déjà tournées, même logique que la bande du bas ── */
+        .page-back-bottom {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 0;
+            height: 16px;
+            z-index: 1;
+            pointer-events: none;
+            overflow: visible;
+            display: none;
+        }
+        .page-back-bottom.is-visible { display: block; }
+        .edge-line-back-bottom {
+            position: absolute;
+            left: 0;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.7);
+        }
+
+        /* ── page edges, bord du bas (même principe, en relief sous la page) ── */
+        .page-edges-bottom {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 0;
+            height: 16px;
+            z-index: 6;
+            pointer-events: none;
+            overflow: visible;
+        }
+        .edge-line-bottom {
+            position: absolute;
+            left: 0;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.7);
+        }
+
+        /* ── page Noir&Blanc : 2 photos côte à côte (ou 1 centrée) ── */
+        .page-nb {
+            padding: 8px !important;
+            flex-direction: row;
+            gap: 6px;
+            align-items: stretch;
+            background: #1a1a1a;
+        }
+        .nb-photo {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            border-radius: 2px;
+        }
+        .nb-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .nb-photo.solo {
+            flex: 0 0 60%;
+            margin: 0 auto;
+        }
+
+
+        .cover {
+            position: absolute;
+            inset: 0;
+            display: none;
+        }
+        .cover.is-active {
+            display: block;
+        }
+        .cover-bg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .cover-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(18, 13, 8, 0.92) 0%, rgba(18, 13, 8, 0.25) 45%, rgba(18, 13, 8, 0.45) 100%);
+        }
+        .cover-text {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 7%;
+            z-index: 2;
+            text-align: center;
+            padding: 0 8%;
+        }
+        .cover-text h1 {
+            font-family: 'Caveat', cursive;
+            font-weight: 700;
+            font-size: clamp(2.2rem, 7vw, 3.6rem);
+            color: #f3ecd9;
+        }
+        .cover-text p {
+            font-family: 'Kalam', cursive;
+            font-size: 1.1rem;
+            margin-top: 0.3rem;
+            color: rgba(243, 236, 217, 0.75);
+        }
+        .cover-version {
+            font-size: 0.78rem !important;
+            opacity: 0.55;
+            margin-top: 0.2rem !important;
+        }
+        .stamp {
+            position: absolute;
+            top: 5%;
+            right: 6%;
+            width: clamp(58px, 9vw, 84px);
+        }
+
+        /* ── content pages ── */
+        .page {
+            position: absolute;
+            inset: 0;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8% 9%;
+            text-align: center;
+        }
+        .page.is-active {
+            display: flex;
+        }
+        .page.bg-foret {
+            background: linear-gradient(rgba(243, 236, 217, 0.3), rgba(243, 236, 217, 0.45)), url('images/aquarelle-foret.jpg') center/cover no-repeat;
+        }
+        .page.bg-champ {
+            background: linear-gradient(rgba(243, 236, 217, 0.32), rgba(243, 236, 217, 0.5)), url('images/aquarelle-champ.jpg') center/cover no-repeat;
+        }
+
+        .section-label {
+            position: absolute;
+            top: 5%;
+            left: 9%;
+            font-family: 'Caveat', cursive;
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: #2a2f47;
+            z-index: 3;
+        }
+        .page-photo-text .section-label {
+            color: #f3ecd9;
+        }
+
+        /* ── polaroid avec ombre ── */
+        .polaroid {
+            position: relative;
+            background: #fbf8f0;
+            padding: 10px 10px 0;
+            width: min(72%, 320px);
+            box-shadow: 4px 6px 12px rgba(0, 0, 0, 0.25), 1px 2px 4px rgba(0, 0, 0, 0.08);
+        }
+        .polaroid img {
+            width: 100%;
+            height: 34vh;
+            object-fit: cover;
+            display: block;
+        }
+        .polaroid-band {
+            height: 92px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 12px;
+        }
+        .polaroid-band p {
+            font-family: 'Caveat', cursive;
+            font-size: 1.4rem;
+            line-height: 1.2;
+            color: #4f4a40;
+            text-align: center;
+            max-width: 26ch;
+        }
+
+        .tape {
+            position: absolute;
+            width: 34px;
+            height: 16px;
+            background: rgba(230, 220, 188, 0.6);
+        }
+        .tape.tl {
+            top: -8px;
+            left: -8px;
+            transform: rotate(-45deg);
+        }
+        .tape.tr {
+            top: -8px;
+            right: -8px;
+            transform: rotate(45deg);
+        }
+        .tape.bl {
+            bottom: -8px;
+            left: -8px;
+            transform: rotate(45deg);
+        }
+        .tape.br {
+            bottom: -8px;
+            right: -8px;
+            transform: rotate(-45deg);
+        }
+
+        /* ── atelier / contact ── */
+        .page-photo-text {
+            padding: 0 !important;
+            justify-content: flex-end !important;
+        }
+        .photo-bg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .photo-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(18, 13, 8, 0.88) 0%, rgba(18, 13, 8, 0.15) 48%, rgba(18, 13, 8, 0.4) 100%);
+        }
+        .photo-overlay-text {
+            position: relative;
+            z-index: 2;
+            font-family: 'Caveat', cursive;
+            font-size: 1.4rem;
+            line-height: 1.45;
+            color: #f3ecd9;
+            max-width: 34ch;
+            padding: 0 9% 10%;
+        }
+        .contact-img {
+            position: relative;
+            z-index: 2;
+            width: min(82%, 380px);
+            margin-top: 0.6rem;
+        }
+
+        /* ── corners (flèche V1.28) ── */
+        .corner {
+            --fold-color: 70, 60, 46;
+            --fold-alpha: 0;
+            position: absolute;
+            width: 52px;
+            height: 52px;
+            cursor: pointer;
+            z-index: 6;
+            background-color: transparent;
+            border: none;
+            padding: 0;
+            transition: width 0.16s ease, height 0.16s ease, transform 0.2s ease;
+            background-image: linear-gradient(135deg, rgba(var(--fold-color), var(--fold-alpha)), rgba(var(--fold-color), var(--fold-alpha)));
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+            mix-blend-mode: normal;
+            will-change: transform;
+        }
+        .curl-svg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            display: block;
+        }
+        .corner-tl {
+            top: 0;
+            left: -64px;
+            transform: scale(-1, -1);
+        }
+        .corner-tr {
+            top: 0;
+            right: 0;
+            transform: scale(1, -1);
+        }
+        .corner-bl {
+            bottom: 0;
+            left: -64px;
+            transform: scale(-1, 1);
+        }
+        .corner-br {
+            bottom: 0;
+            right: 0;
+        }
+        .corner[hidden] {
+            display: none;
+        }
+
+        .corner-arrow {
+            position: absolute;
+            bottom: 13px;
+            color: #4f4a40;
+            opacity: 0.6;
+            pointer-events: none;
+            transition: opacity 0.16s ease, color 0.16s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .corner-bl .corner-arrow {
+            right: 13px;
+            transform: scaleX(-1); /* annule le scale(-1,1) du parent .corner-bl, pour garder la flèche telle que fournie */
+        }
+        .corner-br .corner-arrow {
+            right: 13px;
+        }
+        .corner:hover .corner-arrow {
+            opacity: 0.9;
+            color: #c0432f;
+        }
+
+        /* Flèche — tracé fourni par l'utilisateur */
+        .corner-arrow svg {
+            display: block;
+            width: 26px;
+            height: 26px;
+        }
+        .corner-arrow .arrow-path {
+            fill: currentColor;
+        }
+        .corner-arrow-mirror svg {
+            transform: scaleX(-1);
+        }
+
+        .page-counter {
+            position: absolute;
+            bottom: 4%;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-family: 'Kalam', cursive;
+            font-size: 0.85rem;
+            color: rgba(74, 70, 63, 0.55);
+        }
+
+        /* ── flip transitions ── */
+        .page.flip-next {
+            animation: flip-n 0.5s ease;
+        }
+        .page.flip-prev {
+            animation: flip-p 0.5s ease;
+        }
+        @keyframes flip-n {
+            from {
+                opacity: 0;
+                transform: translateX(22px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        @keyframes flip-p {
+            from {
+                opacity: 0;
+                transform: translateX(-22px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .page.flip-next,
+            .page.flip-prev {
+                animation: none;
+            }
+        }
+
+        /* ── responsive ── */
+        @media (max-width: 720px) {
+            body {
+                overflow-y: auto;
+            }
+            .notebook {
+                width: 90vw;
+                height: 78vh;
+                margin: 9vh auto 4vh;
+            }
+            .polaroid img {
+                height: 28vh;
+            }
+            .page-frame {
+                left: 0;
+                top: 24px;
+            }
+            .tabs {
+                top: 24px;
+            }
+            .page-edges {
+                width: 14px;
+            }
+            .edge-line {
+                width: 0.8px;
+            }
+            .page-edges-bottom {
+                height: 14px;
+            }
+            .edge-line-bottom {
+                height: 0.8px;
+            }
+            .page-back-bottom {
+                height: 14px;
+            }
+            .edge-line-back-bottom {
+                height: 0.8px;
+            }
+            .corner-tl, .corner-bl {
+                left: 0; /* annule le décalage horizontal du mode bureau, ne s'applique pas ici */
+            }
+            .corner-tl, .corner-tr {
+                top: -64px; /* remonté sur la zone du dos fantôme, qui est en haut en mode mobile */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="desk" aria-hidden="true"></div>
+
+    <div class="notebook">
+        <div class="page-back" id="page-back"></div>
+        <div class="page-back-bottom" id="page-back-bottom"></div>
+        <div class="page-frame" id="page-frame">
+            <div class="page-content" id="page-content">
+
+                <!-- COVER -->
+                <div class="cover is-active" id="cover">
+                    <img class="cover-bg" src="images/guillaume-varet-01.jpg" alt="Profil d'une sculpture en bois sur fond sombre incandescent" />
+                    <div class="cover-overlay"></div>
+                    <img class="stamp" src="images/timbre-foret-jour.gif" alt="" />
+                    <div class="cover-text">
+                        <h1>Carnet de sculptures</h1>
+                        <p>Guillaume Varet</p>
+                        <p class="cover-version">V2.11</p>
+                    </div>
+                </div>
+
+                <!-- pages injected by JS -->
+                <div id="pages"></div>
+
+                <div class="page-counter" id="page-counter"></div>
+            </div>
+
+            <!-- les 4 coins sont sortis de .page-content (qui a overflow:hidden) pour pouvoir
+                 déborder vers .page-back sans être rognés -->
+            <button class="corner corner-tl" data-dir="prev" aria-label="Page précédente" hidden>
+                <svg class="curl-svg" viewBox="0 0 1000 1000" preserveAspectRatio="none">
+                    <defs>
+                        <filter id="shadowBlur-tl" x="-30%" y="-30%" width="160%" height="160%">
+                            <feDropShadow dx="-10" dy="-10" stdDeviation="15" flood-color="#000000" flood-opacity="0.4" />
+                        </filter>
+                    </defs>
+                    <polygon class="curl-polygon" id="curl-tl" points="1000,200 250,800 350,950" fill="#000000" filter="url(#shadowBlur-tl)" />
+                </svg>
+            </button>
+            <button class="corner corner-tr" data-dir="next" aria-label="Page suivante" hidden>
+                <svg class="curl-svg" viewBox="0 0 1000 1000" preserveAspectRatio="none">
+                    <defs>
+                        <filter id="shadowBlur-tr" x="-30%" y="-30%" width="160%" height="160%">
+                            <feDropShadow dx="-10" dy="-10" stdDeviation="15" flood-color="#000000" flood-opacity="0.4" />
+                        </filter>
+                    </defs>
+                    <polygon class="curl-polygon" id="curl-tr" points="1000,200 250,800 350,950" fill="#000000" filter="url(#shadowBlur-tr)" />
+                </svg>
+            </button>
+            <button class="corner corner-bl" data-dir="prev" aria-label="Page précédente" hidden>
+                <svg class="curl-svg" viewBox="0 0 1000 1000" preserveAspectRatio="none">
+                    <defs>
+                        <filter id="shadowBlur-bl" x="-30%" y="-30%" width="160%" height="160%">
+                            <feDropShadow dx="-10" dy="-10" stdDeviation="15" flood-color="#000000" flood-opacity="0.4" />
+                        </filter>
+                    </defs>
+                    <polygon class="curl-polygon" id="curl-bl" points="1000,200 250,800 350,950" fill="#000000" filter="url(#shadowBlur-bl)" />
+                </svg>
+                <span class="corner-arrow">
+                    <svg viewBox="0 0 300 300" width="26" height="26">
+                        <path class="arrow-path" d="
+                            M 265 15
+                            C 275 150, 240 280, 110 275
+                            C 35 270, 15 190, 45 125
+                            C 65 75, 100 70, 140 85
+                            L 165 30
+                            L 215 85
+                            L 165 140
+                            L 145 115
+                            L 155 105
+                            L 135 95
+                            L 155 88
+                            L 145 85
+                            C 100 80, 70 100, 60 140
+                            C 50 180, 70 240, 110 245
+                            C 190 250, 245 180, 255 35
+                            Z" />
+                    </svg>
+                </span>
+            </button>
+            <button class="corner corner-br" data-dir="next" aria-label="Page suivante" hidden>
+                <svg class="curl-svg" viewBox="0 0 1000 1000" preserveAspectRatio="none">
+                    <defs>
+                        <filter id="shadowBlur-br" x="-30%" y="-30%" width="160%" height="160%">
+                            <feDropShadow dx="-10" dy="-10" stdDeviation="15" flood-color="#000000" flood-opacity="0.4" />
+                        </filter>
+                    </defs>
+                    <polygon class="curl-polygon" id="curl-br" points="1000,200 250,800 350,950" fill="#000000" filter="url(#shadowBlur-br)" />
+                </svg>
+                <span class="corner-arrow corner-arrow-mirror">
+                    <svg viewBox="0 0 300 300" width="26" height="26">
+                        <path class="arrow-path" d="
+                            M 265 15
+                            C 275 150, 240 280, 110 275
+                            C 35 270, 15 190, 45 125
+                            C 65 75, 100 70, 140 85
+                            L 165 30
+                            L 215 85
+                            L 165 140
+                            L 145 115
+                            L 155 105
+                            L 135 95
+                            L 155 88
+                            L 145 85
+                            C 100 80, 70 100, 60 140
+                            C 50 180, 70 240, 110 245
+                            C 190 250, 245 180, 255 35
+                            Z" />
+                    </svg>
+                </span>
+            </button>
+            <div class="page-edges-bottom" id="page-edges-bottom"></div>
+        </div>
+
+        <nav class="tabs" id="tabs">
+            <button class="tab is-active" data-tab="cover">Couverture</button>
+            <button class="tab" data-tab="geants">Géants</button>
+            <button class="tab" data-tab="impromptu">Impromptu</button>
+            <button class="tab" data-tab="visages">Visages</button>
+            <button class="tab" data-tab="atelier">Noir&amp;Blanc</button>
+            <button class="tab" data-tab="contact">Atelier</button>
+        </nav>
+
+        <div class="page-edges" id="page-edges"></div>
+    </div>
+
+    <script>
+        // ─── binding rings ────────────────────────────────────────────────
+        const pageFrame = document.getElementById('page-frame');
+        const binding = document.createElement('div');
+        binding.className = 'binding';
+        pageFrame.appendChild(binding);
+
+        // On récupère le conteneur binding créé (celui qui est dans le DOM)
+        const bindingEl = document.querySelector('.binding');
+        const RING_SHORT_AXIS = 16;
+        const pageBackEl = document.getElementById('page-back');
+        const pageBackBottomEl = document.getElementById('page-back-bottom');
+
+        function buildPageBack(visible) {
+            pageBackEl.innerHTML = '';
+            pageBackEl.classList.toggle('is-visible', visible);
+            if (!visible) return;
+
+            const vertical = window.innerWidth <= 720; // true = anneaux en haut (mobile)
+            const notebookRect = document.querySelector('.notebook').getBoundingClientRect();
+            const pageFrameRect = document.getElementById('page-frame').getBoundingClientRect();
+            const GAP = 4;
+
+            pageBackEl.classList.toggle('top-mode', vertical);
+
+            if (vertical) {
+                // anneaux en haut : le dos se place au-dessus de la page, 4px d'écart
+                const bottom = pageFrameRect.top - notebookRect.top - GAP;
+                pageBackEl.style.top = '';
+                pageBackEl.style.left = '';
+                pageBackEl.style.width = '';
+                pageBackEl.style.bottom = (notebookRect.height - bottom) + 'px';
+            } else {
+                // anneaux à gauche : le dos se place à gauche de la page, 4px d'écart
+                const right = pageFrameRect.left - notebookRect.left - GAP;
+                pageBackEl.style.bottom = '';
+                pageBackEl.style.left = (right - 60) + 'px'; // largeur 60px, finit pile au bord droit calculé
+                pageBackEl.style.width = '60px';
+            }
+
+            // mêmes trous que la reliure réelle, mêmes positions/espacement (alignement visuel)
+            const space = vertical ? bindingEl.clientWidth : bindingEl.clientHeight;
+            let count = Math.max(3, Math.floor(space / RING_SHORT_AXIS) + 2);
+            if (!vertical) count = Math.max(3, count - 2);
+
+            for (let i = 0; i < count; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'ghost-hole';
+                const pos = (i / Math.max(1, count - 1)) * 100;
+                if (vertical) {
+                    dot.style.left = pos + '%';
+                } else {
+                    dot.style.top = pos + '%';
+                }
+                pageBackEl.appendChild(dot);
+            }
+        }
+
+        // pile de pages déjà tournées, sous .page-back — même angle, même accent 1/5 noir que la bande du bas
+        function updatePageBackBottom(idxPassed, visible) {
+            pageBackBottomEl.innerHTML = '';
+            const mobileNow = window.innerWidth <= 720;
+            pageBackBottomEl.classList.toggle('is-visible', !!visible && !mobileNow);
+            if (!visible || mobileNow) return; // abandonné en mobile : se superposait avec l'autre pile au même endroit
+
+            const notebookRect = document.querySelector('.notebook').getBoundingClientRect();
+            const pageFrameRect = document.getElementById('page-frame').getBoundingClientRect();
+            const backRect = pageBackEl.getBoundingClientRect();
+
+            const left = backRect.left - notebookRect.left;
+            const width = backRect.width;
+            const top = pageFrameRect.bottom - notebookRect.top; // même hauteur que la bande du bas principale
+
+            pageBackBottomEl.style.left = left + 'px';
+            pageBackBottomEl.style.width = width + 'px';
+            pageBackBottomEl.style.top = top + 'px';
+
+            const count = Math.max(0, idxPassed);
+            const lines = Math.min(count, 30);
+            if (lines <= 0) return;
+            const yMax = (lines - 1) * STEP;
+            const tan30 = Math.tan(30 * Math.PI / 180);
+            const NUDGE = 4; // décalage fixe vers la droite
+
+            for (let i = 0; i < lines; i++) {
+                const line = document.createElement('div');
+                line.className = 'edge-line-back-bottom';
+                const y = i * STEP;
+                const x1 = y * tan30 + NUDGE;
+                const x2 = width - (yMax - y) * tan30 + NUDGE;
+                line.style.top = y + 'px';
+                line.style.left = x1.toFixed(2) + 'px';
+                line.style.width = Math.max(0, x2 - x1) + 'px';
+                const isAccent = (i % 5) === 4;
+                if (isAccent) {
+                    line.style.background = 'rgba(0,0,0,0.55)';
+                    line.style.opacity = '1';
+                } else {
+                    const alpha = 0.5 + 0.5 * (1 - i / Math.max(1, lines - 1));
+                    line.style.opacity = alpha;
+                }
+                pageBackBottomEl.appendChild(line);
+            }
+        }
+
+
+        function buildBinding() {
+            bindingEl.innerHTML = '';
+            const vertical = window.innerWidth <= 720;
+            const space = vertical ? bindingEl.clientWidth : bindingEl.clientHeight;
+            // On ajoute 2 anneaux pour mieux remplir
+            let count = Math.max(3, Math.floor(space / RING_SHORT_AXIS) + 2);
+            if (!vertical) count = Math.max(3, count - 2);
+
+            for (let i = 0; i < count; i++) {
+                const item = document.createElement('div');
+                item.className = 'hole-ring';
+
+                const hole = document.createElement('div');
+                hole.className = 'hole';
+
+                const front = document.createElement('div');
+                front.className = 'ring-front';
+
+                item.appendChild(hole);
+                item.appendChild(front);
+                bindingEl.appendChild(item);
+            }
+        }
+
+        buildBinding();
+
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                buildBinding();
+                render(0);
+            }, 150);
+        });
+
+        // ─── data ──────────────────────────────────────────────────────────
+        const DATA = {
+            geants: { bg: 'bg-foret', label: 'Géants', pages: [
+                    { img: 'images/sequoia.jpg', alt: "Sculpture monumentale en cours, à même un douglas, échafaudage et château en arrière-plan",
+                        cap: "Un douglas entier, sculpté debout." },
+                    { img: 'images/couple-totem.jpg', alt: "Deux silhouettes enlacées sculptées dans un tronc debout, jardin",
+                        cap: "Deux silhouettes enlacées, à même un tronc encore debout." }
+                ] },
+            impromptu: { bg: 'bg-champ', label: 'Impromptu', pages: [
+                    { img: 'images/corbeau.jpg', alt: "Oiseau facétieux au chapeau, posé sur deux jambes en bois",
+                        cap: "Un chapeau trouvé, un oiseau qui s'impose." },
+                    { img: 'images/bouddha.jpg', alt: "Buste détaillé, mains jointes, coiffe travaillée",
+                        cap: "Un visage recueilli." },
+                    { img: 'images/marmottes.jpg', alt: "Deux marmottes sculptées sur une souche, vue de dos",
+                        cap: "Deux marmottes, blotties sur une souche." },
+                    { img: 'images/saxophoniste.jpg', alt: "Personnage félin anthropomorphe tenant un instrument, fond sombre",
+                        cap: "Un musicien qu'on n'attendait pas." },
+                    { img: 'images/crapaud.jpg', alt: "Forme abstraite émergeant du bois brut, sous-bois en automne",
+                        cap: "Une forme entre figure et paysage." },
+                    { img: 'images/lunien.jpg', alt: "Masque creusé dans une bille fendue, contre un mur de pierre",
+                        cap: "Un masque trouvé dans une bille fendue." },
+                    { img: 'images/poteau.jpg', alt: "Poteau de bois fin avec ferrures, contre un muret moussu",
+                        cap: "Un dernier geste, plus retenu." }
+                ] },
+            visages: { bg: 'bg-foret', label: 'Visages', pages: [
+                    { img: 'images/epure.jpg', alt: "Visage très épuré, traits réduits à quelques lignes, dans l'herbe",
+                        cap: "À peine esquissé." },
+                    { img: 'images/pipe.jpg', alt: "Buste d'homme au chapeau et à la pipe, taille brute à la tronçonneuse",
+                        cap: "Le fumeur." },
+                    { img: 'images/beret.jpg', alt: "Tête de femme au béret, traitement lisse et minimal",
+                        cap: "Poli jusqu'au silence." },
+                    { img: 'images/ecorce-1.jpg', alt: "Visage émergeant d'une bille de bois, écorce conservée en couronne",
+                        cap: "L'écorce, gardée en couronne." },
+                    { img: 'images/bob.jpg', alt: "Tête au carré court, lumière rasante, jardin en hiver",
+                        cap: "Lumière de givre." },
+                    { img: 'images/couronne.jpg', alt: "Buste à la coiffe sculptée en éclats, posé en intérieur",
+                        cap: "La coiffe devient sculpture." },
+                    { img: 'images/totem-multiple.jpg', alt: "Plusieurs visages superposés, écorce et bois clair",
+                        cap: "Plusieurs têtes, une seule bille." },
+                    { img: 'images/brut.jpg', alt: "Visage taillé à même une branche brute",
+                        cap: "Encore aveugle, sur la branche." },
+                    { img: 'images/ecorce-2.jpg', alt: "Visage en cours de dégrossissage, écorce encore présente",
+                        cap: "En devenir." },
+                    { img: 'images/texture.jpg', alt: "Gros plan sur le grain du bois sculpté",
+                        cap: "Le grain, de très près." }
+                ] }
+        };
+
+        const SECTION_ORDER = ['geants', 'impromptu', 'visages', 'atelier', 'contact'];
+
+        // ─── helpers ──────────────────────────────────────────────────────
+        let tiltSeed = 0;
+
+        function nextTilt() {
+            tiltSeed++;
+            const sign = tiltSeed % 2 === 0 ? 1 : -1;
+            const magnitude = 1.4 + Math.random() * 2.8;
+            return (sign * magnitude).toFixed(1);
+        }
+
+        function tapeHTML() {
+            const fourCorners = Math.random() < 0.5;
+            if (fourCorners) {
+                return ['tl', 'tr', 'bl', 'br'].map(c => `<span class="tape ${c}"></span>`).join('');
+            }
+            const diag = Math.random() < 0.5 ? ['tl', 'br'] : ['tr', 'bl'];
+            return diag.map(c => `<span class="tape ${c}"></span>`).join('');
+        }
+
+        function photoPageHTML(bgClass, label, it) {
+            const tilt = nextTilt();
+            return `
+            <div class="page ${bgClass}">
+              <span class="section-label">${label}</span>
+              <div class="polaroid" style="transform: rotate(${tilt}deg);">
+                ${tapeHTML()}
+                <img src="${it.img}" alt="${it.alt}" loading="lazy">
+                <div class="polaroid-band"><p>${it.cap}</p></div>
+              </div>
+            </div>`;
+        }
+
+        // ─── build pages ──────────────────────────────────────────────────
+        const pagesEl = document.getElementById('pages');
+        let html = '';
+
+        Object.entries(DATA).forEach(([key, section]) => {
+            section.pages.forEach(it => {
+                html += `<div data-section="${key}">${photoPageHTML(section.bg, section.label, it)}</div>`;
+            });
+        });
+
+        html += `
+          <div data-section="atelier"><div class="page page-nb">
+            <span class="section-label">Noir&Blanc</span>
+            <div class="nb-photo"><img src="images/nb-1.jpg" alt="Couple-totem couché, visages enchevêtrés, vue rapprochée"></div>
+            <div class="nb-photo"><img src="images/nb-2.jpg" alt="Série de visages sculptés au sol, lumière de forêt tachée"></div>
+          </div></div>
+          <div data-section="atelier"><div class="page page-nb">
+            <span class="section-label">Noir&Blanc</span>
+            <div class="nb-photo solo"><img src="images/nb-3.jpg" alt="Détail de spirales sculptées, cernes du bois apparents, vue plongeante"></div>
+          </div></div>
+        `;
+
+        html += `
+          <div data-section="contact"><div class="page page-photo-text">
+            <span class="section-label">Atelier</span>
+            <img class="photo-bg" src="images/etabli.jpg" alt="Atelier de Guillaume Varet">
+            <div class="photo-overlay"></div>
+            <img class="contact-img" src="images/contact.png" alt="Coordonnées de l'atelier">
+          </div></div>
+        `;
+
+        pagesEl.innerHTML = html;
+
+        // ─── index pages by section ──────────────────────────────────────
+        const sections = {};
+        SECTION_ORDER.forEach(key => {
+            sections[key] = Array.from(document.querySelectorAll(`#pages [data-section="${key}"] .page`));
+        });
+
+        const cover = document.getElementById('cover');
+        const tabs = document.querySelectorAll('.tab');
+        const tabsNav = document.getElementById('tabs');
+        const pageEdges = document.getElementById('page-edges');
+        const pageEdgesBottom = document.getElementById('page-edges-bottom');
+        const corners = Array.from(document.querySelectorAll('.corner'));
+        const cornersPrev = corners.filter(c => c.dataset.dir === 'prev');
+        const cornersNext = corners.filter(c => c.dataset.dir === 'next');
+        const counter = document.getElementById('page-counter');
+
+        // ─── sequence: cover + all pages in order ──────────────────────
+        const sequence = [{ tab: 'cover', el: cover }];
+        SECTION_ORDER.forEach(key => {
+            sections[key].forEach(el => sequence.push({ tab: key, el }));
+        });
+        const TOTAL_PAGES = sequence.length - 1; // pages excluding cover
+        let pos = 0;
+
+        // ─── page-edges (white lines) ────────────────────────────────────
+        const LINE_WIDTH = 1;
+        const STEP = 0.5;
+
+        function updatePageEdges(count, activeTabEl) {
+            pageEdges.innerHTML = '';
+            if (count < 0) count = 0;
+            const visible = Math.min(count, 30);
+            for (let i = 0; i < visible; i++) {
+                const line = document.createElement('div');
+                line.className = 'edge-line';
+                line.style.right = (i * STEP) + 'px';
+                const isAccent = (i % 5) === 4; // 1 ligne sur 5, en noir, pour le relief
+                if (isAccent) {
+                    line.style.background = 'rgba(0,0,0,0.55)';
+                    line.style.opacity = '1';
+                } else {
+                    const alpha = 0.5 + 0.5 * (1 - i / Math.max(1, visible - 1));
+                    line.style.opacity = alpha;
+                }
+                pageEdges.appendChild(line);
+            }
+
+            // trait droite : du bas de l'onglet ACTIF jusqu'au bas de Contact — suit l'onglet courant
+            // (comportement d'origine, restauré — perdu en route quand j'avais figé la bande sur Géants)
+            const notebookRect = document.querySelector('.notebook').getBoundingClientRect();
+            const contactTab = document.querySelector('.tab[data-tab="contact"]');
+            const refTab = activeTabEl || document.querySelector('.tab[data-tab="geants"]');
+            if (refTab && contactTab) {
+                const refRect = refTab.getBoundingClientRect();
+                const contactRect = contactTab.getBoundingClientRect();
+                // épaisseur RÉELLEMENT utilisée par les lignes de la bande du bas (pas la hauteur fixe du conteneur,
+                // qui elle ne bouge jamais) — c'est ça qui diminue quand il reste moins de pages
+                const visibleBottom = Math.min(Math.max(count, 0), 30);
+                const bottomBandThickness = visibleBottom > 0 ? (visibleBottom - 1) * STEP : 0;
+                const top = refRect.bottom - notebookRect.top;
+                const height = (contactRect.bottom - refRect.bottom) + bottomBandThickness;
+                pageEdges.style.top = top + 'px';
+                pageEdges.style.height = Math.max(0, height) + 'px';
+
+                // découpe diagonale, ancrée en BAS-DROITE (longueur max, intacte), GAUCHE raccourcie — perspective
+                const tan30 = Math.tan(30 * Math.PI / 180);
+                const shearPx = bottomBandThickness * tan30;
+                const hPct = (height > 0) ? (100 - (shearPx / height) * 100) : 100;
+                pageEdges.style.clipPath = `polygon(0 0, 100% 0, 100% 100%, 0 ${hPct.toFixed(2)}%)`;
+            }
+        }
+
+        function updatePageEdgesBottom(count) {
+            pageEdgesBottom.innerHTML = '';
+
+            const pageFrameRect = document.getElementById('page-frame').getBoundingClientRect();
+            const contactTabRect = document.querySelector('.tab[data-tab="contact"]').getBoundingClientRect();
+
+            // #page-edges-bottom est en fait À L'INTÉRIEUR de #page-frame (son vrai bloc englobant) —
+            // donc tout doit être calculé relativement à pageFrameRect, pas notebookRect.
+            // Bord gauche aligné directement avec le bord gauche de la page (0, dans le repère de .page-frame).
+            const left = 0;
+            const right = contactTabRect.right - pageFrameRect.left;
+            const top = pageFrameRect.bottom - pageFrameRect.top; // = hauteur de .page-frame, place le bloc à son propre bas
+
+            pageEdgesBottom.style.left = left + 'px';
+            pageEdgesBottom.style.width = (right - left) + 'px';
+            pageEdgesBottom.style.top = top + 'px';
+
+            if (count < 0) count = 0;
+            const visible = Math.min(count, 30);
+            const yMax = (visible - 1) * STEP; // profondeur de la dernière ligne (la plus basse)
+            const tan30 = Math.tan(30 * Math.PI / 180);
+
+            for (let i = 0; i < visible; i++) {
+                const line = document.createElement('div');
+                line.className = 'edge-line-bottom';
+                const y = i * STEP;
+                // cisaillement uniforme : les deux bords avancent du même pas vers la droite avec la profondeur,
+                // le bord droit de la ligne la plus basse retombe pile sur la position d'origine (avant l'angle)
+                const x1 = y * tan30;
+                const x2 = (right - left) - (yMax - y) * tan30;
+                line.style.top = y + 'px';
+                line.style.left = x1.toFixed(2) + 'px';
+                line.style.width = Math.max(0, x2 - x1) + 'px';
+                const isAccent = (i % 5) === 4; // 1 ligne sur 5, en noir, pour le relief
+                if (isAccent) {
+                    line.style.background = 'rgba(0,0,0,0.55)';
+                    line.style.opacity = '1';
+                } else {
+                    const alpha = 0.5 + 0.5 * (1 - i / Math.max(1, visible - 1));
+                    line.style.opacity = alpha;
+                }
+                pageEdgesBottom.appendChild(line);
+            }
+        }
+
+        // ─── navigation ──────────────────────────────────────────────────
+        function goNext() { if (pos < sequence.length - 1) { pos++;
+                render(1); } }
+
+        function goPrev() { if (pos > 0) { pos--;
+                render(-1); } }
+
+        function render(direction) {
+            sequence.forEach(s => s.el.classList.remove('is-active', 'flip-next', 'flip-prev'));
+
+            const current = sequence[pos];
+            current.el.classList.add('is-active');
+            if (direction === 1) current.el.classList.add('flip-next');
+            if (direction === -1) current.el.classList.add('flip-prev');
+
+            // ── onglets ──────────────────────────────────────────────────
+            const allTabs = document.querySelectorAll('.tab');
+            let activeIndex = -1;
+            allTabs.forEach((t, i) => {
+                t.classList.remove('highlight', 'is-active');
+                if (t.dataset.tab === current.tab) {
+                    t.classList.add('is-active');
+                    activeIndex = i;
+                }
+            });
+
+            if (activeIndex !== -1) {
+                for (let i = 0; i <= activeIndex; i++) {
+                    allTabs[i].classList.add('highlight');
+                }
+            }
+
+            const atCover = current.tab === 'cover';
+            const atEnd = pos >= sequence.length - 1;
+
+            cornersPrev.forEach(c => { c.hidden = atCover; });
+            cornersNext.forEach(c => { c.hidden = atEnd; });
+
+            buildPageBack(!atCover);
+
+            // ── page counter ──
+            if (atCover) {
+                counter.textContent = '';
+            } else {
+                const idx = sections[current.tab].indexOf(current.el);
+                const total = sections[current.tab].length;
+                counter.textContent = `${current.tab} — page ${idx + 1} / ${total}`;
+            }
+
+            // ── pages restantes ──
+            let remaining;
+            if (atCover) {
+                remaining = TOTAL_PAGES;
+            } else {
+                remaining = TOTAL_PAGES - pos;
+                if (remaining < 0) remaining = 0;
+            }
+
+            // ── largeur de la pile de traits ──
+            let extraWidth = 0;
+            if (remaining > 0) {
+                extraWidth = (remaining - 1) * STEP + LINE_WIDTH;
+            }
+            extraWidth = Math.round(extraWidth * 100) / 100;
+            const isMobile = window.innerWidth <= 720;
+
+            // ── onglets : taille fixe pour tous, comme Contact et Atelier ──
+            // (le redimensionnement dynamique a été retiré : il créait un décalage
+            // d'autant plus visible qu'il restait de pages, donc très visible sur
+            // Géants/Impromptu/Visages et quasi invisible sur Atelier/Contact)
+            allTabs.forEach((tab) => {
+                tab.style.width = '';
+                tab.style.transform = '';
+                tab.style.marginLeft = '';
+            });
+
+            // ── coins : position fixe, comme les onglets (plus de suivi de extraWidth) ──
+            // on efface juste le style inline ; chaque coin retombe sur sa règle CSS statique
+            document.querySelectorAll('.corner').forEach(c => { c.style.transform = ''; });
+
+            // ── décaler la reliure en mobile ──
+            if (isMobile) {
+                bindingEl.style.right = (8 + extraWidth) + 'px';
+            } else {
+                bindingEl.style.right = '';
+            }
+
+            // ── mettre à jour les traits blancs ──
+            const activeTabEl = document.querySelector('.tab.is-active');
+            updatePageEdgesBottom(remaining);
+            updatePageEdges(remaining, activeTabEl);
+
+            // ── pile des pages déjà tournées, sous le dos fantôme ──
+            const passed = TOTAL_PAGES - remaining; // cohérent avec le calcul global de `remaining` ci-dessus
+            updatePageBackBottom(passed, !atCover);
+        }
+
+        // ─── tab clicks ──────────────────────────────────────────────────
+        tabs.forEach(t => t.addEventListener('click', () => {
+            const target = t.dataset.tab;
+            pos = sequence.findIndex(s => s.tab === target);
+            render(0);
+        }));
+
+        // ─── corner clicks ───────────────────────────────────────────────
+        corners.forEach(c => c.addEventListener('click', () => {
+            c.dataset.dir === 'next' ? goNext() : goPrev();
+        }));
+
+        // ─── keyboard ────────────────────────────────────────────────────
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') goNext();
+            if (e.key === 'ArrowLeft') goPrev();
+        });
+
+        // ─── corner hover expansion ─────────────────────────────────────
+        const ANCHORS = {
+            'corner-tl': ['left', 'top'],
+            'corner-tr': ['right', 'top'],
+            'corner-bl': ['left', 'bottom'],
+            'corner-br': ['right', 'bottom']
+        };
+        const BASE_SIZE = 52,
+            MAX_SIZE = 118,
+            INFLUENCE = 150;
+        const maxT = new Map();
+        const pageContent = document.getElementById('page-content');
+
+        pageFrame.addEventListener('mousemove', (e) => {
+            const frameRect = pageContent.getBoundingClientRect();
+            corners.forEach(c => {
+                if (c.hidden) return;
+                const cls = [...c.classList].find(cl => ANCHORS[cl]);
+                if (!cls) return;
+                const [hx, vy] = ANCHORS[cls];
+                const mobileNow = window.innerWidth <= 720;
+                const ax = hx === 'left' ? frameRect.left - (mobileNow ? 0 : 64) : frameRect.right;
+                const ay = vy === 'top' ? frameRect.top - (mobileNow ? 64 : 0) : frameRect.bottom;
+                const dist = Math.hypot(e.clientX - ax, e.clientY - ay);
+                let tNow = Math.max(0, 1 - dist / INFLUENCE);
+                const tBest = Math.max(maxT.get(c) || 0, tNow);
+                maxT.set(c, tBest);
+                const size = BASE_SIZE + tBest * (MAX_SIZE - BASE_SIZE);
+                c.style.width = size + 'px';
+                c.style.height = size + 'px';
+                c.style.setProperty('--fold-alpha', (tBest * 0.5).toFixed(2));
+                c.style.setProperty('--fold-color', tBest > 0.45 ? '192,67,47' : '70,60,46');
+
+                // anime le point mobile du triangle (250,800) -> (350,500) selon la même proximité
+                const poly = c.querySelector('.curl-polygon');
+                if (poly) {
+                    const mx = 250 + tBest * (350 - 250);
+                    const my = 800 + tBest * (500 - 800);
+                    poly.setAttribute('points', `1000,200 ${mx.toFixed(1)},${my.toFixed(1)} 350,950`);
+                }
+            });
+        });
+
+        pageFrame.addEventListener('mouseleave', () => {
+            corners.forEach(c => {
+                maxT.set(c, 0);
+                c.style.width = BASE_SIZE + 'px';
+                c.style.height = BASE_SIZE + 'px';
+                c.style.setProperty('--fold-alpha', '0');
+                c.style.setProperty('--fold-color', '70,60,46');
+                const poly = c.querySelector('.curl-polygon');
+                if (poly) poly.setAttribute('points', '1000,200 250,800 350,950');
+            });
+        });
+
+        // ─── initial render ─────────────────────────────────────────────
+        render(0);
+        window.addEventListener('load', () => { render(0); });
+    </script>
+
+</body>
+</html>
