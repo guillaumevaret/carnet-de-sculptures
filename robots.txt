@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://guillaumevaret.github.io/carnet-de-sculptures/sitemap.xml
